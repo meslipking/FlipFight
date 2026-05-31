@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-SVKCGVWV7R"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-SVKCGVWV7R');
+  </script>
+  <!-- ═══ SEO Primary ═══ -->
+  <title>FlipFight.com - Game Chiến Đấu Trực Tuyến Miễn Phí | Multiplayer Battle</title>
+  <meta name="description" content="FlipFight.com – Game chiến đấu trực tuyến miễn phí, không cần cài đặt. 10 giai đoạn tiến hóa, kỹ năng đặc biệt, vật phẩm đa dạng. Chơi ngay trên trình duyệt!"/>
+  <meta name="keywords" content="game chiến đấu online, game trực tuyến miễn phí, multiplayer battle game, flipfight, game io, game browser, 2d battle game, game không cần cài đặt"/>
+  <meta name="author" content="FlipFight.com"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="https://flipfight.com"/>
+  <link rel="alternate" hreflang="vi" href="https://flipfight.com"/>
+  <link rel="alternate" hreflang="en" href="https://flipfight.com/?lang=en"/>
+  <link rel="alternate" hreflang="x-default" href="https://flipfight.com"/>
+  
+  <!-- ═══ GEO Tags ═══ -->
+  <meta name="geo.region" content="VN"/>
+  <meta name="geo.placename" content="Vietnam"/>
+  <meta name="geo.position" content="16.0544;108.2022"/>
+  <meta name="ICBM" content="16.0544, 108.2022"/>
+  <meta name="language" content="Vietnamese, English"/>
+  
+  <!-- ═══ Open Graph (Facebook/Zalo) ═══ -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://flipfight.com"/>
+  <meta property="og:title" content="FlipFight.com - Game Chiến Đấu Trực Tuyến Miễn Phí"/>
+  <meta property="og:description" content="Chơi game chiến đấu 2D trực tuyến miễn phí! 10 giai đoạn tiến hóa, kỹ năng mạnh mẽ, đấu với người chơi thật từ khắp nơi. Không cần cài đặt!"/>
+  <meta property="og:image" content="https://flipfight.com/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:site_name" content="FlipFight.com"/>
+  <meta property="og:locale" content="vi_VN"/>
+  
+  <!-- ═══ Twitter Card ═══ -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="@flipfightcom"/>
+  <meta name="twitter:title" content="FlipFight.com - Game Chiến Đấu Online Miễn Phí"/>
+  <meta name="twitter:description" content="Game chiến đấu 2D multiplayer miễn phí! Tiến hóa nhân vật, dùng kỹ năng, đánh bại đối thủ. Chơi ngay!"/>
+  <meta name="twitter:image" content="https://flipfight.com/og-image.png"/>
+  
+  <!-- ═══ Structured Data (JSON-LD) ═══ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "FlipFight",
+    "url": "https://flipfight.com",
+    "description": "Game chiến đấu 2D multiplayer trực tuyến miễn phí với 10 giai đoạn tiến hóa, kỹ năng đặc biệt và vật phẩm đa dạng.",
+    "genre": ["Action", "Multiplayer", "Battle"],
+    "gamePlatform": "Web Browser",
+    "applicationCategory": "Game",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "VND"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "FlipFight",
+      "url": "https://flipfight.com"
+    },
+    "inLanguage": ["vi", "en"],
+    "numberOfPlayers": {
+      "@type": "QuantitativeValue",
+      "minValue": 1,
+      "maxValue": 20
+    }
+  }
+  </script>
+  
+  <!-- ═══ Fonts ═══ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="style.css?v=20260525_v12"/>
+  <link rel="shortcut icon" href="/favicon.png" type="image/x-icon"/>
+  <link rel="icon" href="/favicon.png" type="image/png"/>
+  <link rel="apple-touch-icon" href="/favicon.png"/>
+  
+  <!-- ═══ Google AdSense ═══ -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4336910138181054" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<!-- Lang Toggle — chỉ hiện ở trang chủ, ẩn trong game -->
+<div id="langToggle">
+  <button onclick="setLang('en')" id="langBtnEn">EN</button>
+  <button onclick="setLang('vi')" id="langBtnVi">VI</button>
+</div>
+
+<!-- ═══ GAME CANVAS ════════════════════════════════════════════ -->
+<canvas id="gameCanvas"></canvas>
+
+<!-- Connecting Overlay -->
+<div id="connectingOverlay">
+  <div class="connect-spinner"></div>
+  <h2 id="connectingText">Đang kết nối...</h2>
+  <p style="color:rgba(255,255,255,0.5); margin-top:8px; font-size:14px;">flipfight.com</p>
+</div>
+
+<!-- Rotate Device Overlay -->
+<div id="rotateOverlay">
+  <div style="font-size:60px; animation: rotateAnim 2s infinite ease-in-out;">📱</div>
+  <h2 data-i18n="rotate_device_title">Xoay ngang điện thoại</h2>
+  <p data-i18n="rotate_device_desc">Để có trải nghiệm tốt nhất</p>
+</div>
+
+<!-- ═══ HUD ════════════════════════════════════════════════════ -->
+<div id="hud" class="hidden">
+
+  <!-- Top Bar -->
+  <div id="topBar">
+    <div class="stat-pill" id="alivePill">
+      <span class="pill-icon">💀</span>
+      <span id="hudAliveCount">0</span>
+    </div>
+
+    <div class="stat-pill" id="timePill">
+      <span class="pill-icon">⏱</span>
+      <span id="hudStopwatch">0:00</span>
+    </div>
+    <div id="pingPill">
+      <div class="ping-bar" id="pingBar1"></div>
+      <div class="ping-bar" id="pingBar2"></div>
+      <div class="ping-bar" id="pingBar3"></div>
+      <div class="ping-bar" id="pingBar4"></div>
+      <span id="pingText" style="color:#22c55e;font-size:10px;font-family:Outfit;margin-left:3px">--ms</span>
+    </div>
+  </div>
+
+  <!-- Left: HP/XP Bars -->
+  <div id="leftPanel">
+    <div id="barGroup">
+      <div class="bar-label" data-i18n="hp_bar">❤️ HP</div>
+      <div class="bar-track">
+        <div class="bar-fill hp-fill" id="hpBarFill"></div>
+      </div>
+      <div class="bar-label" data-i18n="xp_bar">✨ XP</div>
+      <div class="bar-track xp-track">
+        <div class="bar-fill xp-fill" id="xpBarFill"></div>
+      </div>
+    </div>
+    
+    <!-- Perks/Cards display area (glowing indicators of selected perks) -->
+    <div id="perksIndicatorPanel" style="margin-top: 10px; display: none; flex-wrap: wrap; gap: 6px; background: var(--clr-panel); border: 1px solid var(--clr-border); backdrop-filter: var(--blur-panel); border-radius: 16px; padding: 8px 12px; box-shadow: var(--shadow-glow);">
+    </div>
+  </div>
+
+  <!-- Minimap — riêng biệt, không đè thanh máu -->
+  <canvas id="minimapCanvas" width="120" height="120"></canvas>
+
+  <!-- Right: Leaderboard — ẩn mặc định, click TopBar để mở -->
+  <div id="leaderboard" class="hidden">
+    <div class="lb-header" onclick="document.getElementById('leaderboardList').classList.toggle('hidden');">
+      <span data-i18n="leaderboard">🏆 Bảng xếp hạng</span>
+      <span style="font-size:10px; opacity:0.7;">[+/-]</span>
+    </div>
+    <ul id="leaderboardList"></ul>
+  </div>
+
+  <!-- Kill Feed -->
+  <div id="killFeed"></div>
+
+  <!-- Hotbar -->
+  <div id="hotbar">
+    <div class="hotbar-slot" data-key="1"><span class="slot-icon">👟</span><span class="slot-key">1</span></div>
+    <div class="hotbar-slot" data-key="2"><span class="slot-icon">🚀</span><span class="slot-key">2</span></div>
+    <div class="hotbar-slot" data-key="3"><span class="slot-icon">💣</span><span class="slot-key">3</span></div>
+    <div class="hotbar-slot" data-key="4"><span class="slot-icon">🧪</span><span class="slot-key">4</span></div>
+    <div class="hotbar-slot" data-key="5"><span class="slot-icon">🛡️</span><span class="slot-key">5</span></div>
+    <div class="hotbar-slot" data-key="6"><span class="slot-icon">🔗</span><span class="slot-key">6</span></div>
+  </div>
+
+  <!-- Leaderboard Toggle Button (top right) -->
+  <button id="lbToggleBtn" title="Bảng xếp hạng [Tab]">🏆</button>
+
+  <!-- Action Buttons — Diamond layout -->
+  <div id="actionButtons">
+    <!-- Dash Button (bottom-right, largest) -->
+    <button id="btnDash" class="action-btn dash-btn" title="Dash [Space]" aria-label="Dash">
+      <div class="cd-overlay" id="dashCdOverlay"></div>
+      <span class="action-icon">💨</span>
+      <span class="action-label" data-i18n="btn_dash">DASH<br><small>[Space]</small></span>
+    </button>
+    <!-- Skill Button (top) -->
+    <button id="btnAttack" class="action-btn skill-btn" title="Skill [E]" aria-label="Skill">
+      <div class="cd-overlay" id="skillCdOverlay"></div>
+      <span class="action-icon">⚡</span>
+      <span class="action-label" data-i18n="btn_skill">SKILL<br><small>[E]</small></span>
+    </button>
+    <!-- Item Button (left) -->
+    <button id="btnUseItem" class="action-btn item-btn" title="Use Item [F]" aria-label="Dùng Item">
+      <div class="cd-overlay"></div>
+      <div class="btn-level-badge" id="inventoryCountBadge">0</div>
+      <span class="icon-wrap">🎒</span>
+      <span class="action-label" data-i18n="btn_item">ITEM<br><small>[F]</small></span>
+    </button>
+    <!-- Switch Item Button (top-left) -->
+    <button id="btnSwitchItem" class="action-btn switch-btn" title="Switch Item [Q]" aria-label="Đổi Item">
+      <span class="action-icon">🔄</span>
+      <span class="action-label" data-i18n="btn_switch">ĐỔI<br><small>[Q]</small></span>
+    </button>
+  </div>
+
+</div>
+
+<!-- ═══ LOGIN SCREEN ═══════════════════════════════════════════ -->
+<div id="loginScreen" class="screen">
+  <!-- Animated background -->
+  <div id="loginBgEffects">
+    <div class="bg-grid"></div>
+    <div class="light-ray ray1"></div>
+    <div class="light-ray ray2"></div>
+    <div class="light-ray ray3"></div>
+    <div class="floating-orb orb1"></div>
+    <div class="floating-orb orb2"></div>
+    <div class="floating-orb orb3"></div>
+    <div class="floating-orb orb4"></div>
+    <div class="star-field" id="starField"></div>
+  </div>
+  
+  <div class="screen-inner login-inner">
+    <!-- MOBILE TABS FOR LOBBY -->
+    <div id="mobileLobbyTabs" class="mobile-tabs-container">
+      <button class="mobile-tab-btn active" onclick="window.switchMobileTab('play')">
+        <span class="tab-icon">🎮</span> <span data-i18n="tab_play">Vào Trận</span>
+      </button>
+      <button class="mobile-tab-btn" onclick="window.switchMobileTab('customize')">
+        <span class="tab-icon">🃏</span> <span data-i18n="tab_customize">Trang Bị</span>
+      </button>
+    </div>
+
+    <!-- LEFT PANEL: Controls -->
+    <div class="login-panel side-panel left-panel">
+      <h3 class="panel-title"><i class="fas fa-gamepad"></i> <span data-i18n="how_to_play">Điều Khiển</span></h3>
+      <div class="ctrl-section">
+        <div class="ctrl-section-title" data-i18n="ctrl_keyboard">⌨️ Bàn phím</div>
+          <div class="ctrl-row">
+            <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> <span data-i18n="ctrl_move">Move character</span>
+          </div>
+          <div class="ctrl-row">
+            <kbd>Space</kbd> / <kbd>Shift</kbd> <span data-i18n="ctrl_dash">Dash / Sprint</span>
+          </div>
+          <div class="ctrl-row">
+            <kbd>E</kbd> <span data-i18n="ctrl_skill">Activate Skill</span>
+          </div>
+        <div class="ctrl-row"><kbd>F</kbd><span data-i18n="ctrl_f">Dùng vật phẩm</span></div>
+        <div class="ctrl-row"><kbd>Q</kbd><span data-i18n="ctrl_q">Đổi vật phẩm</span></div>
+        <div class="ctrl-row"><kbd>1-6</kbd><span data-i18n="ctrl_1to6">Chọn ô vật phẩm 1-6</span></div>
+        <div class="ctrl-row"><kbd>Tab</kbd><span data-i18n="ctrl_tab">Bảng xếp hạng</span></div>
+      </div>
+      <div class="ctrl-section">
+        <div class="ctrl-section-title" data-i18n="ctrl_mouse_header">🖱️ Chuột</div>
+        <div class="ctrl-row"><div class="mouse-icon">🖱️→</div><span data-i18n="ctrl_mouse">Tự đi theo chuột</span></div>
+        <div class="ctrl-row"><div class="mouse-btn lmb">L</div><span data-i18n="ctrl_lclick">Tấn công / Kỹ năng</span></div>
+        <div class="ctrl-row"><div class="mouse-btn rmb">R</div><span data-i18n="ctrl_rclick">Dùng vật phẩm</span></div>
+        <div class="ctrl-row"><div class="mouse-btn smb">⟳</div><span data-i18n="ctrl_scroll">Chuyển vật phẩm</span></div>
+      </div>
+      <div class="ctrl-section" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px;">
+        <div class="ctrl-section-title" data-i18n="rps_title">⚔️ Khắc Chế Hệ Phái (Oẳn Tù Tì)</div>
+        <div style="font-size: 11px; color: var(--clr-text-mute); margin-bottom: 6px;" data-i18n="rps_desc">Sát thương khắc chế tăng thêm +30%:</div>
+        <div class="ctrl-row" style="font-size: 11.5px; color: #f472b6;" data-i18n="rps_assassin">💜 Sát Thủ ➜ khắc 🩵 Pháp Sư (+30%)</div>
+        <div class="ctrl-row" style="font-size: 11.5px; color: #22d3ee;" data-i18n="rps_mage">🩵 Pháp Sư ➜ khắc 💛 Đấu Sĩ (+30%)</div>
+        <div class="ctrl-row" style="font-size: 11.5px; color: #facc15;" data-i18n="rps_fighter">💛 Đấu Sĩ ➜ khắc 💜 Sát Thủ (+30%)</div>
+      </div>
+    </div>
+
+    <!-- CENTER PANEL: Main Login -->
+    <div class="login-panel center-panel">
+      <div class="logo-area">
+        <div class="logo-icon-wrap">
+          <div class="logo-halo"></div>
+          <div class="logo-halo-2"></div>
+          <img class="logo-icon" src="logo.png" alt="Flip Fight Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+        </div>
+        <h1 class="logo-title">FlipFight<span class="logo-dot">.com</span></h1>
+        <p class="logo-sub" data-i18n="tagline">Game Chiến Đấu Trực Tuyến Miễn Phí</p>
+        <div class="logo-badges">
+          <span class="badge-chip"><span data-i18n="badge_multi">🎮 Multiplayer</span></span>
+          <span class="badge-chip"><span data-i18n="badge_10evo">🔥 10 Tiến Hóa</span></span>
+          <span class="badge-chip">⚡ Real-time</span>
+        </div>
+      </div>
+
+      <div class="lobby-stats">
+        <div class="online-dot"></div>
+        <span><span id="lobbyCountText">0</span> <span data-i18n="online_players">Người đang chơi</span></span>
+      </div>
+
+      <div class="input-group">
+        <div class="input-icon"><i class="fas fa-user"></i></div>
+        <input id="playerName" class="name-input" type="text" 
+               data-i18n-placeholder="enter_name" 
+               placeholder="Nhập tên của bạn..." 
+               maxlength="16" autocomplete="off"/>
+      </div>
+      
+      <button id="joinButton" class="join-btn">
+        <span class="btn-text" data-i18n="play_now">⚔️ VÀO TRẬN NGAY</span>
+        <div class="btn-shine"></div>
+      </button>
+
+      <!-- PVE BETA BUTTON: ẩn, hiện sau 3s -->
+      <button id="pveBetaButton" onclick="openPveModal()" title="Chế độ thử nghiệm PVE Roguelike">🧪 PVE BETA</button>
+
+      <div class="social-row" style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 8px;">
+        <a href="https://www.facebook.com/FlipFight" target="_blank" rel="noopener" class="social-btn facebook-btn" style="margin: 0;">
+          <i class="fab fa-facebook"></i> <span data-i18n="report_bug">Báo Lỗi & Góp Ý</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: Selection of Perk & Branch -->
+    <div class="login-panel side-panel right-panel">
+      <h3 class="panel-title"><i class="fas fa-magic"></i> <span data-i18n="select_starting_perk">Chọn Thẻ Bài Khởi Đầu</span></h3>
+      <div class="selection-grid" id="perkSelectGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px;">
+        <div class="selection-box active" data-perk="speed_boost" onclick="window.selectHomepagePerk('speed_boost')">
+          <span class="sel-icon">⚡</span>
+          <span class="sel-name" data-i18n="perk_speed">Tốc Độ</span>
+        </div>
+        <div class="selection-box" data-perk="max_hp_boost" onclick="window.selectHomepagePerk('max_hp_boost')">
+          <span class="sel-icon">🛡️</span>
+          <span class="sel-name" data-i18n="perk_hp">Máu Tối Đa</span>
+        </div>
+        <div class="selection-box" data-perk="heal_boost" onclick="window.selectHomepagePerk('heal_boost')">
+          <span class="sel-icon">🧪</span>
+          <span class="sel-name" data-i18n="perk_heal">Hồi Phục</span>
+        </div>
+        <div class="selection-box" data-perk="bomb_boost" onclick="window.selectHomepagePerk('bomb_boost')">
+          <span class="sel-icon">💣</span>
+          <span class="sel-name" data-i18n="perk_bomb">Bom Nổ</span>
+        </div>
+        <div class="selection-box" data-perk="attack_dmg_boost" onclick="window.selectHomepagePerk('attack_dmg_boost')">
+          <span class="sel-icon">⚔️</span>
+          <span class="sel-name" data-i18n="perk_dmg">Tấn Công</span>
+        </div>
+        <div class="selection-box" data-perk="cooldown_reduction" onclick="window.selectHomepagePerk('cooldown_reduction')">
+          <span class="sel-icon">⏱️</span>
+          <span class="sel-name" data-i18n="perk_cd">Hồi Chiêu</span>
+        </div>
+      </div>
+
+      <!-- Perk Details Panel (Premium Glassmorphism) -->
+      <div id="perkDetailPanel" class="perk-detail-panel hidden">
+        <div class="pdp-header">
+          <span class="pdp-icon" id="pdpIcon">⚡</span>
+          <span class="pdp-title" id="pdpTitle">Swift Foot</span>
+        </div>
+        <div class="pdp-stat" id="pdpStat">+8% Movement Speed</div>
+        <div class="pdp-desc" id="pdpDesc">Move swiftly across the arena to dodge hazards and chase down enemies.</div>
+      </div>
+      
+      <h3 class="panel-title" style="margin-top:8px"><i class="fas fa-dna"></i> <span data-i18n="select_evo_branch">Chọn Nhánh Tiến Hóa (Cấp 5+)</span></h3>
+      <div class="selection-grid" id="branchSelectGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px;">
+        <div class="selection-box active" data-branch="assassin" onclick="window.selectHomepageBranch('assassin')">
+          <span class="sel-icon">💜</span>
+          <span class="sel-name" data-i18n="branch_assassin">Sát Thủ</span>
+        </div>
+        <div class="selection-box" data-branch="fighter" onclick="window.selectHomepageBranch('fighter')">
+          <span class="sel-icon">💛</span>
+          <span class="sel-name" data-i18n="branch_fighter">Đấu Sĩ</span>
+        </div>
+        <div class="selection-box" data-branch="mage" onclick="window.selectHomepageBranch('mage')">
+          <span class="sel-icon">🩵</span>
+          <span class="sel-name" data-i18n="branch_mage">Pháp Sư</span>
+        </div>
+      </div>
+
+      <!-- Branch Animated 2D Canvas Preview Area -->
+      <div id="branchPreviewWrap" class="branch-preview-wrap">
+        <div class="canvas-container">
+          <canvas id="homepageBranchCanvas" width="90" height="90"></canvas>
+          <div class="preview-glow"></div>
+        </div>
+        <div class="branch-preview-info">
+          <h4 id="branchPreviewName">Sát Thủ</h4>
+          <p id="branchPreviewDesc">Cơ động vượt trội, ám sát chớp nhoáng...</p>
+        </div>
+      </div>
+
+      <div class="seo-text" style="margin-top: 10px; padding-top: 5px;">
+        <p data-i18n="seo_desc">🎮 Game chiến đấu 2D online miễn phí. Chọn thẻ bài và nhánh tiến hóa ngay từ trang chủ để bắt đầu trận chiến!</p>
+      </div>
+    </div>
+    
+  </div>
+
+</div>
+
+<!-- ═══ GAME OVER SCREEN ════════════════════════════════════════ -->
+<div id="gameOverScreen" class="screen hidden">
+  <div class="screen-inner gameover-inner">
+    <div class="ko-icon">💀</div>
+    <h2 class="ko-title" data-i18n="eliminated">ELIMINATED</h2>
+    <div id="statKilledBy" class="killed-by" data-i18n="killed_by">Killed by: ???</div>
+
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-val" id="statRank">#?</div><div class="stat-lbl" data-i18n="stat_rank">🏅 Rank</div></div>
+      <div class="stat-box"><div class="stat-val" id="statScore">0</div><div class="stat-lbl" data-i18n="stat_score">⭐ Score</div></div>
+      <div class="stat-box"><div class="stat-val" id="statKills">0</div><div class="stat-lbl" data-i18n="stat_kills">⚔️ Kills</div></div>
+      <div class="stat-box"><div class="stat-val" id="statTime">0s</div><div class="stat-lbl" data-i18n="stat_survived">⏱ Survived</div></div>
+      <div class="stat-box wide"><div class="stat-val evo-val" id="statEvolution">Blobby</div><div class="stat-lbl" data-i18n="stat_evolution">🦋 Max Evolution</div></div>
+    </div>
+
+    <button id="respawnButton" class="join-btn" data-i18n="play_again">🔄 CHƠI LẠI</button>
+  </div>
+</div>
+
+<!-- Evolution Choice Modal -->
+<div id="evolutionChoiceModal" class="screen hidden">
+  <div class="screen-inner modal-inner" style="max-width: 950px;">
+    <div style="display:inline-block; background: linear-gradient(90deg, #c084fc, #22d3ee); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-size:13px; font-weight:700; letter-spacing:3px; text-transform:uppercase; margin-bottom:6px;" data-i18n="evo_modal_banner">✨ ĐẠT CẤP 5 — TIẾN HÓA CỰC HẠN ✨</div>
+    <h2 class="modal-title" style="font-size:28px; margin-bottom:4px;" data-i18n="evo_modal_title">🌳 CHỌN NHÁNH TIẾN HÓA 🌳</h2>
+    <p class="modal-subtitle" style="margin-bottom:20px;"><span data-i18n="evo_modal_subtitle">Chọn một hướng đi định hình sức mạnh tối thượng của bạn.</span> <span id="evoCountdown" style="color: #06b6d4; font-weight: 700; margin-left: 8px;"></span></p>
+    <div class="card-container">
+      <!-- Assassin Card -->
+      <div class="modal-card assassin-card" onclick="selectBranch('assassin')">
+        <div class="card-glow"></div>
+        <div class="card-cost-badge">5</div>
+        <div class="card-art-frame">
+          <canvas id="canvasEvoAssassin" width="100" height="100"></canvas>
+        </div>
+        <div class="card-title-banner" data-i18n="branch_assassin_banner">SÁT THỦ</div>
+        <div class="card-desc-box">
+          <p class="card-desc-text" data-i18n="branch_assassin_desc_short">Ẩn hiện vô hình, dồn sát thương chí mạng cực nhanh.</p>
+          <ul class="card-stats">
+            <li data-i18n="branch_assassin_stat1">⚡ Tốc chạy: <span class="stat-up">+20%</span></li>
+            <li data-i18n="branch_assassin_stat2">🎯 Thể chất: Bán kính nhỏ (-15%)</li>
+            <li data-i18n="branch_assassin_stat3">💔 Sinh mệnh: Thấp (-20% HP)</li>
+          </ul>
+          <div class="card-skill" style="margin-top:auto; font-size:10px; opacity:0.85; text-align:center;" data-i18n="branch_assassin_skill">
+            <strong>Kỹ năng chính:</strong>
+            Lướt bóng tối (Stun) & Tàng hình ẩn thân.
+          </div>
+        </div>
+        <div class="card-type-tag" style="border-color: #c084fc; color: #c084fc" data-i18n="branch_assassin_banner">SÁT THỦ</div>
+        <button class="card-select-btn" style="background: #c084fc" data-i18n="evo_select_btn">LỰA CHỌN</button>
+      </div>
+
+      <!-- Fighter Card -->
+      <div class="modal-card fighter-card" onclick="selectBranch('fighter')">
+        <div class="card-glow"></div>
+        <div class="card-cost-badge">5</div>
+        <div class="card-art-frame">
+          <canvas id="canvasEvoFighter" width="100" height="100"></canvas>
+        </div>
+        <div class="card-title-banner" data-i18n="branch_fighter_banner">ĐẤU SĨ</div>
+        <div class="card-desc-box">
+          <p class="card-desc-text" data-i18n="branch_fighter_desc_short">Thiết giáp bất bại, càn quét tuyến đầu bản đồ.</p>
+          <ul class="card-stats">
+            <li data-i18n="branch_fighter_stat1">❤️ Sinh mệnh: <span class="stat-up">+35% HP</span></li>
+            <li data-i18n="branch_fighter_stat2">🧱 Thể chất: Bán kính lớn (+15%)</li>
+            <li data-i18n="branch_fighter_stat3">💨 Tốc chạy: Giảm nhẹ (-10%)</li>
+          </ul>
+          <div class="card-skill" style="margin-top:auto; font-size:10px; opacity:0.85; text-align:center;" data-i18n="branch_fighter_skill">
+            <strong>Kỹ năng chính:</strong>
+            Lướt khiên choáng & Bất tử 5 giây.
+          </div>
+        </div>
+        <div class="card-type-tag" style="border-color: #facc15; color: #facc15" data-i18n="branch_fighter_banner">ĐẤU SĨ</div>
+        <button class="card-select-btn" style="background: #facc15" data-i18n="evo_select_btn">LỰA CHỌN</button>
+      </div>
+
+      <!-- Mage Card -->
+      <div class="modal-card mage-card" onclick="selectBranch('mage')">
+        <div class="card-glow"></div>
+        <div class="card-cost-badge">5</div>
+        <div class="card-art-frame">
+          <canvas id="canvasEvoMage" width="100" height="100"></canvas>
+        </div>
+        <div class="card-title-banner" data-i18n="branch_mage_banner">PHÁP SƯ</div>
+        <div class="card-desc-box">
+          <p class="card-desc-text" data-i18n="branch_mage_desc_short">Bão tố phép thuật, khống chế quần thể diện rộng.</p>
+          <ul class="card-stats">
+            <li data-i18n="branch_mage_stat1">🎯 Tầm bắn: <span class="stat-up">+25% Range</span></li>
+            <li data-i18n="branch_mage_stat2">💥 Đòn đánh: Đạn ma pháp nảy sét</li>
+            <li data-i18n="branch_mage_stat3">⏱️ Mana: Hồi phục cực nhanh</li>
+          </ul>
+          <div class="card-skill" style="margin-top:auto; font-size:10px; opacity:0.85; text-align:center;" data-i18n="branch_mage_skill">
+            <strong>Kỹ năng chính:</strong>
+            Lôi xích & Bão tuyết đóng băng.
+          </div>
+        </div>
+        <div class="card-type-tag" style="border-color: #22d3ee; color: #22d3ee" data-i18n="branch_mage_banner">PHÁP SƯ</div>
+        <button class="card-select-btn" style="background: #22d3ee" data-i18n="evo_select_btn">LỰA CHỌN</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Roguelike Perks Choice Modal (Level 1 - Start of Game) -->
+<div id="perkChoiceModal" class="screen hidden">
+  <div class="screen-inner modal-inner" style="text-align:center;">
+    <div style="display:inline-block; background: linear-gradient(90deg, #eab308, #f97316); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-size:13px; font-weight:700; letter-spacing:3px; text-transform:uppercase; margin-bottom:6px;" data-i18n="perk_modal_banner">✨ PHẦN THƯỞNG BẮT ĐẦU TRẬN ĐẤU ✨</div>
+    <h2 class="modal-title" style="font-size:28px; margin-bottom:4px;" data-i18n="perk_modal_title">🃏 THẺ BÀI ROGUELIKE 🃏</h2>
+    <p class="modal-subtitle" style="margin-bottom:6px;">
+      <span data-i18n="perk_modal_subtitle">Chọn <strong style="color:#fbbf24;">1 thẻ bài</strong> — Hiệu ứng cộng dồn vĩnh viễn suốt trận đấu.</span><br>
+      <span style="color:#94a3b8; font-size:13px;" data-i18n="perk_modal_warn">⚠️ Hãy chọn thật nhanh để sẵn sàng bước vào đấu trường!</span>
+      <span id="perkCountdown" style="display:block; color:#06b6d4; font-weight:700; font-size:16px; margin-top:6px;"></span>
+    </p>
+    <div class="card-container" id="perkCardContainer">
+      <!-- Cards will be dynamically generated here -->
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ MOBILE JOYSTICK ════════════════════════════════════════ -->
+<div id="mobileJoystickOverlay" class="hidden">
+  <div id="joystickZone">
+    <div id="joystickBase">
+      <div id="joystickStick"></div>
+    </div>
+  </div>
+</div>
+
+
+
+<script src="game.js?v=20260525_v12"></script>
+
+<!-- ═══ PVE PASSWORD MODAL ════════════════════════════════════ -->
+<div id="pvePassModal" class="hidden">
+  <div class="pve-pass-box" id="pvePassBox">
+    <h3>🧪 PVE BETA</h3>
+    <p>Nhập mật khẩu thử nghiệm để tiếp tục</p>
+    <input type="password" id="pvePassInput" class="pve-pass-input" placeholder="Nhập mật khẩu..." onkeydown="if(event.key==='Enter')checkPvePass()" autocomplete="off"/>
+    <div class="pve-pass-error" id="pvePassError"></div>
+    <button class="pve-pass-btn" onclick="checkPvePass()">🚀 Tiếp Tục</button>
+    <button class="pve-pass-cancel" onclick="closePveModal()">Huỷ</button>
+  </div>
+</div>
+
+<!-- Inline styles cho PVE button + modal on index.html -->
+<link rel="stylesheet" href="pve.css?v=20260525_pve1"/>
+
+<script>
+function openPveModal() {
+  document.getElementById('pvePassModal').classList.remove('hidden');
+  setTimeout(() => document.getElementById('pvePassInput').focus(), 100);
+}
+function closePveModal() {
+  document.getElementById('pvePassModal').classList.add('hidden');
+  document.getElementById('pvePassInput').value = '';
+  document.getElementById('pvePassError').textContent = '';
+}
+function checkPvePass() {
+  const val = document.getElementById('pvePassInput').value.trim();
+  const box  = document.getElementById('pvePassBox');
+  const err  = document.getElementById('pvePassError');
+  if (val === 'flipfight_pve_beta') {
+    // Transfer playerName and selectedBranch to pve.html via sessionStorage
+    sessionStorage.setItem('pve_player_name', document.getElementById('playerName').value.trim() || 'Hero');
+    window.location.href = '/pve.html';
+  } else {
+    err.textContent = '❌ Sai mật khẩu! Hãy thử lại.';
+    box.classList.remove('shake');
+    void box.offsetWidth;
+    box.classList.add('shake');
+    setTimeout(() => box.classList.remove('shake'), 500);
+    document.getElementById('pvePassInput').value = '';
+  }
+}
+</script>
+</body>
+</html>

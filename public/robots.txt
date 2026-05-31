@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://flipfight.com/sitemap.xml

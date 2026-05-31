@@ -1,0 +1,16 @@
+# Node dependencies
+node_modules/
+
+# Environment configurations
+.env
+
+# Build outputs and archives
+release.tar.gz
+
+# System logs and temporary files
+*.log
+.system_generated/
+.agents/
+.tempmediaStorage/
+scratch/
+dist/

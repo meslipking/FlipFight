@@ -1,0 +1,22 @@
+{
+  "name": "flipfight",
+  "version": "1.0.0",
+  "description": "2D Top-Down Multiplayer Arena Web Game",
+  "main": "main.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "electron .",
+    "build-pc": "electron-packager . FlipFight --platform=win32 --arch=x64 --out=dist/ --overwrite --ignore=\"dist|\\.git|unity_.*|node_modules/electron(-.*)?\""
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ssh2": "^1.17.0",
+    "ws": "^8.17.0"
+  },
+  "author": "AI Angel Studio",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^42.3.0",
+    "electron-packager": "^17.1.2"
+  }
+}

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>FlipFight Sprite Exporter</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090a15;
+      --bg-card: rgba(20, 24, 48, 0.95);
+      --clr-purple: #a78bfa;
+      --clr-cyan: #22d3ee;
+      --clr-green: #34d399;
+      --clr-orange: #fb923c;
+      --text-white: #f8fafc;
+      --text-gray: #94a3b8;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #141732 0%, var(--bg-dark) 100%);
+      color: var(--text-white);
+      font-family: 'Outfit', sans-serif;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 38px;
+      background: linear-gradient(90deg, var(--clr-purple), var(--clr-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+      text-shadow: 0 0 30px rgba(167, 139, 250, 0.25);
+    }
+
+    p.subtitle {
+      color: var(--text-gray);
+      font-size: 16px;
+      margin-bottom: 40px;
+      text-align: center;
+      max-width: 600px;
+      line-height: 1.6;
+    }
+
+    .exporter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 24px;
+      width: 100%;
+      max-width: 1000px;
+      margin-bottom: 40px;
+    }
+
+    .sprite-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(167, 139, 250, 0.15);
+      border-radius: 16px;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sprite-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--clr-purple), var(--clr-cyan));
+      opacity: 0.7;
+    }
+
+    .sprite-card:hover {
+      border-color: rgba(34, 211, 238, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(34, 211, 238, 0.12), 0 0 20px rgba(167, 139, 250, 0.05);
+    }
+
+    .canvas-container {
+      background: radial-gradient(circle, #101228 0%, #060710 100%);
+      border: 1px dashed rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 128px;
+      height: 128px;
+    }
+
+    canvas {
+      image-rendering: pixelated;
+    }
+
+    .sprite-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-white);
+      margin-bottom: 4px;
+      text-transform: capitalize;
+    }
+
+    .sprite-desc {
+      font-size: 12px;
+      color: var(--text-gray);
+      margin-bottom: 20px;
+      text-align: center;
+      height: 32px;
+    }
+
+    .btn-download {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      width: 100%;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(109, 40, 217, 0.3);
+    }
+
+    .btn-download:hover {
+      background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+      box-shadow: 0 6px 18px rgba(124, 58, 237, 0.4);
+      transform: scale(1.02);
+    }
+
+    .global-actions {
+      display: flex;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .btn-all {
+      background: linear-gradient(135deg, var(--clr-cyan) 0%, #0891b2 100%);
+      color: #030712;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(34, 211, 238, 0.25);
+      transition: all 0.2s;
+    }
+
+    .btn-all:hover {
+      background: linear-gradient(135deg, #67e8f9 0%, #06b6d4 100%);
+      box-shadow: 0 12px 30px rgba(34, 211, 238, 0.4);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>FlipFight Sprite Exporter</h1>
+  <p class="subtitle">
+    Công cụ kết xuất tự động giúp trích xuất các nhân vật (Slime, Sát Thủ, Thương Nhân), chướng ngại vật (Hòm gỗ, Đá) 
+    và các hiệu ứng từ HTML Canvas thành định dạng PNG chất lượng cao, nền trong suốt để nhập trực tiếp vào Unity!
+  </p>
+
+  <div class="exporter-grid" id="exporterGrid"></div>
+
+  <div class="global-actions">
+    <button class="btn-all" onclick="downloadAll()">📥 TẢI TRỌN BỘ SPRITE (PNG)</button>
+  </div>
+
+  <script>
+    // Định nghĩa các loại Sprite cần vẽ và trích xuất
+    const SPRITES_TO_EXPORT = [
+      {
+        id: 'slime',
+        name: 'Slime (Quái vật)',
+        desc: 'Quái Slime xanh lục cute có lá nhỏ trên đầu',
+        size: 128,
+        draw: (ctx, sz) => {
+          const r = sz * 0.35;
+          const cx = sz / 2, cy = sz / 2 + 10;
+          ctx.save();
+          // Shadow
+          ctx.beginPath(); ctx.ellipse(cx, cy + r - 3, r * 0.9, 6, 0, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fill();
+
+          // Body (gradient)
+          ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          const g = ctx.createRadialGradient(cx - r*0.3, cy - r*0.3, 0, cx, cy, r);
+          g.addColorStop(0, '#a7f3d0'); g.addColorStop(0.4, '#34d399'); g.addColorStop(1, '#064e3b');
+          ctx.fillStyle = g; ctx.fill();
+          ctx.strokeStyle = '#042f1a'; ctx.lineWidth = 4; ctx.stroke();
+
+          // Blush cheeks
+          ctx.globalAlpha = 0.5; ctx.fillStyle = '#fbcfe8';
+          ctx.beginPath(); ctx.ellipse(cx - r*0.5, cy + r*0.2, r*0.25, r*0.15, -0.2, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.ellipse(cx + r*0.5, cy + r*0.2, r*0.25, r*0.15, 0.2, 0, Math.PI * 2); ctx.fill();
+          ctx.globalAlpha = 1.0;
+
+          // Eyes
+          const eyeSpread = r * 0.35;
+          const eyeFwd = r * 0.1;
+          const eyeY = cy - r * 0.1;
+          [cx - eyeSpread, cx + eyeSpread].forEach(ex => {
+            ctx.beginPath(); ctx.arc(ex, eyeY, r*0.18, 0, Math.PI*2);
+            ctx.fillStyle = '#fff'; ctx.fill();
+            ctx.strokeStyle = '#042f1a'; ctx.lineWidth = 2.5; ctx.stroke();
+            // Pupil
+            ctx.beginPath(); ctx.arc(ex + 1, eyeY + 1, r*0.09, 0, Math.PI*2);
+            ctx.fillStyle = '#111827'; ctx.fill();
+            // Highlight
+            ctx.beginPath(); ctx.arc(ex - 1, eyeY - 2, 2, 0, Math.PI*2);
+            ctx.fillStyle = '#fff'; ctx.fill();
+          });
+
+          // Leaf on Head
+          ctx.save();
+          ctx.translate(cx, cy - r + 3);
+          ctx.fillStyle = '#10b981'; ctx.strokeStyle = '#042f1a'; ctx.lineWidth = 2;
+          ctx.save(); ctx.rotate(-0.4); ctx.beginPath(); ctx.ellipse(-4, -6, 7, 3, -0.3, 0, Math.PI*2); ctx.fill(); ctx.stroke(); ctx.restore();
+          ctx.save(); ctx.rotate(0.4); ctx.beginPath(); ctx.ellipse(4, -6, 7, 3, 0.3, 0, Math.PI*2); ctx.fill(); ctx.stroke(); ctx.restore();
+          ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,-5); ctx.stroke();
+          ctx.restore();
+
+          ctx.restore();
+        }
+      },
+      {
+        id: 'assassin',
+        name: 'Sát Thủ (Hero)',
+        desc: 'Nhân vật Sát thủ tím lục với mặt nạ và shuriken',
+        size: 128,
+        draw: (ctx, sz) => {
+          const r = sz * 0.33;
+          const cx = sz / 2, cy = sz / 2 + 10;
+          ctx.save();
+          // Shadow
+          ctx.beginPath(); ctx.ellipse(cx, cy + r - 3, r * 0.9, 6, 0, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fill();
+
+          // Body
+          ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          const g = ctx.createRadialGradient(cx - r*0.3, cy - r*0.3, 0, cx, cy, r);
+          g.addColorStop(0, '#f3e8ff'); g.addColorStop(0.4, '#c084fc'); g.addColorStop(1, '#581c87');
+          ctx.fillStyle = g; ctx.fill();
+          ctx.strokeStyle = '#2e1065'; ctx.lineWidth = 4; ctx.stroke();
+
+          // Shuriken
+          ctx.save();
+          ctx.translate(cx + r * 0.8, cy + r * 0.2);
+          ctx.rotate(0.5);
+          ctx.fillStyle = '#94a3b8'; ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          for (let i = 0; i < 4; i++) {
+            ctx.rotate(Math.PI / 2);
+            ctx.moveTo(0, 0); ctx.lineTo(-2, -r * 0.2); ctx.lineTo(0, -r * 0.4); ctx.lineTo(2, -r * 0.2);
+          }
+          ctx.closePath(); ctx.fill(); ctx.stroke();
+          ctx.restore();
+
+          // Mask and Glowing eyes
+          ctx.fillStyle = '#1e1b4b'; ctx.beginPath();
+          ctx.arc(cx, cy - r*0.1, r*0.65, 0, Math.PI*2); ctx.fill();
+          // Glowing violet eyes
+          ctx.fillStyle = '#a855f7'; ctx.shadowColor = '#c084fc'; ctx.shadowBlur = 8;
+          ctx.beginPath(); ctx.ellipse(cx - r*0.25, cy - r*0.12, r*0.13, r*0.06, 0, 0, Math.PI*2); ctx.fill();
+          ctx.beginPath(); ctx.ellipse(cx + r*0.25, cy - r*0.12, r*0.13, r*0.06, 0, 0, Math.PI*2); ctx.fill();
+
+          ctx.restore();
+        }
+      },
+      {
+        id: 'merchant',
+        name: 'Thương Nhân (NPC)',
+        desc: 'Nhà buôn pháp sư trượng vàng, áo choàng tím',
+        size: 128,
+        draw: (ctx, sz) => {
+          const r = sz * 0.33;
+          const cx = sz / 2, cy = sz / 2 + 10;
+          ctx.save();
+          // Shadow
+          ctx.beginPath(); ctx.ellipse(cx, cy + r - 3, r * 0.9, 6, 0, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fill();
+
+          // Body
+          ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          const g = ctx.createRadialGradient(cx - r*0.3, cy - r*0.3, 0, cx, cy, r);
+          g.addColorStop(0, '#f5f3ff'); g.addColorStop(0.4, '#8b5cf6'); g.addColorStop(1, '#2e1065');
+          ctx.fillStyle = g; ctx.fill();
+          ctx.strokeStyle = '#1e1b4b'; ctx.lineWidth = 4; ctx.stroke();
+
+          // Staff (Trượng)
+          ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+          ctx.beginPath(); ctx.moveTo(cx + r*0.65, cy + r*0.5); ctx.lineTo(cx + r*0.65, cy - r*0.9); ctx.stroke();
+          ctx.fillStyle = '#fef08a'; ctx.beginPath(); ctx.arc(cx + r*0.65, cy - r*1.0, 7, 0, Math.PI*2); ctx.fill();
+
+          // Hat
+          ctx.fillStyle = '#4c1d95'; ctx.strokeStyle = '#1e1b4b'; ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.moveTo(cx - r*0.8, cy - r*0.5); ctx.lineTo(cx + r*0.8, cy - r*0.5);
+          ctx.lineTo(cx, cy - r*1.3); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+          // Eyes
+          [cx - r*0.25, cx + r*0.25].forEach(ex => {
+            ctx.beginPath(); ctx.arc(ex, cy - r*0.08, r*0.14, 0, Math.PI*2);
+            ctx.fillStyle = '#fff'; ctx.fill();
+            ctx.strokeStyle = '#1e1b4b'; ctx.lineWidth = 2; ctx.stroke();
+            ctx.beginPath(); ctx.arc(ex + 1, cy - r*0.08, 3, 0, Math.PI*2);
+            ctx.fillStyle = '#000'; ctx.fill();
+          });
+
+          ctx.restore();
+        }
+      },
+      {
+        id: 'crate',
+        name: 'Hòm Gỗ (Prop)',
+        desc: 'Hòm gỗ chướng ngại vật phong cách hoạt họa 2.5D',
+        size: 128,
+        draw: (ctx, sz) => {
+          const r = sz * 0.32;
+          const cx = sz / 2, cy = sz / 2 + 10;
+          ctx.save();
+          // Shadow
+          ctx.beginPath(); ctx.ellipse(cx, cy + r - 3, r * 1.15, 6, 0, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fill();
+
+          const w = r * 1.35;
+          const h = r * 1.15;
+          const bx = cx - w / 2;
+          const by = cy - h + 10;
+          const th = r * 0.52;
+
+          // Top face (gold-wood)
+          ctx.fillStyle = '#d97706';
+          ctx.beginPath();
+          ctx.moveTo(bx, by); ctx.lineTo(bx + w, by);
+          ctx.lineTo(bx + w - th * 0.6, by - th); ctx.lineTo(bx - th * 0.6, by - th);
+          ctx.closePath(); ctx.fill();
+          ctx.strokeStyle = '#451a03'; ctx.lineWidth = 2.2; ctx.stroke();
+
+          // Side face (dark brown-wood)
+          ctx.fillStyle = '#78350f';
+          ctx.beginPath();
+          ctx.moveTo(bx + w, by); ctx.lineTo(bx + w, by + h);
+          ctx.lineTo(bx + w + th * 0.4, by + h - th * 0.5); ctx.lineTo(bx + w + th * 0.4, by - th * 0.5);
+          ctx.closePath(); ctx.fill(); ctx.stroke();
+
+          // Front face (medium wood)
+          ctx.fillStyle = '#b45309';
+          ctx.fillRect(bx, by, w, h);
+          ctx.strokeRect(bx, by, w, h);
+
+          // Front X wooden patterns
+          ctx.beginPath();
+          ctx.moveTo(bx + 4, by + 4); ctx.lineTo(bx + w - 4, by + h - 4);
+          ctx.moveTo(bx + w - 4, by + 4); ctx.lineTo(bx + 4, by + h - 4);
+          ctx.stroke();
+
+          ctx.restore();
+        }
+      },
+      {
+        id: 'rock',
+        name: 'Đá (Prop)',
+        desc: 'Đá cản đường dạng khối 2.5D đa giác góc cạnh',
+        size: 128,
+        draw: (ctx, sz) => {
+          const r = sz * 0.32;
+          const cx = sz / 2, cy = sz / 2 + 10;
+          ctx.save();
+          // Shadow
+          ctx.beginPath(); ctx.ellipse(cx, cy + r - 3, r * 1.15, 6, 0, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fill();
+
+          // Dark rock face
+          ctx.fillStyle = '#64748b';
+          ctx.beginPath();
+          ctx.moveTo(cx - r * 0.9, cy + r * 0.1);
+          ctx.lineTo(cx - r * 0.4, cy - r * 0.85);
+          ctx.lineTo(cx + r * 0.9, cy + r * 0.15);
+          ctx.lineTo(cx + r * 0.5, cy + r * 0.35);
+          ctx.lineTo(cx - r * 0.5, cy + r * 0.35);
+          ctx.closePath(); ctx.fill();
+
+          // Bright rock highlight
+          ctx.fillStyle = '#94a3b8';
+          ctx.beginPath();
+          ctx.moveTo(cx - r * 0.9, cy + r * 0.1);
+          ctx.lineTo(cx - r * 0.4, cy - r * 0.85);
+          ctx.lineTo(cx + r * 0.1, cy - r * 0.6);
+          ctx.lineTo(cx - r * 0.1, cy + r * 0.35);
+          ctx.closePath(); ctx.fill();
+
+          // Edge lines
+          ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.moveTo(cx - r * 0.9, cy + r * 0.1);
+          ctx.lineTo(cx - r * 0.4, cy - r * 0.85);
+          ctx.lineTo(cx + r * 0.1, cy - r * 0.6);
+          ctx.stroke();
+
+          // Outer border
+          ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 2.2;
+          ctx.beginPath();
+          ctx.moveTo(cx - r * 0.9, cy + r * 0.1);
+          ctx.lineTo(cx - r * 0.4, cy - r * 0.85);
+          ctx.lineTo(cx + r * 0.9, cy + r * 0.15);
+          ctx.lineTo(cx + r * 0.5, cy + r * 0.35);
+          ctx.lineTo(cx - r * 0.5, cy + r * 0.35);
+          ctx.closePath(); ctx.stroke();
+
+          ctx.restore();
+        }
+      },
+      {
+        id: 'devil_deal',
+        name: 'Giao Kèo Ác Quỷ (Aura)',
+        desc: 'Vùng giao kèo đỏ thẫm đứt nét với sừng quỷ',
+        size: 128,
+        draw: (ctx, sz) => {
+          const cx = sz / 2, cy = sz / 2;
+          const rx = sz * 0.42, ry = sz * 0.22;
+          ctx.save();
+
+          // Dashed oval
+          ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3.5;
+          ctx.setLineDash([8, 6]);
+          ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 12;
+          ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+          ctx.setLineDash([]); ctx.shadowBlur = 0;
+
+          // Inner fill glow
+          ctx.fillStyle = 'rgba(239, 68, 68, 0.06)';
+          ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
+
+          // Horn symbols inside
+          ctx.fillStyle = 'rgba(239, 68, 68, 0.4)';
+          ctx.beginPath();
+          ctx.moveTo(cx - 10, cy + 5); ctx.quadraticCurveTo(cx - 15, cy - 10, cx - 8, cy - 20);
+          ctx.quadraticCurveTo(cx - 4, cy - 10, cx - 10, cy + 5); ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(cx + 10, cy + 5); ctx.quadraticCurveTo(cx + 15, cy - 10, cx + 8, cy - 20);
+          ctx.quadraticCurveTo(cx + 4, cy - 10, cx + 10, cy + 5); ctx.fill();
+
+          ctx.restore();
+        }
+      }
+    ];
+
+    // Tạo các thẻ Card trong UI
+    const grid = document.getElementById('exporterGrid');
+    SPRITES_TO_EXPORT.forEach(spec => {
+      const card = document.createElement('div');
+      card.className = 'sprite-card';
+      card.innerHTML = `
+        <div class="canvas-container">
+          <canvas id="canvas_${spec.id}" width="${spec.size}" height="${spec.size}"></canvas>
+        </div>
+        <div class="sprite-name">${spec.name}</div>
+        <div class="sprite-desc">${spec.desc}</div>
+        <button class="btn-download" onclick="downloadSingle('${spec.id}')">
+          <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+          Tải ảnh PNG
+        </button>
+      `;
+      grid.appendChild(card);
+
+      // Thực hiện vẽ lên Canvas
+      const canvas = document.getElementById(`canvas_${spec.id}`);
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, spec.size, spec.size);
+      spec.draw(ctx, spec.size);
+    });
+
+    // Hàm tải xuống 1 sprite
+    function downloadSingle(id) {
+      const spec = SPRITES_TO_EXPORT.find(s => s.id === id);
+      const canvas = document.getElementById(`canvas_${id}`);
+      const link = document.createElement('a');
+      link.download = `sprite_${id}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    // Hàm tải xuống toàn bộ dưới dạng file nén zip hoặc tuần tự
+    function downloadAll() {
+      let delay = 0;
+      SPRITES_TO_EXPORT.forEach(spec => {
+        setTimeout(() => {
+          downloadSingle(spec.id);
+        }, delay);
+        delay += 250; // Tránh trình duyệt chặn multiple downloads liên tiếp
+      });
+    }
+  </script>
+</body>
+</html>
