@@ -1942,6 +1942,7 @@ class PveGame {
     const finalMaxHp = Math.round(baseHp * (1 + puVitality + mMaxHp));
 
     return {
+      branch: cls,
       x: WORLD_W / 2, y: WORLD_H / 2,
       r: 22,
       maxHp: finalMaxHp, hp: finalMaxHp,
@@ -1950,7 +1951,7 @@ class PveGame {
       hpRegen: hpRegen + puRecovery,
       goldBonus: goldBonus + puGreed,
       revive, reviveUsed: false,
-      level: 1, xp: 0, xpToNext: 20,   // formula mới: bắt đầu với 20 XP
+      level: 1, xp: 0, xpToNext: 5,   // Bắt đầu với 5 XP
       xpGainMult: 1.0 + puGrowth,        // nhân XP nhận được
       magnetBonusPx: puMagnet,           // px cộng vào magnetRadius
       // Special class traits
@@ -2108,8 +2109,10 @@ class PveGame {
   checkLegendary() {
     for (const combo of LEGENDARY_COMBOS) {
       if (this.skills.find(s => s.id === combo.unlocks)) continue; // already have it
-      const ownedIds = this.skills.map(s => s.id);
-      const hasAll   = combo.needs.every(n => ownedIds.includes(n));
+      const hasAll = combo.needs.every(n => {
+        const s = this.skills.find(sk => sk.id === n);
+        return s && s.level >= 8;
+      });
       if (hasAll) {
         // Unlock the legendary
         const slot = this.skills.find(s => s.id === combo.unlocks);
@@ -2361,6 +2364,16 @@ class PveGame {
 
   updatePlayer(dt) {
     const p = this.player;
+    if (p.voidDemonActiveUntil && Date.now() > p.voidDemonActiveUntil) {
+      if (p._originalRadius) {
+        p.r = p._originalRadius;
+        p.atkMult = p._originalAtkMult;
+        p._originalRadius = null;
+        p._originalAtkMult = null;
+        this.addFloat(p.x, p.y - 70, 'Demon form ended', '#94a3b8');
+      }
+      p.voidDemonActiveUntil = null;
+    }
     let dx = 0, dy = 0;
     if (this.keys['KeyW'] || this.keys['ArrowUp'])    dy -= 1;
     if (this.keys['KeyS'] || this.keys['ArrowDown'])  dy += 1;
@@ -2520,9 +2533,9 @@ class PveGame {
       const def = SKILL_DEFS[s.id];
       if (!def) return;
       const state = this.skillState[s.id] || (this.skillState[s.id] = { lastFired: 0 });
-      const cdMs = def.cd * 1000 * p.cdMult * (1 - (s.level - 1) * 0.15);
+      const cdMs = Math.max(200, def.cd * 1000 * p.cdMult * Math.max(0.25, 1 - (s.level - 1) * 0.10));
       const elapsed = now - state.lastFired;
-      const pct = Math.min(1, elapsed / cdMs);
+      const pct = Math.max(0, Math.min(1, elapsed / cdMs));
 
       // Update CD overlay
       const cdEl = document.getElementById(`skillCd_${s.id}`);
@@ -3509,22 +3522,24 @@ class PveGame {
 
   // Tính XP cần cho lần lên cấp tiếp theo dựa theo cấp hiện tại
   getXpToNext(level) {
-    // Cấp 1→2: 20 XP
-    // Cấp 2→3 ... 20→21: cộng thêm 10 mỗi cấp   → cấp L cần (20 + (L-1)*10)
-    // Cấp 21→22 ... 40→41: cộng thêm 13 mỗi cấp
-    // Cấp 41+: cộng thêm 16 mỗi cấp
-    // Milestone cấp 20, 40: nhân 3x XP cần
-    let base;
-    if (level <= 20) {
-      base = 20 + (level - 1) * 10;
-    } else if (level <= 40) {
-      base = 20 + 19 * 10 + (level - 20) * 13;
-    } else {
-      base = 20 + 19 * 10 + 20 * 13 + (level - 40) * 16;
+    if (level === 1) return 5;
+    if (level >= 2 && level <= 19) {
+      return 5 + (level - 1) * 10;
     }
-    // Milestone: cấp 20 và 40 cần XP gấp 3
-    if (level === 20 || level === 40) base = Math.round(base * 3);
-    return base;
+    if (level === 20) {
+      return 600; // Checkpoint
+    }
+    if (level >= 21 && level <= 39) {
+      return 195 + (level - 20) * 13;
+    }
+    if (level === 40) {
+      return 2400; // Checkpoint
+    }
+    if (level >= 41) {
+      const base40 = 195 + 20 * 13; // 455
+      return base40 + (level - 40) * 16;
+    }
+    return 1000;
   }
 
   gainXp(amount) {
@@ -3550,14 +3565,34 @@ class PveGame {
   onLevelUp() {
     const p = this.player;
 
-    // Milestone level 20 & 40: thưởng +100% Growth tạm thời (1 màn)
-    const isMilestone = (p.level === 20 || p.level === 40);
-    if (isMilestone) {
+    // Remove milestone 20 buff when leaving Level 20 (i.e. leveling up to 21)
+    if (p.hasMilestone20Buff && p.level !== 20) {
+      p.xpGainMult /= 2.0;
+      p.hasMilestone20Buff = false;
+      showToast(`⭐ Hết hiệu ứng x2 XP Milestone 20`, '#94a3b8');
+    }
+    // Remove milestone 40 buff when leaving Level 40 (i.e. leveling up to 41)
+    if (p.hasMilestone40Buff && p.level !== 40) {
+      p.xpGainMult /= 2.0;
+      p.hasMilestone40Buff = false;
+      showToast(`⭐ Hết hiệu ứng x2 XP Milestone 40`, '#94a3b8');
+    }
+
+    // Milestone level 20 & 40: thưởng +100% Growth tạm thời
+    if (p.level === 20) {
       p.xpGainMult = (p.xpGainMult || 1.0) * 2.0; // +100% Growth
-      this.addFloat(p.x, p.y - 90, `🌟 MILESTONE Lv.${p.level}! +100% GROWTH!`, '#fbbf24', true);
+      p.hasMilestone20Buff = true;
+      this.addFloat(p.x, p.y - 90, `🌟 MILESTONE Lv.20! +100% GROWTH!`, '#fbbf24', true);
       this.spawnParticles(p.x, p.y, '#fbbf24', 50, 10);
       this.screenShake(15, 0.5);
-      showToast(`⭐ MILESTONE ${p.level}! XP nhận được x2!`, '#fbbf24');
+      showToast(`⭐ MILESTONE 20! XP nhận được x2!`, '#fbbf24');
+    } else if (p.level === 40) {
+      p.xpGainMult = (p.xpGainMult || 1.0) * 2.0; // +100% Growth
+      p.hasMilestone40Buff = true;
+      this.addFloat(p.x, p.y - 90, `🌟 MILESTONE Lv.40! +100% GROWTH!`, '#fbbf24', true);
+      this.spawnParticles(p.x, p.y, '#fbbf24', 50, 10);
+      this.screenShake(15, 0.5);
+      showToast(`⭐ MILESTONE 40! XP nhận được x2!`, '#fbbf24');
     } else {
       this.addFloat(p.x, p.y - 50, `⬆️ LEVEL ${p.level}!`, '#a78bfa', true);
       this.spawnParticles(p.x, p.y, '#a78bfa', 25, 6);
@@ -5070,7 +5105,26 @@ class PveGame {
     });
 
     // Filter active skills that can be upgraded (Lv < 8)
-    const upgradeableSkills = this.skills.filter(s => !s.isLegendary && s.level < 8);
+    const upgradeableSkills = this.skills.filter(s => {
+      if (s.isLegendary) return false;
+      if (s.level >= 8) return false;
+      if (s.level === 7) {
+        // To upgrade to Lv 8, must own the corresponding passive item for standard EVOs
+        const evo = EVO_COMBOS.find(e => e.baseSkill === s.id);
+        if (evo) {
+          const hasPassive = this.passiveItems.some(p => p.id === evo.passiveItem);
+          if (!hasPassive) return false;
+        }
+        // To upgrade to Lv 8, must own the corresponding secondary skill for UNION combos
+        const union = UNION_COMBOS.find(u => u.baseSkill1 === s.id || u.baseSkill2 === s.id);
+        if (union) {
+          const hasSkill1 = this.skills.some(sk => sk.id === union.baseSkill1);
+          const hasSkill2 = this.skills.some(sk => sk.id === union.baseSkill2);
+          if (!hasSkill1 || !hasSkill2) return false;
+        }
+      }
+      return true;
+    });
     // Filter passive items that can be upgraded (Lv < 5)
     const upgradeablePassives = this.passiveItems.filter(p => p.level < 5);
 
@@ -5396,8 +5450,8 @@ class PveGame {
     this._kd = (e) => {
       this.keys[e.code] = true;
 
-      // Phím P: toggle Powerup Panel trong game
-      if (e.code === 'KeyP' && this.running) {
+      // Phím I: toggle Powerup Panel trong game
+      if (e.code === 'KeyI' && this.running) {
         e.preventDefault();
         this._toggleInGamePowerupPanel();
       }
@@ -5437,9 +5491,9 @@ class PveGame {
           }
         }
       }
-      // Phím Escape: đóng panels hoặc toggle pause
-      if (e.code === 'Escape') {
-        e.preventDefault(); // Luôn ngăn browser bắt ESC
+      // Phím P: toggle pause hoặc đóng panel
+      if (e.code === 'KeyP' && this.running) {
+        e.preventDefault();
         if (this._inGamePowerupOpen) {
           this._closeInGamePowerupPanel();
         } else if (this._merchantShopOpen) {
@@ -5447,11 +5501,20 @@ class PveGame {
         } else if (this._demonicAltarOpen) {
           this.closeDemonicAltarModal();
         } else if (!this.paused) {
-          // Không có panel nào mở → toggle pause
           this.pause();
         } else {
-          // Đang pause → resume
           this.resume();
+        }
+      }
+      // Phím Escape: đóng panels (KHÔNG pause game để tránh Electron co màn hình)
+      if (e.code === 'Escape') {
+        e.preventDefault();
+        if (this._inGamePowerupOpen) {
+          this._closeInGamePowerupPanel();
+        } else if (this._merchantShopOpen) {
+          this.closeMerchantShop();
+        } else if (this._demonicAltarOpen) {
+          this.closeDemonicAltarModal();
         }
       }
     };
@@ -7989,6 +8052,42 @@ class PveGame {
         this.aoeExplosion(bx, by, 90, dmg * 0.5, '#fbbf24');
         this.spawnParticles(bx, by, '#fffbeb', 8, 3);
       }, i * 80);
+    }
+  }
+
+  fireVoidDemon(dmg, lv) {
+    const p = this.player;
+    this.addFloat(p.x, p.y - 70, '😈 VOID DEMON TRANSFORM!', '#6d28d9');
+    this.screenShake(15, 0.5);
+
+    if (!p._originalRadius) {
+      p._originalRadius = p.r;
+      p._originalAtkMult = p.atkMult;
+    }
+    
+    p.r = 35;
+    p.atkMult = p._originalAtkMult * 1.8;
+    p.voidDemonActiveUntil = Date.now() + 6000;
+    
+    for (let i = 0; i < 6; i++) {
+      setTimeout(() => {
+        if (!this.running || Date.now() > p.voidDemonActiveUntil) return;
+        const angle = Math.random() * Math.PI * 2;
+        const sweepRange = 220;
+        this.enemies.forEach(e => {
+          if (e.hp <= 0) return;
+          const dist = Math.hypot(e.x - p.x, e.y - p.y);
+          if (dist < sweepRange) {
+            this.dealDamage(e, dmg * 1.5, true);
+            const pushAngle = Math.atan2(e.y - p.y, e.x - p.x);
+            e.x += Math.cos(pushAngle) * 50;
+            e.y += Math.sin(pushAngle) * 50;
+          }
+        });
+        this.emitSlash(p.x, p.y, angle, sweepRange, '#6d28d9', 'fighter_slash');
+        this.particles.push({ type: 'ring', x: p.x, y: p.y, r: 0, maxR: sweepRange, color: '#6d28d9', life: 0.3, maxLife: 0.3 });
+        this.spawnParticles(p.x, p.y, '#c084fc', 12, 4);
+      }, i * 1000);
     }
   }
 
