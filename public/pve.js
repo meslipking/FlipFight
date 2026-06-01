@@ -18635,7 +18635,7 @@ function audioSetSfxVol(val) {
 
 // Update now playing label + sync widget UI
 const THEME_NAMES = {
-  lobby:   '🏛 Angel Arena Anthem',
+  lobby:   '🏛 Flipfight Anthem',
   battle:  '⚔️ Eternal Siege',
   boss:    '💀 Wrath of the Reaper',
   victory: '🏆 Angels Ascend',

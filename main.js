@@ -16,7 +16,7 @@ function createWindow() {
     height: 1080,
     fullscreen: !isDev,          // Fullscreen trong bản release
     autoHideMenuBar: true,
-    title: 'Angel Arena',
+    title: 'Flipfight',
     backgroundColor: '#07080f',  // Tránh chớp trắng khi load
     icon: path.join(__dirname, 'public', 'favicon.png'),
     webPreferences: {

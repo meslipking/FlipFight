@@ -1,4 +1,4 @@
-# ⚔️ Angel Arena
+# ⚔️ Flipfight
 
 > **2D Top-Down PVE Survival Game** — Chiến đấu chống lại 21 boss huyền thoại trong 30 phút sinh tồn!
 
@@ -6,7 +6,7 @@
 
 ## 🎮 Gameplay
 
-Angel Arena là game sinh tồn theo phong cách **roguelite** — bạn điều khiển một nhân vật, tiêu diệt kẻ thù liên tục để nhận EXP, lên cấp và chọn kỹ năng ngẫu nhiên. Mục tiêu: **sống sót 30 phút** qua 3 màn độ khó tăng dần.
+Flipfight là game sinh tồn theo phong cách **roguelite** — bạn điều khiển một nhân vật, tiêu diệt kẻ thù liên tục để nhận EXP, lên cấp và chọn kỹ năng ngẫu nhiên. Mục tiêu: **sống sót 30 phút** qua 3 màn độ khó tăng dần.
 
 ### Tính năng chính
 
@@ -46,13 +46,13 @@ Angel Arena là game sinh tồn theo phong cách **roguelite** — bạn điều
 
 ### Bản PC (Electron App)
 1. Tải bản release mới nhất từ [Releases](../../releases)
-2. Giải nén và chạy `Angel Arena.exe`
+2. Giải nén và chạy `Flipfight.exe`
 3. Không cần cài đặt thêm!
 
 ### Chạy từ source
 ```bash
-git clone https://github.com/your-username/angel-arena.git
-cd angel-arena
+git clone https://github.com/your-username/flipfight.git
+cd flipfight
 npm install
 npm run electron
 ```
@@ -60,7 +60,7 @@ npm run electron
 ### Build bản release
 ```bash
 npm run build-win
-# Output: dist/Angel Arena-win32-x64/
+# Output: dist/Flipfight-win32-x64/
 ```
 
 ---
@@ -92,7 +92,7 @@ npm run build-win
 ## 📁 Project Structure
 
 ```
-angel-arena/
+flipfight/
 ├── public/
 │   ├── pve.html      # Game PVE (single-player)
 │   ├── pve.js        # Game engine (~860KB, 19000+ lines)

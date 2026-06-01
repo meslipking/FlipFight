@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const name = 'FlipFight';
+const name = 'Flipfight';
 const zipPath = 'C:\\Users\\PC\\AppData\\Local\\electron\\Cache\\bc80a13ebe4734629db853b3fc870b18ba9e388b795710fdbbd075694e548d03\\electron-v42.3.0-win32-x64.zip';
 const outDir = path.join(__dirname, 'dist', `${name}-win32-x64`);
 const appDir = path.join(outDir, 'resources', 'app');

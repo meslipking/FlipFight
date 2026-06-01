@@ -131,7 +131,7 @@ const FlipAudio = (() => {
     currentTheme = null;
   }
 
-  // ── THEME: LOBBY — "Angel Arena Anthem" ───────────────────
+  // ── THEME: LOBBY — "Flipfight Anthem" ───────────────────
   // Chill, epic orchestral-chiptune hybrid. Majestic, not aggressive.
   function scheduleLobbyTheme() {
     if (!musicEnabled || !ctx) return;

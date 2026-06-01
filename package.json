@@ -1,15 +1,15 @@
 {
-  "name": "angel-arena",
+  "name": "flipfight",
   "version": "1.0.0",
-  "description": "Angel Arena — 2D Top-Down PVE Survival Game with 21 Unique Bosses",
+  "description": "Flipfight — 2D Top-Down PVE Survival Game with 21 Unique Bosses",
   "main": "main.js",
   "author": "Angel Studio",
   "license": "MIT",
-  "homepage": "https://github.com/angel-studio/angel-arena",
+  "homepage": "https://github.com/angel-studio/flipfight",
   "scripts": {
     "start": "node server.js",
     "electron": "electron .",
-    "build-win": "electron-packager . \"Angel Arena\" --platform=win32 --arch=x64 --out=dist/ --overwrite --icon=public/favicon.png --ignore=\"dist|\\.git|node_modules/electron(-.*)?|release\\.tar\\.gz|scratch/|logs/|chat-history/|qa_.*\\.js|search_.*\\.js|update_pve\\.js|ssh_command\\.js|fast-deploy\\.js|deploy\\.js|build_manually\\.js\" --app-version=1.0.0 --win32metadata.ProductName=\"Angel Arena\" --win32metadata.CompanyName=\"Angel Studio\" --win32metadata.FileDescription=\"Angel Arena PVE Game\""
+    "build-win": "electron-packager . \"Flipfight\" --platform=win32 --arch=x64 --out=dist/ --overwrite --icon=public/favicon.png --ignore=\"dist|\\.git|node_modules/electron(-.*)?|release\\.tar\\.gz|scratch/|logs/|chat-history/|qa_.*\\.js|search_.*\\.js|update_pve\\.js|ssh_command\\.js|fast-deploy\\.js|deploy\\.js|build_manually\\.js\" --app-version=1.0.0 --win32metadata.ProductName=\"Flipfight\" --win32metadata.CompanyName=\"Angel Studio\" --win32metadata.FileDescription=\"Flipfight PVE Game\""
   },
   "dependencies": {
     "express": "^4.19.2",
