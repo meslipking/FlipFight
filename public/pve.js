@@ -1369,7 +1369,7 @@ const ENEMY_TYPES = {
 // ─── GAME STATE ───────────────────────────────────────────────
 let G = null; // Game instance
 let selectedClass = 'assassin';
-let savedData = null;
+let savedData = defaultSave();
 
 // ─── INIT ON LOAD ─────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
@@ -5559,7 +5559,7 @@ class PveGame {
     p.hp -= amt;
     this.addFloat(p.x, p.y - 30, `-${Math.round(amt)}`, '#f87171');
     this.spawnParticles(p.x, p.y, '#ef4444', 8, 2);
-    cp && (cp.lastHit = now); // update lastHit for hit flash
+    p && (p.lastHit = now); // update lastHit for hit flash
 
     // Arcana Grace check
     if (this.activeArcanas.has('arcana_grace') && p.hp / p.maxHp < 0.3 && p.hp > 0) {
@@ -7440,6 +7440,7 @@ class PveGame {
 
   // ──────────────────────────────────────────────
   updateWave(dt) {
+    const p = this.player;
     // ── GAME TIMER ──
     this.gameElapsed += dt;
     const elapsed = this.gameElapsed;
@@ -12597,11 +12598,18 @@ class PveGame {
 
     // Spawn enemies around merchant
     const enemyCount = mission.enemies || 8;
+    const eligible = Object.entries(ENEMY_TYPES).filter(([k, v]) => {
+      if (v.isBoss) return false;
+      const unlockSec = (v.wave - 1) * 60;
+      return this.gameElapsed >= unlockSec;
+    });
+    const typeId = eligible.length > 0 ? eligible[Math.floor(Math.random() * eligible.length)][0] : 'slime';
+
     for (let i = 0; i < enemyCount; i++) {
       const ea = (i / enemyCount) * Math.PI * 2;
       const rx = this.merchant.x + Math.cos(ea) * 150;
       const ry = this.merchant.y + Math.sin(ea) * 150;
-      this.spawnEnemy(rx, ry, { isElite: i < (mission.eliteCount || 0), forceSpawn: true });
+      this.spawnEnemy(typeId, rx, ry, 1, i < (mission.eliteCount || 0));
     }
 
     // Show rescue UI pill

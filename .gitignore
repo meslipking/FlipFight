@@ -36,3 +36,5 @@ remote_diagnostic.js
 check_server.js
 test_ws.js
 test-client.js
+github_release.js
+release_payload.json
