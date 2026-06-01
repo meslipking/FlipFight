@@ -3036,17 +3036,32 @@ class PveGame {
   fireArrowRain(dmg, lv) {
     const p = this.player;
     const target = this.nearestEnemy() || { x: p.x + 200, y: p.y };
-    const baseAngle = Math.atan2(target.y - p.y, target.x - p.x);
     const count = 8 + lv * 4;
-    const spread = 0.5 + lv * 0.1;
+    const aoeR = (80 + lv * 15) * p.aoeMult;
     for (let i = 0; i < count; i++) {
       setTimeout(() => {
         if (!this.running) return;
-        const tx = target.x + (Math.random() - 0.5) * 200;
-        const ty = target.y + (Math.random() - 0.5) * 200;
-        this.particles.push({ type:'rain_arrow', x: tx, y: ty - 300, tx, ty, color:'#34d399', life: 0.4, maxLife: 0.4, dmg });
-      }, i * 60);
+        const tx = target.x + (Math.random() - 0.5) * aoeR * 2;
+        const ty = target.y + (Math.random() - 0.5) * aoeR * 2;
+        // Spawn warning dot on ground
+        this.particles.push({ type: 'rain_arrow_warn', x: tx, y: ty, r: 8, life: 0.25, maxLife: 0.25, color: '#34d399' });
+        // Spawn falling arrow after 0.25s delay
+        setTimeout(() => {
+          if (!this.running) return;
+          this.particles.push({
+            type: 'rain_arrow',
+            x: tx, y: ty - 320,
+            tx, ty,
+            vx: 0, vy: 0,
+            color: '#34d399',
+            dmg: dmg * p.dmgMult * p.atkMult,
+            life: 0.22, maxLife: 0.22,
+            done: false
+          });
+        }, 250);
+      }, i * 70);
     }
+    this.addFloat(p.x, p.y - 50, '🏹 MƯA TÊN!', '#34d399');
   }
 
     fireBriarPatch(dmg, lv) {
@@ -5055,6 +5070,26 @@ class PveGame {
       else if (p.type === 'ring') {
         p.r += (p.maxR / p.maxLife) * dt;
       }
+      else if (p.type === 'rain_arrow') {
+        // Move arrow from sky to ground target
+        const progress = 1 - p.life / p.maxLife;
+        p.x = p.x + (p.tx - p.x) * Math.min(1, dt * 12);
+        p.y = p.y + (p.ty - p.y) * Math.min(1, dt * 12);
+        // Deal damage when arrow arrives (life < 0.05 and not already dealt)
+        if (!p.done && p.life < 0.04) {
+          p.done = true;
+          this.enemies.forEach(e => {
+            if (e.hp > 0 && Math.hypot(e.x - p.tx, e.y - p.ty) < 35) {
+              this.dealDamage(e, p.dmg);
+            }
+          });
+          this.spawnParticles(p.tx, p.ty, '#34d399', 5, 2);
+        }
+      }
+      else if (p.type === 'rain_arrow_warn') {
+        // Pulsing warning circle - no movement
+        p.r = 8 + Math.sin(p.life * 30) * 3;
+      }
       else if (p.type === 'gold_orb' || p.type === 'xp_orb') {
         const dx = this.player.x - p.x, dy = this.player.y - p.y;
         const distSq = dx * dx + dy * dy;
@@ -6911,24 +6946,173 @@ class PveGame {
 
     drawCharacter(sp, cp, ctx);
 
-    // Draw active pet companion (D2)
+    // Draw active pet companion (2.5D animated sprite)
     if (this.save && this.save.activePet) {
       const petId = this.save.activePet;
-      const petEmoji = PETS_DEFS[petId]?.emoji || '🐾';
-      // Floating offset behind the player
-      const floatOffset = Math.sin(t * 0.003) * 6;
-      const angle = p.angle + Math.PI + Math.sin(t * 0.001) * 0.25;
-      const petX = p.x + Math.cos(angle) * (p.r + 25);
-      const petY = p.y + Math.sin(angle) * (p.r + 25) + floatOffset;
+      const floatOffset = Math.sin(t * 0.0035) * 5;
+      const orbitAngle = p.angle + Math.PI + Math.sin(t * 0.0009) * 0.3;
+      const petX = p.x + Math.cos(orbitAngle) * (p.r + 28);
+      const petY = p.y + Math.sin(orbitAngle) * (p.r + 28) + floatOffset;
       
       ctx.save();
-      ctx.font = '22px Outfit, Inter, Arial';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      // Subtle shadow
-      ctx.shadowColor = 'rgba(0,0,0,0.5)';
-      ctx.shadowBlur = 4;
-      ctx.fillText(petEmoji, petX, petY);
+      ctx.translate(petX, petY);
+
+      // Ground shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.2)';
+      ctx.beginPath();
+      ctx.ellipse(0, 14, 12, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (petId === 'corgi') {
+        // ── CORGI: fluffy running dog with golden fur ──
+        ctx.shadowColor = '#fbbf24'; ctx.shadowBlur = 12;
+        // Body
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath(); ctx.ellipse(0, 0, 13, 9, 0, 0, Math.PI * 2); ctx.fill();
+        // Belly
+        ctx.fillStyle = '#fef3c7';
+        ctx.beginPath(); ctx.ellipse(0, 3, 8, 5, 0, 0, Math.PI * 2); ctx.fill();
+        // Head
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath(); ctx.arc(11, -4, 8, 0, Math.PI * 2); ctx.fill();
+        // Snout
+        ctx.fillStyle = '#fef3c7';
+        ctx.beginPath(); ctx.ellipse(16, -2, 5, 3.5, 0.2, 0, Math.PI * 2); ctx.fill();
+        // Nose
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath(); ctx.arc(18, -2, 1.5, 0, Math.PI * 2); ctx.fill();
+        // Ears (floppy)
+        ctx.fillStyle = '#d97706';
+        ctx.beginPath(); ctx.moveTo(8, -10); ctx.lineTo(6, -18); ctx.lineTo(13, -13); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(13, -9); ctx.lineTo(15, -17); ctx.lineTo(18, -11); ctx.closePath(); ctx.fill();
+        // Eyes
+        ctx.fillStyle = '#1e293b'; ctx.shadowBlur = 0;
+        ctx.beginPath(); ctx.arc(13, -6, 2.2, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(13.6, -6.5, 0.7, 0, Math.PI * 2); ctx.fill();
+        // Tail (wagging)
+        const wagAngle = Math.sin(t / 100) * 0.6;
+        ctx.save(); ctx.translate(-12, -3); ctx.rotate(-wagAngle - 0.4);
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath(); ctx.ellipse(0, 0, 4, 2.5, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+        // Running legs
+        ctx.strokeStyle = '#d97706'; ctx.lineWidth = 3.5; ctx.lineCap = 'round';
+        const legSwing = Math.sin(t / 90);
+        [[-6, 9, -0.4], [-1, 9, 0.4], [4, 9, -0.3], [9, 9, 0.3]].forEach(([lx, ly, phase], i) => {
+          ctx.save(); ctx.translate(lx, ly);
+          ctx.rotate(Math.sin(t / 90 + i * 1.3) * 0.4);
+          ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 7); ctx.stroke();
+          ctx.restore();
+        });
+
+      } else if (petId === 'owl') {
+        // ── OWL: wise owl with animated wings and glowing eyes ──
+        ctx.shadowColor = '#7c3aed'; ctx.shadowBlur = 14;
+        const wingFlap = Math.sin(t / 120) * 0.35;
+        // Wings flapping
+        ctx.fillStyle = '#6d28d9';
+        ctx.save(); ctx.translate(-10, -2); ctx.rotate(-wingFlap);
+        ctx.beginPath(); ctx.ellipse(0, 0, 11, 5, -0.4, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+        ctx.save(); ctx.translate(10, -2); ctx.rotate(wingFlap);
+        ctx.beginPath(); ctx.ellipse(0, 0, 11, 5, 0.4, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+        // Body
+        ctx.fillStyle = '#4c1d95';
+        ctx.beginPath(); ctx.ellipse(0, 2, 9, 11, 0, 0, Math.PI * 2); ctx.fill();
+        // Belly feathers
+        ctx.fillStyle = '#7c3aed';
+        ctx.beginPath(); ctx.ellipse(0, 4, 6, 7, 0, 0, Math.PI * 2); ctx.fill();
+        // Head
+        ctx.fillStyle = '#4c1d95';
+        ctx.beginPath(); ctx.arc(0, -9, 8, 0, Math.PI * 2); ctx.fill();
+        // Ear tufts
+        ctx.fillStyle = '#6d28d9';
+        ctx.beginPath(); ctx.moveTo(-6, -14); ctx.lineTo(-8, -22); ctx.lineTo(-2, -16); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(6, -14); ctx.lineTo(8, -22); ctx.lineTo(2, -16); ctx.closePath(); ctx.fill();
+        // Glowing eyes
+        ctx.fillStyle = '#fbbf24'; ctx.shadowColor = '#fbbf24'; ctx.shadowBlur = 12;
+        ctx.beginPath(); ctx.arc(-3.5, -9, 3.5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(3.5, -9, 3.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#000'; ctx.shadowBlur = 0;
+        ctx.beginPath(); ctx.arc(-3.5, -9, 1.8, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(3.5, -9, 1.8, 0, Math.PI * 2); ctx.fill();
+        // Beak
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath(); ctx.moveTo(-2, -7); ctx.lineTo(0, -4); ctx.lineTo(2, -7); ctx.closePath(); ctx.fill();
+        // Talons
+        ctx.strokeStyle = '#6d28d9'; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(-4, 12); ctx.lineTo(-6, 17); ctx.moveTo(-4,12); ctx.lineTo(-2,18); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(4, 12); ctx.lineTo(6, 17); ctx.moveTo(4,12); ctx.lineTo(2,18); ctx.stroke();
+
+      } else if (petId === 'kitty') {
+        // ── KITTY: playful cat with swishing tail ──
+        ctx.shadowColor = '#ec4899'; ctx.shadowBlur = 12;
+        // Tail (swishing)
+        const tailSwing = Math.sin(t / 150) * 0.8;
+        ctx.strokeStyle = '#f9a8d4'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+        ctx.save(); ctx.translate(-12, 4); ctx.rotate(tailSwing - 0.5);
+        ctx.beginPath(); ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(-10, -12, -8, -20);
+        ctx.stroke(); ctx.restore();
+        // Body
+        ctx.fillStyle = '#f9a8d4';
+        ctx.beginPath(); ctx.ellipse(0, 3, 11, 8, 0, 0, Math.PI * 2); ctx.fill();
+        // Belly
+        ctx.fillStyle = '#fce7f3';
+        ctx.beginPath(); ctx.ellipse(0, 5, 7, 5, 0, 0, Math.PI * 2); ctx.fill();
+        // Head
+        ctx.fillStyle = '#f9a8d4';
+        ctx.beginPath(); ctx.arc(0, -8, 9, 0, Math.PI * 2); ctx.fill();
+        // Ears
+        ctx.fillStyle = '#f472b6';
+        ctx.beginPath(); ctx.moveTo(-7, -14); ctx.lineTo(-10, -22); ctx.lineTo(-2, -16); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(7, -14); ctx.lineTo(10, -22); ctx.lineTo(2, -16); ctx.closePath(); ctx.fill();
+        // Inner ear
+        ctx.fillStyle = '#fce7f3';
+        ctx.beginPath(); ctx.moveTo(-6, -15); ctx.lineTo(-8, -20); ctx.lineTo(-3, -16); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(6, -15); ctx.lineTo(8, -20); ctx.lineTo(3, -16); ctx.closePath(); ctx.fill();
+        // Eyes (blinking)
+        const blink = (Math.floor(t / 3000) % 8 === 0) ? 0.15 : 1.0;
+        ctx.fillStyle = '#10b981'; ctx.shadowColor = '#10b981'; ctx.shadowBlur = 8;
+        ctx.beginPath(); ctx.ellipse(-3.5, -9, 3, 3 * blink, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(3.5, -9, 3, 3 * blink, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#000'; ctx.shadowBlur = 0;
+        ctx.beginPath(); ctx.arc(-3.5, -9, 1.5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(3.5, -9, 1.5, 0, Math.PI * 2); ctx.fill();
+        // Whiskers
+        ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(0, -6); ctx.lineTo(-14, -8); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, -5); ctx.lineTo(-14, -4); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, -6); ctx.lineTo(14, -8); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, -5); ctx.lineTo(14, -4); ctx.stroke();
+        // Nose
+        ctx.fillStyle = '#f472b6';
+        ctx.beginPath(); ctx.arc(0, -6, 1.5, 0, Math.PI * 2); ctx.fill();
+        // Paws
+        ctx.fillStyle = '#f9a8d4';
+        ctx.beginPath(); ctx.ellipse(-5, 11, 4, 2.5, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(5, 11, 4, 2.5, 0, 0, Math.PI * 2); ctx.fill();
+
+      } else {
+        // Generic pet fallback (emoji)
+        const petEmoji = PETS_DEFS[petId]?.emoji || '🐾';
+        ctx.font = '22px Outfit, Inter, Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 4;
+        ctx.fillText(petEmoji, 0, 0);
+      }
+
+      // Pet ability aura ring (subtle glow based on pet type)
+      const auraColors = { corgi: '#fbbf24', owl: '#a78bfa', kitty: '#ec4899' };
+      const aura = auraColors[petId] || '#fff';
+      ctx.strokeStyle = aura + '55'; ctx.lineWidth = 1.5;
+      ctx.shadowColor = aura; ctx.shadowBlur = 8;
+      ctx.beginPath(); ctx.arc(0, 0, 18 + Math.sin(t / 200) * 2, 0, Math.PI * 2); ctx.stroke();
+      ctx.shadowBlur = 0;
+
       ctx.restore();
     }
   }
@@ -7610,6 +7794,56 @@ class PveGame {
                             p.x + Math.cos(a)*len, p.y + Math.sin(a)*len);
           ctx.stroke();
         }
+      } else if (p.type === 'rain_arrow') {
+        // Draw a falling arrow from sky to target
+        const progress = 1 - (p.life / p.maxLife);
+        const ax = p.x;
+        const ay = p.y;
+        const angle = Math.atan2(p.ty - p.y, p.tx - p.x) + Math.PI * 0.5;
+        const arrowLen = 28;
+        ctx.save();
+        ctx.translate(ax, ay);
+        ctx.rotate(angle);
+        // Arrow shaft
+        ctx.strokeStyle = '#34d399';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = '#34d399';
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.moveTo(0, -arrowLen * 0.5);
+        ctx.lineTo(0, arrowLen * 0.5);
+        ctx.stroke();
+        // Arrowhead
+        ctx.fillStyle = '#6ee7b7';
+        ctx.beginPath();
+        ctx.moveTo(0, -arrowLen * 0.5 - 8);
+        ctx.lineTo(-5, -arrowLen * 0.5 + 2);
+        ctx.lineTo(5, -arrowLen * 0.5 + 2);
+        ctx.closePath();
+        ctx.fill();
+        // Feathers at tail
+        ctx.strokeStyle = '#a7f3d0';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-4, arrowLen * 0.5);
+        ctx.lineTo(0, arrowLen * 0.5 - 8);
+        ctx.lineTo(4, arrowLen * 0.5);
+        ctx.stroke();
+        ctx.restore();
+      } else if (p.type === 'rain_arrow_warn') {
+        // Pulsing green circle warning on ground before arrow lands
+        ctx.save();
+        ctx.globalAlpha = alpha * 0.7;
+        ctx.strokeStyle = '#34d399';
+        ctx.lineWidth = 2;
+        ctx.shadowColor = '#34d399';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(52, 211, 153, 0.2)';
+        ctx.fill();
+        ctx.restore();
       }
       ctx.restore();
     });
@@ -7814,65 +8048,284 @@ class PveGame {
     const t = Date.now();
     ctx.save();
     ctx.translate(s.x, s.y);
-    
-    ctx.beginPath(); ctx.ellipse(0, s.r-2, s.r*0.85, 4, 0, 0, Math.PI*2); ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.fill();
-    
-    const bob = Math.sin(t/150 + s.x)*0.06;
-    ctx.scale(1 + bob, 1 - bob);
-    
-    let color1 = s.color;
-    let color2 = shadeColor(s.color, -40);
-    let eyeColor = '#fff';
-    
-    if (s.type === 'shadow_clone') {
-      color1 = '#6d28d9';
-      color2 = '#2e1065';
-      eyeColor = '#c084fc';
-    } else if (s.type === 'skeleton') {
-      color1 = '#cbd5e1';
-      color2 = '#475569';
-      eyeColor = '#f87171';
-    } else if (s.type === 'spirit_wolf') {
-      color1 = '#34d399';
-      color2 = '#064e3b';
-      eyeColor = '#ffffff';
-    } else if (s.type === 'grim_reaper') {
-      color1 = '#09090b';
-      color2 = '#18181b';
-      eyeColor = '#ef4444';
-    } else if (s.type === 'ghost_echo') {
-      color1 = '#a78bfa';
-      color2 = '#5b21b6';
-      eyeColor = '#ffffff';
-    }
-    
+    const bob = Math.sin(t / 160 + s.x * 0.01) * 2.5;
+    ctx.translate(0, bob);
+
+    // Ground shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.28)';
     ctx.beginPath();
-    ctx.arc(0, 0, s.r, 0, Math.PI*2);
-    const g = ctx.createRadialGradient(-s.r*0.2, -s.r*0.2, 0, 0, 0, s.r);
-    g.addColorStop(0, '#fff');
-    g.addColorStop(0.3, color1);
-    g.addColorStop(1, color2);
-    ctx.fillStyle = g;
+    ctx.ellipse(0, s.r - bob, s.r * 0.9, s.r * 0.35, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    
-    ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.arc(-s.r*0.25, -s.r*0.1, s.r*0.2, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(s.r*0.25, -s.r*0.1, s.r*0.2, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = eyeColor;
-    ctx.beginPath(); ctx.arc(-s.r*0.22, -s.r*0.1, s.r*0.09, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(s.r*0.28, -s.r*0.1, s.r*0.09, 0, Math.PI*2); ctx.fill();
-    
+
+    if (s.type === 'shadow_clone') {
+      // ── SHADOW CLONE: humanoid silhouette with purple dark energy ──
+      const r = s.r;
+      ctx.shadowColor = '#7c3aed';
+      ctx.shadowBlur = 18;
+      // Body torso
+      ctx.fillStyle = '#3b0764';
+      ctx.fillRect(-r * 0.32, -r * 0.6, r * 0.64, r * 0.85);
+      // Legs
+      ctx.fillStyle = '#2e1065';
+      ctx.fillRect(-r * 0.32, r * 0.2, r * 0.28, r * 0.55);
+      ctx.fillRect(r * 0.04, r * 0.2, r * 0.28, r * 0.55);
+      // Arms
+      const armSwing = Math.sin(t / 160) * 0.18;
+      ctx.save();
+      ctx.translate(-r * 0.32, -r * 0.2);
+      ctx.rotate(-armSwing);
+      ctx.fillStyle = '#3b0764';
+      ctx.fillRect(-r * 0.18, 0, r * 0.18, r * 0.55);
+      ctx.restore();
+      ctx.save();
+      ctx.translate(r * 0.32, -r * 0.2);
+      ctx.rotate(armSwing);
+      ctx.fillStyle = '#3b0764';
+      ctx.fillRect(0, 0, r * 0.18, r * 0.55);
+      ctx.restore();
+      // Head
+      const g = ctx.createRadialGradient(-r * 0.1, -r * 0.75, 0, 0, -r * 0.75, r * 0.36);
+      g.addColorStop(0, '#7c3aed');
+      g.addColorStop(1, '#1e1b4b');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(0, -r * 0.75, r * 0.36, 0, Math.PI * 2);
+      ctx.fill();
+      // Glowing purple eyes
+      ctx.fillStyle = '#c084fc';
+      ctx.shadowColor = '#c084fc';
+      ctx.shadowBlur = 10;
+      ctx.beginPath(); ctx.arc(-r * 0.11, -r * 0.75, r * 0.08, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(r * 0.11, -r * 0.75, r * 0.08, 0, Math.PI * 2); ctx.fill();
+      // Dark energy wisps
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = 'rgba(167,139,250,0.55)';
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i < 4; i++) {
+        const wa = (i / 4) * Math.PI * 2 + t / 300;
+        ctx.beginPath();
+        ctx.moveTo(0, -r * 0.2);
+        ctx.quadraticCurveTo(Math.cos(wa) * r * 0.6, Math.sin(wa) * r * 0.5, Math.cos(wa) * r * 0.9, Math.sin(wa) * r * 0.9);
+        ctx.stroke();
+      }
+
+    } else if (s.type === 'skeleton') {
+      // ── SKELETON: full bony humanoid figure ──
+      const r = s.r;
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.shadowColor = '#ef4444';
+      ctx.shadowBlur = 8;
+      // Skull
+      ctx.fillStyle = '#f1f5f9';
+      ctx.beginPath(); ctx.arc(0, -r * 0.78, r * 0.3, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5;
+      ctx.stroke();
+      // Jaw
+      ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.18, -r * 0.55);
+      ctx.lineTo(-r * 0.18, -r * 0.44);
+      ctx.lineTo(r * 0.18, -r * 0.44);
+      ctx.lineTo(r * 0.18, -r * 0.55);
+      ctx.stroke();
+      // Eye sockets
+      ctx.fillStyle = '#1e293b';
+      ctx.beginPath(); ctx.arc(-r * 0.1, -r * 0.8, r * 0.07, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(r * 0.1, -r * 0.8, r * 0.07, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#ef4444';
+      ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 8;
+      ctx.beginPath(); ctx.arc(-r * 0.1, -r * 0.8, r * 0.04, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(r * 0.1, -r * 0.8, r * 0.04, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
+      // Spine
+      ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(0, -r * 0.5); ctx.lineTo(0, r * 0.22);
+      ctx.stroke();
+      // Ribs
+      ctx.lineWidth = 1.8;
+      for (let i = 0; i < 3; i++) {
+        const ry = -r * 0.35 + i * r * 0.2;
+        ctx.beginPath(); ctx.moveTo(0, ry); ctx.quadraticCurveTo(-r * 0.45, ry + r * 0.06, -r * 0.38, ry + r * 0.18); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, ry); ctx.quadraticCurveTo(r * 0.45, ry + r * 0.06, r * 0.38, ry + r * 0.18); ctx.stroke();
+      }
+      // Arms
+      const armSwing = Math.sin(t / 180) * 0.25;
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = '#e2e8f0';
+      // Left arm
+      ctx.save(); ctx.translate(-r * 0.38, -r * 0.38); ctx.rotate(-armSwing - 0.3);
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0, r * 0.38); ctx.moveTo(0, r * 0.38); ctx.lineTo(0, r * 0.6);
+      ctx.stroke(); ctx.restore();
+      // Right arm
+      ctx.save(); ctx.translate(r * 0.38, -r * 0.38); ctx.rotate(armSwing + 0.3);
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0, r * 0.38); ctx.moveTo(0, r * 0.38); ctx.lineTo(0, r * 0.6);
+      ctx.stroke(); ctx.restore();
+      // Pelvis and legs
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(-r * 0.3, r * 0.22); ctx.lineTo(r * 0.3, r * 0.22); ctx.stroke();
+      const legSwing = Math.sin(t / 200) * 0.18;
+      // Left leg
+      ctx.save(); ctx.translate(-r * 0.18, r * 0.22); ctx.rotate(-legSwing);
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0, r * 0.4); ctx.moveTo(0, r * 0.4); ctx.lineTo(0, r * 0.7);
+      ctx.stroke(); ctx.restore();
+      // Right leg
+      ctx.save(); ctx.translate(r * 0.18, r * 0.22); ctx.rotate(legSwing);
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0, r * 0.4); ctx.moveTo(0, r * 0.4); ctx.lineTo(0, r * 0.7);
+      ctx.stroke(); ctx.restore();
+
+    } else if (s.type === 'spirit_wolf') {
+      // ── SPIRIT WOLF: wolf silhouette with ethereal glow ──
+      const r = s.r;
+      const facing = s.angle > Math.PI * 0.5 && s.angle < Math.PI * 1.5 ? -1 : 1;
+      ctx.save();
+      ctx.scale(facing, 1);
+      ctx.shadowColor = '#34d399';
+      ctx.shadowBlur = 18;
+      // Body
+      ctx.fillStyle = '#065f46';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, r * 0.75, r * 0.42, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // Inner luminous body
+      const wg = ctx.createRadialGradient(-r * 0.1, -r * 0.1, 0, 0, 0, r * 0.7);
+      wg.addColorStop(0, 'rgba(110, 231, 183, 0.8)');
+      wg.addColorStop(0.6, 'rgba(16, 185, 129, 0.5)');
+      wg.addColorStop(1, 'rgba(6, 78, 59, 0)');
+      ctx.fillStyle = wg;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, r * 0.75, r * 0.42, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // Head
+      ctx.fillStyle = '#065f46';
+      ctx.beginPath();
+      ctx.ellipse(r * 0.62, -r * 0.12, r * 0.35, r * 0.3, -0.2, 0, Math.PI * 2);
+      ctx.fill();
+      // Snout
+      ctx.fillStyle = '#047857';
+      ctx.beginPath();
+      ctx.ellipse(r * 0.9, r * 0.0, r * 0.22, r * 0.16, 0.3, 0, Math.PI * 2);
+      ctx.fill();
+      // Ears
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath(); ctx.moveTo(r * 0.5, -r * 0.35); ctx.lineTo(r * 0.4, -r * 0.65); ctx.lineTo(r * 0.65, -r * 0.42); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(r * 0.68, -r * 0.3); ctx.lineTo(r * 0.68, -r * 0.58); ctx.lineTo(r * 0.82, -r * 0.35); ctx.closePath(); ctx.fill();
+      // Glowing eyes
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 8;
+      ctx.beginPath(); ctx.arc(r * 0.72, -r * 0.15, r * 0.07, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#34d399';
+      ctx.beginPath(); ctx.arc(r * 0.73, -r * 0.15, r * 0.04, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
+      // Tail (curved)
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.7, 0);
+      ctx.quadraticCurveTo(-r * 1.1, -r * 0.5, -r * 0.95, -r * 0.75);
+      ctx.stroke();
+      // Running legs
+      const legAnim = Math.sin(t / 80) * 0.4;
+      ctx.strokeStyle = '#065f46'; ctx.lineWidth = 5;
+      const legPositions = [[-r*0.4, r*0.38], [-r*0.15, r*0.38], [r*0.15, r*0.38], [r*0.4, r*0.38]];
+      legPositions.forEach(([lx, ly], idx) => {
+        ctx.save();
+        ctx.translate(lx, ly - r * 0.02);
+        const swing = Math.sin(t / 80 + idx * 1.2) * 0.35;
+        ctx.rotate(swing);
+        ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, r * 0.38); ctx.stroke();
+        ctx.restore();
+      });
+      ctx.restore();
+
+    } else if (s.type === 'grim_reaper') {
+      // ── GRIM REAPER ──
+      const r = s.r;
+      ctx.shadowColor = '#ef4444';
+      ctx.shadowBlur = 14;
+      // Floating dark robe
+      ctx.fillStyle = '#09090b';
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.4, -r * 0.4);
+      ctx.quadraticCurveTo(-r * 0.55, 0, -r * 0.5, r * 0.7);
+      ctx.quadraticCurveTo(0, r * 0.85, r * 0.5, r * 0.7);
+      ctx.quadraticCurveTo(r * 0.55, 0, r * 0.4, -r * 0.4);
+      ctx.closePath();
+      ctx.fill();
+      // Hood
+      ctx.fillStyle = '#18181b';
+      ctx.beginPath(); ctx.arc(0, -r * 0.62, r * 0.38, 0, Math.PI * 2); ctx.fill();
+      // Pointy hood tip
+      ctx.beginPath(); ctx.moveTo(-r*0.28, -r*0.75); ctx.lineTo(0, -r*1.15); ctx.lineTo(r*0.28, -r*0.75); ctx.fill();
+      // Glowing red eyes
+      ctx.fillStyle = '#ef4444'; ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 15;
+      ctx.beginPath(); ctx.arc(-r * 0.1, -r * 0.65, r * 0.07, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(r * 0.1, -r * 0.65, r * 0.07, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
+      // Scythe
+      ctx.strokeStyle = '#71717a'; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(r * 0.35, -r * 0.5); ctx.lineTo(r * 0.35, r * 0.6); ctx.stroke();
+      ctx.strokeStyle = '#a1a1aa'; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(r * 0.35, -r * 0.5);
+      ctx.quadraticCurveTo(r * 0.9, -r * 1.0, r * 0.1, -r * 0.85);
+      ctx.stroke();
+
+    } else if (s.type === 'ghost_echo') {
+      // ── GHOST ECHO: translucent wavy spirit ──
+      const r = s.r;
+      ctx.globalAlpha *= 0.75;
+      ctx.shadowColor = '#a78bfa';
+      ctx.shadowBlur = 22;
+      // Ghost body (teardrop)
+      const gg = ctx.createRadialGradient(0, -r * 0.3, 0, 0, 0, r * 0.9);
+      gg.addColorStop(0, '#c4b5fd');
+      gg.addColorStop(0.6, '#7c3aed');
+      gg.addColorStop(1, 'rgba(109,40,217,0)');
+      ctx.fillStyle = gg;
+      ctx.beginPath();
+      ctx.arc(0, -r * 0.25, r * 0.55, 0, Math.PI, true);
+      const waveAmp = r * 0.15;
+      for (let xi = -r * 0.55; xi <= r * 0.55; xi += r * 0.18) {
+        ctx.lineTo(xi, r * 0.35 + Math.sin(xi * 0.3 + t / 100) * waveAmp);
+      }
+      ctx.closePath();
+      ctx.fill();
+      // Eyes
+      ctx.globalAlpha = 1.0 * (ctx.globalAlpha > 0 ? 1 : 1);
+      ctx.fillStyle = '#ffffff'; ctx.shadowBlur = 10;
+      ctx.beginPath(); ctx.arc(-r * 0.18, -r * 0.32, r * 0.1, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(r * 0.18, -r * 0.32, r * 0.1, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#1e1b4b';
+      ctx.beginPath(); ctx.arc(-r * 0.18, -r * 0.3, r * 0.05, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(r * 0.18, -r * 0.3, r * 0.05, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
+
+    } else {
+      // Fallback generic blob summon
+      const color1 = s.color || '#8b5cf6';
+      const color2 = shadeColor(color1, -40);
+      ctx.beginPath(); ctx.arc(0, 0, s.r, 0, Math.PI*2);
+      const g = ctx.createRadialGradient(-s.r*0.2, -s.r*0.2, 0, 0, 0, s.r);
+      g.addColorStop(0, '#fff'); g.addColorStop(0.3, color1); g.addColorStop(1, color2);
+      ctx.fillStyle = g; ctx.fill();
+      ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
+    }
+
+    // Floating emoji label above summon
     ctx.save();
     const icons = { shadow_clone:'👤', skeleton:'💀', spirit_wolf:'🐺', grim_reaper:'☠️', ghost_echo:'👻' };
-    ctx.translate(0, -s.r - 12 + Math.sin(t/200)*2);
-    ctx.font = '12px Outfit'; ctx.textAlign = 'center';
-    ctx.fillStyle = '#fff';
-    ctx.fillText(icons[s.type] || '✨', 0, 0);
+    const labelY = -s.r * 1.15 - 14 + Math.sin(t / 240) * 2.5;
+    ctx.font = 'bold 11px Outfit'; ctx.textAlign = 'center';
+    ctx.fillStyle = '#ffffff';
+    ctx.strokeStyle = '#000000'; ctx.lineWidth = 2.5;
+    ctx.strokeText(icons[s.type] || '✨', 0, labelY);
+    ctx.fillText(icons[s.type] || '✨', 0, labelY);
     ctx.restore();
-    
+
     ctx.restore();
   }
 
@@ -7880,6 +8333,35 @@ class PveGame {
     const t = Date.now();
     this.hazards.forEach(h => {
       ctx.save();
+
+      if (h.type === 'lightning_warning') {
+        // ── LIGHTNING WARNING: pulsing red danger zone with ⚡ icon ──
+        const pulse = Math.sin(t / 80) * 0.5 + 0.5;
+        const lifeAlpha = Math.min(1, h.life / h.maxLife);
+        const rf = h.r * (1 + pulse * 0.08);
+        ctx.globalAlpha = lifeAlpha * (0.45 + pulse * 0.25);
+        ctx.fillStyle = 'rgba(239, 68, 68, 0.28)';
+        ctx.beginPath(); ctx.arc(h.x, h.y, rf, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = lifeAlpha * (0.75 + pulse * 0.25);
+        ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2.5 + pulse * 1.5;
+        ctx.setLineDash([8, 6]);
+        ctx.beginPath(); ctx.arc(h.x, h.y, rf, 0, Math.PI * 2); ctx.stroke();
+        ctx.setLineDash([]);
+        // Cross-hair
+        ctx.strokeStyle = 'rgba(251,191,36,0.7)'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(h.x - rf * 0.6, h.y); ctx.lineTo(h.x + rf * 0.6, h.y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(h.x, h.y - rf * 0.6); ctx.lineTo(h.x, h.y + rf * 0.6); ctx.stroke();
+        // ⚡ icon at center
+        ctx.globalAlpha = lifeAlpha * (0.8 + pulse * 0.2);
+        ctx.font = `bold ${Math.round(rf * 0.55)}px Outfit`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#fde047';
+        ctx.fillText('⚡', h.x, h.y);
+        ctx.textBaseline = 'alphabetic';
+        ctx.restore();
+        return;
+      }
+
       const alpha = 0.35 + Math.sin(t/400)*0.1;
       
       // Outer glow boundary (No shadowBlur, fast 2-pass fill)
@@ -8928,26 +9410,96 @@ class PveGame {
       this.lastLightningStrike = now;
       
       const angle = Math.random() * Math.PI * 2;
-      const dist = 50 + Math.random() * 250;
+      const dist = 80 + Math.random() * 280;
       const tx = this.player.x + Math.cos(angle) * dist;
       const ty = this.player.y + Math.sin(angle) * dist;
       
       const warnR = 80;
+      // 1. Spawn warning zone first (1.5s)
       this.hazards.push({
         type: 'lightning_warning',
-        x: tx,
-        y: ty,
+        x: tx, y: ty,
         r: warnR,
-        life: 1.5,
-        maxLife: 1.5,
+        life: 1.5, maxLife: 1.5,
         color: 'rgba(239, 68, 68, 0.45)',
         tickCd: 99
       });
+      
+      // 2. After 1.5s, strike lightning and deal damage
+      setTimeout(() => {
+        if (!this.running) return;
+        // Draw lightning bolt particle
+        const steps = 8;
+        const path = [{ x: tx, y: ty - 400 }];
+        for (let i = 1; i <= steps; i++) {
+          const px = tx + (Math.random() - 0.5) * 60 * (1 - i / steps);
+          const py = ty - 400 + (400 / steps) * i + (Math.random() - 0.5) * 30;
+          path.push({ x: px, y: py });
+        }
+        path.push({ x: tx, y: ty });
+        
+        this.particles.push({
+          type: 'lightning',
+          path: path,
+          color: '#fde047',
+          glow: '#fef9c3',
+          life: 0.35, maxLife: 0.35,
+          alpha: 1
+        });
+        
+        // Screen flash
+        this.screenShake(6, 0.15);
+        this.addFloat(tx, ty - 60, '⚡ SÉT ⚡', '#fde047');
+        
+        // Damage enemies in strike zone
+        const strikeR = 90;
+        this.enemies.forEach(e => {
+          if (e.hp > 0 && Math.hypot(e.x - tx, e.y - ty) < strikeR) {
+            const lightningDmg = 80 + this.wave * 15;
+            this.dealDamage(e, lightningDmg);
+            e.stunUntil = Math.max(e.stunUntil || 0, Date.now() + 1500);
+            this.spawnParticles(e.x, e.y, '#fde047', 8, 3);
+          }
+        });
+        
+        // Damage player if too close
+        if (!this.player.invincible && Math.hypot(this.player.x - tx, this.player.y - ty) < strikeR * 0.7) {
+          this.takeDamage(35);
+          this.addFloat(this.player.x, this.player.y - 40, '-35 HP ⚡', '#fde047');
+        }
+        
+        // Impact particles
+        this.spawnParticles(tx, ty, '#fde047', 18, 5);
+      }, 1500);
     }
   }
 
   updateBlizzard(dt) {
-    // Blizzard logic is processed in movement updates
+    // Apply blizzard speed slow to player every frame
+    // This is handled in movement via currentWeather check,
+    // but we also spawn ice particles periodically around player
+    if (!this.lastBlizzardTick) this.lastBlizzardTick = 0;
+    const now = Date.now();
+    if (now - this.lastBlizzardTick > 400) {
+      this.lastBlizzardTick = now;
+      const p = this.player;
+      // Spawn snowflake particles around player to indicate slow effect
+      for (let i = 0; i < 4; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const d = 30 + Math.random() * 80;
+        this.particles.push({
+          type: 'snowflake',
+          x: p.x + Math.cos(a) * d,
+          y: p.y + Math.sin(a) * d - 20,
+          r: 4 + Math.random() * 4,
+          rot: Math.random() * Math.PI * 2,
+          vx: (Math.random() - 0.5) * 20,
+          vy: 15 + Math.random() * 20,
+          life: 0.8 + Math.random() * 0.6,
+          maxLife: 0.8 + Math.random() * 0.6
+        });
+      }
+    }
   }
 
   updateSolarFlare(dt) {
@@ -9251,50 +9803,8 @@ class PveGame {
   }
 
   // ─── ROUND 3 UPDATES & HELPERS: PART 2 ──────────────────────
-  
-  updateMerchantRescue(dt) {
-    if (this.gameElapsed >= 300 && this.gameElapsed < 360 && !this.merchantRescueActive && !this.rescue1Triggered) {
-      this.rescue1Triggered = true;
-      this.triggerMerchantRescueEvent();
-    }
-    if (this.gameElapsed >= 900 && this.gameElapsed < 960 && !this.merchantRescueActive && !this.rescue2Triggered) {
-      this.rescue2Triggered = true;
-      this.triggerMerchantRescueEvent();
-    }
-    
-    if (this.merchantRescueActive) {
-      this.merchantRescueTimer -= dt;
-      
-      if (this.merchant.hp <= 0) {
-        this.endMerchantRescueEvent(false);
-      }
-      else if (this.merchantRescueTimer <= 0) {
-        this.endMerchantRescueEvent(true);
-      }
-    }
-  }
-
-  triggerMerchantRescueEvent() {
-    this.merchantRescueActive = true;
-    this.merchantRescueTimer = 60;
-    this.merchantRescueSuccess = false;
-    
-    this.merchant.hp = 1200;
-    this.merchant.maxHp = 1200;
-    this.merchant.active = true;
-    
-    this.merchant.x = WORLD_W / 2;
-    this.merchant.y = WORLD_H / 2;
-    
-    this.addFloat(this.player.x, this.player.y - 120, '🆘 BẢO VỆ THƯƠNG NHÂN (60s)!', '#ef4444', true);
-    
-    for (let i = 0; i < 6; i++) {
-      const angle = (i / 6) * Math.PI * 2;
-      const rx = this.merchant.x + Math.cos(angle) * 150;
-      const ry = this.merchant.y + Math.sin(angle) * 150;
-      this.spawnEnemy('knight', rx, ry, 1.5, true);
-    }
-  }
+  // NOTE: updateMerchantRescue and triggerMerchantRescueEvent are defined above (~line 9041)
+  // The duplicate definitions below were removed to prevent method override bugs.
 
   endMerchantRescueEvent(success) {
     this.merchantRescueActive = false;
