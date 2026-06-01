@@ -288,6 +288,18 @@
       </div>
     </div>
 
+    <!-- BOSS HP BAR — dynamic, shown when boss is alive -->
+    <div id="pveBossHpSection" class="hidden" style="position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:60;min-width:280px;max-width:440px;width:55vw;background:rgba(10,5,5,0.88);border:1.5px solid rgba(239,68,68,0.55);border-radius:14px;padding:8px 14px 10px;box-shadow:0 0 28px rgba(239,68,68,0.25);backdrop-filter:blur(8px);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span id="pveBossEmoji" style="font-size:22px;">👹</span>
+        <span id="pveBossName" style="font-size:13px;font-weight:800;color:#fca5a5;letter-spacing:0.5px;flex:1;">BOSS</span>
+        <span id="pveBossHpText" style="font-size:11px;font-weight:700;color:#ef4444;">100%</span>
+      </div>
+      <div style="background:rgba(239,68,68,0.15);border-radius:8px;height:10px;overflow:hidden;border:1px solid rgba(239,68,68,0.3);">
+        <div id="pveBossHpFill" style="height:100%;width:100%;background:linear-gradient(90deg,#ef4444,#dc2626);border-radius:8px;transition:width 0.2s ease;"></div>
+      </div>
+    </div>
+
     <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
       <div id="pveSkillBar">
         <!-- Dynamically filled by pve.js -->
@@ -453,6 +465,7 @@
       <button class="codex-tab" onclick="switchCodexTab('passives')" id="tabPassives" data-i18n="tab_passives">🛡️ Vật Phẩm Passive</button>
       <button class="codex-tab" onclick="switchCodexTab('evolutions')" id="tabEvolutions" data-i18n="tab_evos">🌟 Công Thức Tiến Hóa</button>
       <button class="codex-tab" onclick="switchCodexTab('bosses')" id="tabBosses" data-i18n="tab_bosses">👹 Bosses</button>
+      <button class="codex-tab" onclick="switchCodexTab('guide')" id="tabGuide" data-i18n="tab_guide">📜 Hướng Dẫn</button>
     </div>
     <div class="codex-body" id="codexBody">
       <!-- Dynamically rendered by pve.js -->

@@ -1,20 +1,21 @@
 {
-  "name": "flipfight",
+  "name": "angel-arena",
   "version": "1.0.0",
-  "description": "2D Top-Down Multiplayer Arena Web Game",
+  "description": "Angel Arena — 2D Top-Down PVE Survival Game with 21 Unique Bosses",
   "main": "main.js",
+  "author": "Angel Studio",
+  "license": "MIT",
+  "homepage": "https://github.com/angel-studio/angel-arena",
   "scripts": {
     "start": "node server.js",
-    "dev": "electron .",
-    "build-pc": "electron-packager . FlipFight --platform=win32 --arch=x64 --out=dist/ --overwrite --ignore=\"dist|\\.git|unity_.*|node_modules/electron(-.*)?\""
+    "electron": "electron .",
+    "build-win": "electron-packager . \"Angel Arena\" --platform=win32 --arch=x64 --out=dist/ --overwrite --icon=public/favicon.png --ignore=\"dist|\\.git|node_modules/electron(-.*)?|release\\.tar\\.gz|scratch/|logs/|chat-history/|qa_.*\\.js|search_.*\\.js|update_pve\\.js|ssh_command\\.js|fast-deploy\\.js|deploy\\.js|build_manually\\.js\" --app-version=1.0.0 --win32metadata.ProductName=\"Angel Arena\" --win32metadata.CompanyName=\"Angel Studio\" --win32metadata.FileDescription=\"Angel Arena PVE Game\""
   },
   "dependencies": {
     "express": "^4.19.2",
     "ssh2": "^1.17.0",
     "ws": "^8.17.0"
   },
-  "author": "Angel Studio",
-  "license": "MIT",
   "devDependencies": {
     "electron": "^42.3.0",
     "electron-packager": "^17.1.2"

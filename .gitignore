@@ -1,16 +1,38 @@
 # Node dependencies
 node_modules/
 
-# Environment configurations
+# Environment / secrets
 .env
+.env.*
 
-# Build outputs and archives
+# Build outputs
+dist/
 release.tar.gz
+*.tar.gz
 
-# System logs and temporary files
+# Logs
+logs/
 *.log
+
+# System / IDE
 .system_generated/
 .agents/
 .tempmediaStorage/
 scratch/
-dist/
+.DS_Store
+Thumbs.db
+
+# Dev-only utility scripts
+qa_*.js
+search_*.js
+update_pve.js
+ssh_command.js
+fast-deploy.js
+deploy.js
+build_manually.js
+extract_*.js
+get_logs.js
+remote_diagnostic.js
+check_server.js
+test_ws.js
+test-client.js

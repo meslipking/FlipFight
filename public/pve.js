@@ -82,6 +82,7 @@ const I18N = {
     tab_passives: "🛡️ Passives",
     tab_evos: "🧬 Evolutions",
     tab_bosses: "☠️ Bosses",
+    tab_guide: "📜 Guide",
     evo_header: "🧬 EVOLUTION PATHS",
     btn_confirm_close: "CONFIRM & CLOSE",
     powerup_sub: "Permanently upgrade basic attributes for all characters",
@@ -167,6 +168,7 @@ const I18N = {
     tab_passives: "🛡️ Hỗ Trợ",
     tab_evos: "🧬 Tiến Hóa",
     tab_bosses: "☠️ Thủ Lĩnh",
+    tab_guide: "📜 Hướng Dẫn",
     evo_header: "🧬 CÔNG THỨC TIẾN HÓA",
     btn_confirm_close: "XÁC NHẬN & ĐÓNG",
     powerup_sub: "Nâng cấp vĩnh viễn các chỉ số cơ bản cho mọi nhân vật",
@@ -194,13 +196,27 @@ const EXTRA_I18N = {
     suicide_desc: "The match will end. Are you sure?",
     suicide_btn_yes: "☠ Surrender",
     suicide_btn_no: "Continue",
-    boss_slime_king_desc: "Giant Slime King. Slow but crushes anything it touches. Summons mini slimes constantly.",
+    boss_slime_king_desc: "Giant Slime King. Slow but crushes everything it touches. Summons mini slimes constantly.",
+    boss_forest_guardian_desc: "Ancient Forest Guardian. Regenerates HP continuously and summons vine traps to block your path.",
     boss_dark_lord_desc: "Leader of the shadow army. Shoots powerful long-range magical orbs and has heavy armor protection.",
+    boss_frost_king_desc: "Ice King of Frozen Mountains. Periodically freezes the player and launches ice lances continuously.",
     boss_dragon_queen_desc: "Queen of the fire dragons. Breathes 5 extremely hot fireballs incinerating all in her path.",
+    boss_lich_supreme_desc: "Ancient Supreme Lich. Summons skeleton armies and fires purple death ray curses.",
     boss_void_titan_desc: "Ancient Titan awakened from the Void. High defense, rages at low health, stamps ground creating earthquakes.",
+    boss_fallen_demon_desc: "Fallen Demon King from the underworld. Strong lifesteal, instant teleport, enrages at low health.",
     boss_death_herald_desc: "Herald of judgment day. Moves fast, turns invisible, and constantly spawns assassin skeletons.",
+    boss_war_machine_desc: "Ancient War Machine from a lost era. Ultra-thick armor, fires machine guns and heat-seeking missiles.",
     boss_reaper_form1_desc: "Dark shadow of the Reaper appearing to signal survival time is running out.",
     boss_death_reaper_desc: "Ultimate Death Reaper appearing at 30 mins to reap your soul. Only the strongest can defeat him!",
+    boss_plague_witch_desc: "Ancient Plague Witch riding a giant cauldron. Spreads poison clouds in rings and hexes the player, rotting armor over time.",
+    boss_storm_admiral_desc: "Storm Admiral commanding a spectral warship. Calls down lightning storms and fires electrified cannonballs in all directions.",
+    boss_sand_colossus_desc: "Colossal golem made of living desert sand. Splits into 4 sand pillars when enraged, each one deadly on its own.",
+    boss_shadow_hydra_desc: "Three-headed Shadow Hydra from the deepest abyss. Each head fires independently — cut one off and it regrows stronger.",
+    boss_crystal_golem_desc: "Ancient Crystal Golem with prismatic armor. Refracts incoming spells into lasers blasting in 6 directions.",
+    boss_chaos_jester_desc: "Unhinged Chaos Jester from a broken dimension. Randomly duplicates himself and reverses player movement controls briefly.",
+    boss_abyssal_kraken_desc: "Colossal Abyssal Kraken erupting from void rifts. Spawns tentacle arms across the arena and drags the player toward its maw.",
+    boss_iron_pharaoh_desc: "Iron Pharaoh cursed into undying existence. Surrounded by rotating sarcophagus shields, fires death scarabs in waves.",
+    boss_celestial_seraph_desc: "Fallen Celestial Seraph burning with divine fire. Creates holy pyre zones that invert the arena's gravity temporarily.",
     undiscovered: "Undiscovered",
     not_unlocked: "Not unlocked",
     formula: "Formula",
@@ -220,21 +236,30 @@ const EXTRA_I18N = {
     toast_mastery_locked: "🌳 Node is locked! Unlock dependencies first.",
     toast_powerup_max: "✓ Powerup is already at max level!",
     toast_powerup_unlocked: "⚡ Upgraded {name} to LV.{level}!",
-    toast_mastery_unlocked: "🌳 Unlocked {name}!",
-    btn_buy_egg: "BUY {cost} 🪙",
-    revive_btn: "❤️ Revive ({cost} Gold)",
-    atk_label: "⚔️ Power (ATK)",
-    spd_label: "💨 Speed (SPD)",
-    hp_label: "❤️ Health",
-    regen_label: "💚 Regeneration",
-    arm_label: "🛡️ Defense (ARM)",
-    cdr_label: "⚡ Cooldown (CDR)",
-    mag_label: "🧲 Vacuum (Magnet)",
-    crit_label: "🍀 Critical (Crit)",
-    lst_label: "🩸 Lifesteal",
-    gold_label: "🪙 Gold Earned",
-    xp_label: "⭐ Level & XP",
-    pet_label: "🐾 Pet Companion",
+    item_elixir: "🍶 Elixir Flask",
+    item_elixir_desc: "Instantly restores 80 HP. Cleanse all poison and debuffs.",
+    item_ward_bell: "🔔 Guardian Bell",
+    item_ward_bell_desc: "Warns 5s before next boss attack. Gain 3s invincibility on first boss hit.",
+    item_scope_lens: "🎯 Scope Lens",
+    item_scope_lens_desc: "+20% Crit Chance and Crit Damage for 60 seconds.",
+    item_alchemy_brew: "⚗️ Alchemy Brew",
+    item_alchemy_brew_desc: "Sacrifice 25% current HP → +40% Attack Damage for 30 seconds.",
+    item_absorb_shield: "🛡️ Absorb Shield",
+    item_absorb_shield_desc: "Block the next death blow completely. One-time use barrier.",
+    item_xp_crystal: "💎 XP Crystal",
+    item_xp_crystal_desc: "Instantly gain 500 experience points.",
+    item_space_scroll: "🌀 Space Scroll",
+    item_space_scroll_desc: "Teleport safely to a random location. Leave a decoy for 2s.",
+    item_radar_map: "🗺️ Radar Map",
+    item_radar_map_desc: "Reveal the next boss position on minimap for 60 seconds.",
+    item_energy_core: "⚡ Energy Core",
+    item_energy_core_desc: "All skill cooldowns reduced by 60% for 20 seconds.",
+    item_crimson_vial: "🩸 Crimson Vial",
+    item_crimson_vial_desc: "+15% Lifesteal for 45 seconds. Each kill heals +5 HP.",
+    item_phantom_step: "👻 Phantom Step",
+    item_phantom_step_desc: "+25% Dodge Chance for 10 seconds. Next hit that would connect is evaded.",
+    item_echo_stone: "🪨 Echo Stone",
+    item_echo_stone_desc: "All skills cast again at 50% damage 1.5s after original. Lasts 30s.",
     tarot_label: "🔮 Tarot Cards",
     
     stat_up_hp_title: "+25% Max HP",
@@ -287,12 +312,26 @@ const EXTRA_I18N = {
     suicide_btn_yes: "☠ Đầu Hàng",
     suicide_btn_no: "Tiếp Tục",
     boss_slime_king_desc: "Vua Slime khổng lồ. Di chuyển chậm nhưng đè bẹp mọi thứ nó chạm vào. Triệu hồi Slime con liên tục.",
+    boss_forest_guardian_desc: "Linh thần rừng cổ đại. Hồi máu liên tục và triệu hồi bẫy dây leo cản đường của bạn.",
     boss_dark_lord_desc: "Kẻ thống lĩnh đội quân bóng tối. Bắn cầu phép ma thuật tầm xa cực mạnh và có áo giáp bảo vệ vững chắc.",
+    boss_frost_king_desc: "Vua băng tuyết núi non. Đóng băng người chơi định kỳ và phóng lao băng liên tục không ngừng nghỉ.",
     boss_dragon_queen_desc: "Nữ hoàng của loài rồng lửa. Khè ra 5 tia lửa cực nóng thiêu rụi mọi thứ cản đường.",
+    boss_lich_supreme_desc: "Thần Lich tối thượng cổ đại. Triệu hồi quân đội xương sống và bắn tia nguyền rủa màu tím.",
     boss_void_titan_desc: "Titan cổ đại thức tỉnh từ Hư vô. Sức phòng thủ cực cao, cuồng nộ khi yếu máu, giẫm đạp tạo chấn động lớn.",
+    boss_fallen_demon_desc: "Quỷ vương sa ngã từ cõi âm. Hút máu mạnh, dịch chuyển tức thời và cuồng nộ khi thấp máu.",
     boss_death_herald_desc: "Kẻ báo hiệu ngày phán xét. Di chuyển cực nhanh, tàng hình và liên tục triệu hồi xương sát thủ cản bước.",
+    boss_war_machine_desc: "Cỗ máy chiến tranh từ kỷ nguyên cổ đại. Giáp cực dày, bắn liên thanh và tên lửa nhiệt kông ngừng.",
     boss_reaper_form1_desc: "Hình bóng đen tối của Thần Chết xuất hiện báo hiệu thời gian sinh tồn sắp cạn kiệt.",
     boss_death_reaper_desc: "Tử Thần Tối Thượng xuất hiện lúc 30 phút để tước đoạt sinh mạng của bạn. Chỉ kẻ mạnh nhất mới có thể tiêu diệt được hắn!",
+    boss_plague_witch_desc: "Phù Thủy Ôn Dịch cổ đại cưỡi vạc lớn. Tung mây độc theo vòng tròn và nguyền rủa người chơi, làm mục nát giáp theo thời gian.",
+    boss_storm_admiral_desc: "Đô Đốc Phong Bão chỉ huy chiến hạm ma. Triệu hồi sét đánh liên hoàn và bắn đạn pháo điện về mọi hướng.",
+    boss_sand_colossus_desc: "Khổng Lồ Cát Sống khổng lồ. Khi cuồng nộ tách thành 4 cột cát riêng biệt, mỗi cột đều chết chóc.",
+    boss_shadow_hydra_desc: "Thủy Quái Bóng Tối ba đầu từ vực thẳm. Mỗi đầu bắn độc lập — chặt một đầu nó mọc lại mạnh hơn.",
+    boss_crystal_golem_desc: "Golem Pha Lê cổ đại với giáp lăng kính. Phản chiếu phép thuật thành tia laser bắn theo 6 hướng.",
+    boss_chaos_jester_desc: "Thằng Hề Hỗn Loạn điên rồ từ chiều không gian vỡ. Nhân bản liên tục và đảo ngược hướng di chuyển của người chơi.",
+    boss_abyssal_kraken_desc: "Bạch Tuộc Vực Thẳm khổng lồ trỗi dậy. Mọc xúc tu khắp đấu trường và kéo người chơi về phía mình.",
+    boss_iron_pharaoh_desc: "Pharaoh Sắt bị nguyền rủa bất diệt. Xoay chuyển khiên quan tài bảo vệ và bắn bọ hung chết chóc theo làn sóng.",
+    boss_celestial_seraph_desc: "Thiên Sứ Sa Ngã rực cháy với lửa thiêng. Tạo vùng hỏa ngục đảo ngược trọng lực đấu trường tạm thời.",
     undiscovered: "Chưa khám phá",
     not_unlocked: "Chưa mở khóa",
     formula: "Công thức",
@@ -312,7 +351,30 @@ const EXTRA_I18N = {
     toast_mastery_locked: "🌳 Nhánh này đang khóa! Hãy mở khóa các nút trước đó.",
     toast_powerup_max: "✓ Nâng cấp đã đạt cấp tối đa!",
     toast_powerup_unlocked: "⚡ Đã nâng cấp {name} lên LV.{level}!",
-    toast_mastery_unlocked: "🌳 Đã mở khóa {name}!",
+    item_elixir: "🍶 Linh Dược Hồi Phục",
+    item_elixir_desc: "Hồi phục ngay lập tức 80 HP. Giải hết độc và mọi trạng thái âm.",
+    item_ward_bell: "🔔 Chuông Cảnh Vệ",
+    item_ward_bell_desc: "Cảnh báo 5 giây trước khi boss tấn công. Nhận 3 giây bất khả xâm phạm khi boss đánh lần đầu.",
+    item_scope_lens: "🎯 Kính Ngắm Tinh Tế",
+    item_scope_lens_desc: "+20% Tỷ lệ và Nhân chí mạng trong 60 giây.",
+    item_alchemy_brew: "⚗️ Thuốc Luyện Kim",
+    item_alchemy_brew_desc: "Hy sinh 25% HP hiện tại → +40% Sát thương trong 30 giây.",
+    item_absorb_shield: "🛡️ Khiên Hấp Thụ",
+    item_absorb_shield_desc: "Hủy hoàn toàn 1 đòn có thể giết chết bạn. Kích hoạt một lần.",
+    item_xp_crystal: "💎 Tinh Thể Kinh Nghiệm",
+    item_xp_crystal_desc: "Nhận ngay lập tức 500 điểm kinh nghiệm.",
+    item_space_scroll: "🌀 Cuộn Không Gian",
+    item_space_scroll_desc: "Dịch chuyển an toàn đến vị trí ngẫu nhiên. Để lại mồi bẫy 2 giây.",
+    item_radar_map: "🗺️ Bản Đồ Radar",
+    item_radar_map_desc: "Tiết lộ vị trí boss tiếp theo trên minimap trong 60 giây.",
+    item_energy_core: "⚡ Lõi Năng Lượng",
+    item_energy_core_desc: "Giảm 60% thời gian hồi chiêu tất cả kỹ năng trong 20 giây.",
+    item_crimson_vial: "🩸 Lọ Máu Đỏ Thắm",
+    item_crimson_vial_desc: "+15% Hút máu trong 45 giây. Mỗi lần giết quái hồi +5 HP.",
+    item_phantom_step: "👻 Bước Ảo Ảnh",
+    item_phantom_step_desc: "+25% Xác Suất Né Tránh trong 10 giây. Đòn tiếp theo có thể bị né.",
+    item_echo_stone: "🪨 Đá Vang Vọng",
+    item_echo_stone_desc: "Mọi kỹ năng sẽ được kích hoạt lại với 50% sát thương sau 1.5 giây. Kéo dài 30 giây.",
     btn_buy_egg: "MUA {cost} 🪙",
     revive_btn: "❤️ Hồi Sinh ({cost} Vàng)",
     atk_label: "⚔️ Sức Mạnh (ATK)",
@@ -494,7 +556,29 @@ const SKILLS_I18N = {
     gale_tempest: { name: "Gale Tempest 🌪️", desc: "Ultimate combination of Piercing Arrow, Arrow Rain, Windstorm, Spirit Wolf. Summon a storm pulling and tearing all enemies apart." },
     divine_sanctuary: { name: "Divine Sanctuary 🏛️", desc: "Ultimate combination of Holy Light, Aegis, Consecration, Judgment. Divine cathedral zone rendering you immune to damage." },
     lich_army: { name: "Lich Army ☠️", desc: "Ultimate combination of Skeleton, Death Grasp, Soul Drain, Abyss. Summon a skeleton army and a giant Lich Lord." },
-    origin_spirit: { name: "Origin Spirit 🌳", desc: "Ultimate combination of Briar Patch, Forest Heal, Vine Whip, Wrath. Merge with the ancient forest spirit, dealing high poison over map." }
+    origin_spirit: { name: "Origin Spirit 🌳", desc: "Ultimate combination of Briar Patch, Forest Heal, Vine Whip, Wrath. Merge with the ancient forest spirit, dealing high poison over map." },
+    // Common skills
+    shockwave: { name: "Shockwave", desc: "Emit a circular shockwave that pushes and damages all nearby enemies." },
+    lifeleech: { name: "Life Leech", desc: "Fire a life-draining beam at the nearest enemy; recover 30% of damage dealt as HP." },
+    aura_bolt: { name: "Aura Bolt", desc: "Fire 4 energy bolts in 4 directions, each piercing through enemies." },
+    explosive_rush: { name: "Explosive Rush", desc: "Dash into the nearest enemy causing a large AoE explosion and 1s stun." },
+    chain_lightning: { name: "Chain Lightning", desc: "Lightning bolt jumps through up to 5 enemies, reducing damage by 20% each jump." },
+    gravity_well: { name: "Gravity Well", desc: "Create a vortex pulling all enemies inward dealing sustained damage for 3 seconds." },
+    mirror_blade: { name: "Mirror Blade", desc: "Launch a blade that ricochets off arena walls up to 4 times, each bounce dealing 15% less damage." },
+    soul_burst: { name: "Soul Burst", desc: "Release soul energy nova damaging all nearby enemies and restoring HP for each target hit." },
+    time_warp: { name: "Time Warp", desc: "Create a temporal field slowing all enemies by 60% for 3 seconds." },
+    echo_strike: { name: "Echo Strike", desc: "Strike nearest enemy then auto-chain to 3 adjacent targets with decreasing damage." },
+    // Evolved common skills
+    seismic_pulse:  { name: "Seismic Pulse", desc: "Evolved Shockwave + Fracture Core: Massive ground rupture leaving 3 damage zones and causes bleed." },
+    crimson_nova:   { name: "Crimson Nova", desc: "Evolved Life Leech + Blood Prism: AoE life-drain field around player, heals for all damage dealt." },
+    stellar_barrage:{ name: "Stellar Barrage", desc: "Evolved Aura Bolt + Radiant Lens: 8 homing energy bolts that pierce and track enemies." },
+    meteor_slam:    { name: "Meteor Slam", desc: "Evolved Explosive Rush + Impact Core: Massive dash explosion with 3 aftershock waves." },
+    storm_surge:    { name: "Storm Surge", desc: "Evolved Chain Lightning + Storm Coil: Lightning storm that strikes all visible enemies simultaneously." },
+    black_hole:     { name: "Black Hole", desc: "Evolved Gravity Well + Singularity: Massive vortex that pulls and crushes all enemies, slowing time briefly." },
+    phantom_edge:   { name: "Phantom Edge", desc: "Evolved Mirror Blade + Void Edge: 3 infinite-bouncing ghost blades that phase through walls." },
+    soul_tempest:   { name: "Soul Tempest", desc: "Evolved Soul Burst + Spirit Vessel: Soul energy tornado that orbits player dealing massive damage and healing." },
+    time_fracture:  { name: "Time Fracture", desc: "Evolved Time Warp + Chrono Shard: Full time stop for 2.5 seconds and rewind enemies to spawn position." },
+    chorus_strike:  { name: "Chorus Strike", desc: "Evolved Echo Strike + Resonance: Simultaneous strike on ALL visible enemies at once with full damage."}  
   },
   vi: {
     shadow_blades: { name: "Lưỡi Bóng Tối", desc: "Dao găm bóng tối quay quanh người càn quét kẻ địch gần." },
@@ -531,7 +615,29 @@ const SKILLS_I18N = {
     gale_tempest: { name: "Bão Tố Tối Thượng 🌪️", desc: "Siêu tiến hóa từ Mũi Tên Xuyên, Mưa Tên, Bão Tên Lốc, Sói Linh Hồn. Cơn lốc cuồng phong xé nát kẻ địch." },
     divine_sanctuary: { name: "Thành Trì Thánh Điện 🏛️", desc: "Siêu tiến hóa từ Thánh Quang, Khiên Thánh, Đất Thánh, Ngày Phán Xét. Khu vực thánh điện miễn nhiễm mọi sát thương." },
     lich_army: { name: "Đại Quân Lich ☠️", desc: "Siêu tiến hóa từ Triệu Hồi Xương, Bàn Tay Tử Thần, Hút Linh Hồn, Chúa Tể Vực Sâu. Quân đoàn xương bất tử càn quét tất cả." },
-    origin_spirit: { name: "Linh Hồn Khởi Nguyên 🌳", desc: "Siêu tiến hóa từ Bụi Gai, Hồi Sinh Rừng, Roi Dây Leo, Phẫn Nộ Rừng. Hóa thân thần rừng tối cổ độc hóa toàn bản đồ." }
+    origin_spirit: { name: "Linh Hồn Khởi Nguyên 🌳", desc: "Siêu tiến hóa từ Bụi Gai, Hồi Sinh Rừng, Roi Dây Leo, Phẫn Nộ Rừng. Hóa thân thần rừng tối cổ độc hóa toàn bản đồ." },
+    // Kỹ năng chung
+    shockwave: { name: "Sóng Xung Kích", desc: "Phát ra sóng chấn động tròn đẩy lùi và gây sát thương mọi kẻ địch xung quanh." },
+    lifeleech: { name: "Hút Sinh Lực", desc: "Phóng tia hút máu vào kẻ địch gần nhất, hồi lại 30% sát thương gây ra thành HP." },
+    aura_bolt: { name: "Tia Hào Quang", desc: "Bắn 4 tia năng lượng ra 4 hướng xuyên thấu kẻ địch." },
+    explosive_rush: { name: "Xung Kích Nổ", desc: "Lao vào kẻ địch gần nhất, gây nổ AoE lớn và choáng 1 giây." },
+    chain_lightning: { name: "Sét Dây Xích", desc: "Tia sét nhảy qua tối đa 5 kẻ địch, mỗi lần giảm 20% sát thương." },
+    gravity_well: { name: "Hố Hấp Dẫn", desc: "Tạo hố hấp dẫn kéo mọi kẻ địch về trung tâm gây sát thương liên tục trong 3 giây." },
+    mirror_blade: { name: "Lưỡi Giao Thủ", desc: "Phóng lưỡi dao nảy tường 4 lần, mỗi lần giảm 15% sát thương." },
+    soul_burst: { name: "Vụ Nổ Linh Hồn", desc: "Giải phóng linh hồn năng lượng gây sát thương xung quanh và hồi máu tương ứng." },
+    time_warp: { name: "Lệch Phá Thời Gian", desc: "Tạo trường thời gian làm chậm 60% tất cả kẻ địch trong 3 giây." },
+    echo_strike: { name: "Chuỗi Chuông Vọ", desc: "Tấn công mục tiêu gần nhất sau đó lan sang 3 kẻ địch liên kế tự động." },
+    // Kỹ năng tiến hóa common
+    seismic_pulse:  { name: "Xung Địa Chấn", desc: "Tiến hóa từ Sóng Xung Kích + Lõi Nứt Vỡ: Nứt đất cực lớn để lại 3 vùng sát thương và gây chảy máu." },
+    crimson_nova:   { name: "Nova Thẫm Đỏ", desc: "Tiến hóa từ Hút Sinh Lực + Lăng Kính Máu: Vùng hút máu AoE quanh nhân vật, hồi toàn bộ sát thương gây ra." },
+    stellar_barrage:{ name: "Tràng Pháo Sao", desc: "Tiến hóa từ Tia Hào Quang + Thấu Kính: 8 tia năng lượng tự tìm mục tiêu xuyên thấu kẻ địch." },
+    meteor_slam:    { name: "Đập Thiên Thạch", desc: "Tiến hóa từ Xung Kích Nổ + Lõi Va Chạm: Lao vào gây nổ cực lớn với 3 đợt sóng dư chấn." },
+    storm_surge:    { name: "Sóng Thần Sấm", desc: "Tiến hóa từ Sét Dây Xích + Cuộn Sấm: Bão sét tấn công tất cả kẻ địch trên màn hình cùng lúc." },
+    black_hole:     { name: "Hố Đen Vũ Trụ", desc: "Tiến hóa từ Hố Hấp Dẫn + Kỳ Điểm Dị: Lỗ hổng vũ trụ kéo và nghiền nát tất cả kẻ địch." },
+    phantom_edge:   { name: "Lưỡi Hồn Ảo", desc: "Tiến hóa từ Lưỡi Giao Thủ + Lưỡi Hư Vô: 3 lưỡi ma nảy tường vô hạn xuyên tường." },
+    soul_tempest:   { name: "Bão Linh Hồn", desc: "Tiến hóa từ Vụ Nổ Linh Hồn + Bình Linh Hồn: Lốc xoáy linh hồn quay quanh nhân vật hồi máu liên tục." },
+    time_fracture:  { name: "Vỡ Thời Gian", desc: "Tiến hóa từ Lệch Phá Thời Gian + Mảnh Thời Gian: Dừng hoàn toàn thời gian 2.5 giây, kẻ địch bị đẩy lùi." },
+    chorus_strike:  { name: "Đồng Thanh Tấn Công", desc: "Tiến hóa từ Chuỗi Chuông Vọ + Âm Hưởng: Tấn công tất cả kẻ địch trên màn hình cùng lúc với sát thương đầy đủ." }
   }
 };
 
@@ -725,40 +831,57 @@ const STAGE_MAX_WAVE = { 1: 30, 2: 30, 3: 30 }; // 30 wave (1 wave/phút)
 // Phút 28 = boss cực khó báo hiệu cuối game
 // Phút 30 = TỬ THẦN xuất hiện — giết ngay hoặc chết!
 const BOSS_SCHEDULE = {
-  // Stage 1: cơ bản nhất
+  // Stage 1: đầy đủ bộ boss mới
   1: [
-    { t: 300,  b: 'boss_slime_king'   },  // phút 5
-    { t: 600,  b: 'boss_dark_lord'    },  // phút 10
-    { t: 900,  b: 'boss_dragon_queen' },  // phút 15
-    { t: 1200, b: 'boss_void_titan'   },  // phút 20
-    { t: 1500, b: 'boss_death_herald' },  // phút 25 — thám tử tử thần
-    { t: 1680, b: 'boss_reaper_form1' },  // phút 28 — cảnh báo DEATH đến gần
-    { t: 1800, b: 'boss_death_reaper' },  // phút 30 — TỬ THẦN (cực kỳ khó)
+    { t: 300,  b: 'boss_slime_king'      },  // phút 5
+    { t: 420,  b: 'boss_forest_guardian' },  // phút 7
+    { t: 600,  b: 'boss_dark_lord'       },  // phút 10
+    { t: 720,  b: 'boss_frost_king'      },  // phút 12
+    { t: 900,  b: 'boss_dragon_queen'    },  // phút 15
+    { t: 1020, b: 'boss_lich_supreme'    },  // phút 17
+    { t: 1200, b: 'boss_void_titan'      },  // phút 20
+    { t: 1320, b: 'boss_fallen_demon'    },  // phút 22
+    { t: 1500, b: 'boss_death_herald'    },  // phút 25
+    { t: 1620, b: 'boss_war_machine'     },  // phút 27
+    { t: 1680, b: 'boss_reaper_form1'    },  // phút 28
+    { t: 1800, b: 'boss_death_reaper'    },  // phút 30
   ],
-  // Stage 2: khó hơn, boss xuất hiện sớm hơn
+  // Stage 2: boss xuất hiện sớm hơn + boss riêng Stage 2
   2: [
-    { t: 240,  b: 'boss_slime_king'   },  // phút 4
-    { t: 480,  b: 'boss_dark_lord'    },  // phút 8
-    { t: 720,  b: 'boss_dragon_queen' },  // phút 12
-    { t: 960,  b: 'boss_void_titan'   },  // phút 16
-    { t: 1200, b: 'boss_void_titan'   },  // phút 20 — lần 2
-    { t: 1440, b: 'boss_death_herald' },  // phút 24
-    { t: 1680, b: 'boss_reaper_form1' },  // phút 28
-    { t: 1800, b: 'boss_death_reaper' },  // phút 30
+    { t: 240,  b: 'boss_plague_witch'    },  // phút 4  — Ph Thủy Ôn Dịch
+    { t: 360,  b: 'boss_slime_king'      },  // phút 6  — Vua Slime
+    { t: 480,  b: 'boss_storm_admiral'   },  // phút 8  — Đô Đốc Phong Bão
+    { t: 600,  b: 'boss_forest_guardian' },  // phút 10 — Linh Thần Đại Mộc
+    { t: 720,  b: 'boss_sand_colossus'   },  // phút 12 — Khổng Lồ Cát
+    { t: 840,  b: 'boss_dark_lord'       },  // phút 14 — Lãnh Chúa Bóng Đêm
+    { t: 960,  b: 'boss_shadow_hydra'    },  // phút 16 — Thủy Quái Bóng Tối
+    { t: 1080, b: 'boss_frost_king'      },  // phút 18 — Băng Vương
+    { t: 1200, b: 'boss_crystal_golem'   },  // phút 20 — Golem Pha Lê
+    { t: 1320, b: 'boss_dragon_queen'    },  // phút 22 — Nữ Hoàng Rồng
+    { t: 1440, b: 'boss_death_herald'    },  // phút 24 — Tiên Phong Tử Thần
+    { t: 1560, b: 'boss_war_machine'     },  // phút 26 — Cỗ Máy Chiến Tranh
+    { t: 1680, b: 'boss_reaper_form1'    },  // phút 28 — Tử Thần Thức Dậy
+    { t: 1800, b: 'boss_death_reaper'    },  // phút 30 — Tử Thần Bất Tử
   ],
-  // Stage 3: khó nhất
+  // Stage 3: khó nhất — bosses từ phút 3, dùng boss đặc biệt Stage 3
   3: [
-    { t: 180,  b: 'boss_slime_king'   },  // phút 3
-    { t: 360,  b: 'boss_dark_lord'    },  // phút 6
-    { t: 540,  b: 'boss_dragon_queen' },  // phút 9
-    { t: 720,  b: 'boss_void_titan'   },  // phút 12
-    { t: 900,  b: 'boss_death_herald' },  // phút 15
-    { t: 1080, b: 'boss_void_titan'   },  // phút 18 — Titan lần 2
-    { t: 1260, b: 'boss_death_herald' },  // phút 21 — Herald lần 2
-    { t: 1440, b: 'boss_reaper_form1' },  // phút 24 — cảnh báo
-    { t: 1620, b: 'boss_reaper_form1' },  // phút 27 — cảnh báo 2
-    { t: 1800, b: 'boss_death_reaper' },  // phút 30
+    { t: 180,  b: 'boss_plague_witch'    },  // phút 3  — Ph Thủy Ôn Dịch
+    { t: 300,  b: 'boss_chaos_jester'    },  // phút 5  — Thằng Hề Hỗn Loạn
+    { t: 420,  b: 'boss_storm_admiral'   },  // phút 7  — Đô Đốc Phong Bão
+    { t: 540,  b: 'boss_abyssal_kraken'  },  // phút 9  — Bạch Tuộc Vực Thẳm
+    { t: 660,  b: 'boss_sand_colossus'   },  // phút 11 — Khổng Lồ Cát
+    { t: 780,  b: 'boss_dark_lord'       },  // phút 13 — Lãnh Chúa Bóng Đêm
+    { t: 900,  b: 'boss_iron_pharaoh'    },  // phút 15 — Pharaoh Sắt
+    { t: 1020, b: 'boss_shadow_hydra'    },  // phút 17 — Thủy Quái Bóng Tối
+    { t: 1140, b: 'boss_void_titan'      },  // phút 19 — Titan Hư Không
+    { t: 1260, b: 'boss_crystal_golem'   },  // phút 21 — Golem Pha Lê
+    { t: 1380, b: 'boss_celestial_seraph'},  // phút 23 — Thiên Sứ Sa Ngã
+    { t: 1500, b: 'boss_lich_supreme'    },  // phút 25 — Thần Lich
+    { t: 1620, b: 'boss_fallen_demon'    },  // phút 27 — Quỷ Vương
+    { t: 1740, b: 'boss_reaper_form1'    },  // phút 29 — Tử Thần Thức Dậy
+    { t: 1800, b: 'boss_death_reaper'    },  // phút 30 — Tử Thần Bất Tử
   ],
+
 };
 
 // ─── WAVE SCALING theo 30 phút ───────────────────────────────
@@ -939,7 +1062,32 @@ const SKILL_DEFS = {
   grim_reaper:       { name:'Thần Chết',        icon:'☠️',  branch:'necromancer', color:'#94a3b8', cd:5.0,  dmg:250, isLegendary:true, desc:'Triệu hồi Thần Chết khổng lồ cầm lưỡi hái chém quét vòng tròn cực mạnh.' },
   glacial_sanctum:   { name:'Thánh Điện Băng',   icon:'❄️',  branch:'mage',        color:'#93c5fd', cd:3.0,  dmg:120, isLegendary:true, desc:'Bão tuyết thánh điện đóng băng quái và hồi phục 5% HP mỗi giây.' },
   archangel_light:   { name:'Hào Quang Thiên Sứ',icon:'👼',  branch:'paladin',     color:'#fde68a', cd:3.0,  dmg:180, isLegendary:true, desc:'Tia sáng quét liên tục, tặng Perk hồi máu khi tung chiêu (Không tiêu thụ Passive item).' },
-  void_demon:        { name:'Hóa Quỷ Hư Vô',     icon:'😈',  branch:'assassin',    color:'#6d28d9', cd:10.0, dmg:260, isLegendary:true, desc:'Biến hình thành Quỷ Vương khổng lồ chém càn quét 360 độ chí mạng.' }
+  void_demon:        { name:'Hóa Quỷ Hư Vô',     icon:'😈',  branch:'assassin',    color:'#6d28d9', cd:10.0, dmg:260, isLegendary:true, desc:'Biến hình thành Quỷ Vương khổng lồ chém càn quét 360 độ chí mạng.' },
+
+  // ─── COMMON SKILLS — Available to ALL classes ─────────────────
+  // These appear in the level-up pool regardless of class branch.
+  shockwave:      { name:'Sóng Xung Kích',  icon:'💢',  branch:'common', color:'#f97316', cd:4.0,  dmg:55,  desc:'Phát ra sóng chấn động tròn đẩy lùi và gây sát thương mọi kẻ địch xung quanh.' },
+  lifeleech:      { name:'Hút Sinh Lực',    icon:'🩸',  branch:'common', color:'#ef4444', cd:3.5,  dmg:30,  desc:'Phóng tia hút máu vào kẻ địch gần nhất, hồi lại 30% sát thương gây ra thành HP.' },
+  aura_bolt:      { name:'Tia Hào Quang',   icon:'✨',  branch:'common', color:'#fde047', cd:1.8,  dmg:35,  desc:'Bắn 4 tia năng lượng ra 4 hướng xuyên thấu kẻ địch.' },
+  explosive_rush: { name:'Xung Kích Nổ',    icon:'💥',  branch:'common', color:'#fb923c', cd:6.0,  dmg:80,  desc:'Lao vào kẻ địch gần nhất, gây nổ AoE lớn và choáng 1 giây.' },
+  chain_lightning:{ name:'Sét Dây Xích',    icon:'⚡',  branch:'common', color:'#facc15', cd:3.0,  dmg:42,  desc:'Tia sét nhảy qua tối đa 5 kẻ địch, mỗi lần giảm 20% sát thương.' },
+  // ─── COMMON SKILLS BATCH 2 (not in Vampire Survivors) ──────────
+  gravity_well:   { name:'Hố Hấp Dẫn',     icon:'🌀', branch:'common', color:'#818cf8', cd:5.0,  dmg:50,  desc:'Tạo hố hấp dẫn kéo mọi kẻ địch về trung tâm và gây sát thương liên tục 3 giây.' },
+  mirror_blade:   { name:'Lưỡi Giao Thủ',   icon:'🗡️', branch:'common', color:'#38bdf8', cd:4.5,  dmg:58,  desc:'Phóng lưỡi dao nảy tường 4 lần, mỗi lần giảm 15% sát thương.' },
+  soul_burst:     { name:'Vụ Nổ Linh Hồn', icon:'👻', branch:'common', color:'#e879f9', cd:6.0,  dmg:70,  desc:'Giải phóng linh hồn năng lượng tạo vành đai gây sát thương và hồi máu theo kẻ địch trúng.' },
+  time_warp:      { name:'Lệch Phá Thời Gian',icon:'⏰', branch:'common', color:'#a78bfa', cd:8.0,  dmg:0,   desc:'Tạo trường thời gian làm chậm 60% tất cả kẻ địch trong 3 giây.' },
+  echo_strike:    { name:'Chuỗi Chuông Vọ',  icon:'📢', branch:'common', color:'#fb7185', cd:3.5,  dmg:45,  desc:'Tấn công mục tiêu gần nhất, sau đó tự động lan tới 3 kẻ địch liên kế.' },
+  // ─── EVOLVED COMMON SKILLS (common + common passive → evolved) ─────
+  seismic_pulse:  { name:'Xung Địa Chấn',  icon:'🗣️', branch:'common', color:'#f97316', cd:5.0,  dmg:130, isLegendary:true, desc:'Sóng chấn cực lớn để lại 3 vùng sát thương và gây chảy máu 5%/s trong 4s.' },
+  crimson_nova:   { name:'Nova Thẫm Đỏ',   icon:'🖤', branch:'common', color:'#ef4444', cd:5.5,  dmg:100, isLegendary:true, desc:'Vùng hút máu AoE quanh nhân vật bán kính 180px, hồi 80% sát thương gây ra thành HP.' },
+  stellar_barrage:{ name:'Tràng Pháo Sao', icon:'🌟', branch:'common', color:'#fde047', cd:2.0,  dmg:90,  isLegendary:true, desc:'8 tia năng lượng tự tìm mục tiêu xuyên thấu, toa sang kẻ địch kế tiếp.' },
+  meteor_slam:    { name:'Đập Thiên Thạch', icon:'💥', branch:'common', color:'#fb923c', cd:7.0,  dmg:200, isLegendary:true, desc:'Lao vào gây nổ cực lớn, 3 đợt sóng dư chấn bán kính tăng dần.' },
+  storm_surge:    { name:'Bão Thần Sấm',  icon:'⛈️', branch:'common', color:'#facc15', cd:6.0,  dmg:100, isLegendary:true, desc:'Tia sét tấn công tất cả kẻ địch trên màn hình cùng lúc, xác suất chóang 30%.' },
+  black_hole:     { name:'Hố Đen Vũ Trụ', icon:'▫️', branch:'common', color:'#818cf8', cd:10.0, dmg:140, isLegendary:true, desc:'Lỗ hổng vũ trụ kéo mọi kẻ địch vào tâm 3s, càng gần càng đau, làm chậm thời gian 40%.' },
+  phantom_edge:   { name:'Lưỡi Hồn Ảo',  icon:'🗡️', branch:'common', color:'#38bdf8', cd:6.0,  dmg:80,  isLegendary:true, desc:'3 lưỡi ma nảy tường vô hạn trong 4s, xuyên thấu các kẻ địch vô hạn lần.' },
+  soul_tempest:   { name:'Bão Linh Hồn',  icon:'👻', branch:'common', color:'#e879f9', cd:9.0,  dmg:90,  isLegendary:true, desc:'Lốc xoáy linh hồn quay quanh nhân vật trong 5s, hồi 2HP/s, xuyên thấu tất cả.' },
+  time_fracture:  { name:'Vỡ Thời Gian',   icon:'⏳', branch:'common', color:'#a78bfa', cd:14.0, dmg:75,  isLegendary:true, desc:'Dừng hoàn toàn thời gian 2s, kẻ địch bị đẩy lùi và nhận sát thương khi thời gian hồi phục.' },
+  chorus_strike:  { name:'Đồng Thanh Tấn Công',icon:'🌊', branch:'common', color:'#fb7185', cd:7.0,  dmg:80,  isLegendary:true, desc:'Tấn công tất cả kẻ địch trên màn hình cùng lúc với sát thương vừa phải.' }
 };
 
 // ─── PASSIVE ITEMS DEFINITIONS ────────────────────────────────
@@ -952,7 +1100,18 @@ const PASSIVE_ITEMS_DEFS = {
   empty_tome:    { name: 'Sách Rỗng (Empty Tome)',     icon: '📖', desc: 'Giảm 6% thời gian hồi chiêu mỗi cấp.', maxLevel: 5 },
   clover:        { name: 'Cỏ 4 Lá (Clover)',           icon: '🍀', desc: 'Tăng 6% tỷ lệ chí mạng mỗi cấp.', maxLevel: 5 },
   wings:         { name: 'Đôi Cánh (Wings)',           icon: '🪶', desc: 'Tăng 8% tốc độ di chuyển mỗi cấp.', maxLevel: 5 },
-  crown:         { name: 'Vương Miện (Crown)',         icon: '👑', desc: 'Tăng 20% lượng XP nhận được mỗi cấp.', maxLevel: 5 }
+  crown:         { name: 'Vương Miện (Crown)',         icon: '👑', desc: 'Tăng 20% lượng XP nhận được mỗi cấp.', maxLevel: 5 },
+  // ─── COMMON PASSIVES (pair with common skills for EVO) ──────────
+  fracture_core:  { name: 'Lõi Nứt Vỡ',        icon: '💥', desc: '+20% phạm vi sóng chấn và gây chảy máu 3% mỗi cấp.', maxLevel: 5, isCommon: true },
+  blood_prism:    { name: 'Lăng Kính Máu',      icon: '🔮', desc: '+15% tầm hút sinh lực và +6% lifesteal mỗi cấp.', maxLevel: 5, isCommon: true },
+  radiant_lens:   { name: 'Thấu Kính Hào Quang', icon: '🔭', desc: '+1 tia Aura Bolt và +10% sát thương xuyên thấu mỗi cấp.', maxLevel: 5, isCommon: true },
+  impact_core:    { name: 'Lõi Va Chạm',         icon: '🌪️', desc: '+20% sát thương Xung Kích Nổ và +0.5s choáng mỗi cấp.', maxLevel: 5, isCommon: true },
+  storm_coil:     { name: 'Cuộn Sấm',            icon: '🌩️', desc: '+1 mục tiêu sét và +10% sát thương Sết Dây Xích mỗi cấp.', maxLevel: 5, isCommon: true },
+  singularity:    { name: 'Kỳ Điểm Dị',          icon: '⚫', desc: '+25% lực kéo Hố Hấp Dẫn và +10% sát thương theo thời gian mỗi cấp.', maxLevel: 5, isCommon: true },
+  void_edge:      { name: 'Lưỡi Hư Vô',          icon: '⚔️', desc: '+1 lần nảy và +8% sát thương Lưỡi Giao Thủ mỗi cấp.', maxLevel: 5, isCommon: true },
+  spirit_vessel:  { name: 'Linh Hồn Bình',      icon: '🏺', desc: '+20% sát thương Vụ Nổ Linh Hồn và +8HP/kẻ dịch mỗi cấp.', maxLevel: 5, isCommon: true },
+  chrono_shard:   { name: 'Mảnh Thời Gian',      icon: '⏳', desc: '+0.5s Lệch Phá Thời Gian và +15% phạm vi trường mỗi cấp.', maxLevel: 5, isCommon: true },
+  resonance:      { name: 'Âm Hưởng',              icon: '🔔', desc: '+1 mục tiêu lan Chuỗi Chuông Vọ và +10% sát thương mỗi cấp.', maxLevel: 5, isCommon: true }
 };
 
 // Legendary combos: which base skills + what legendary they unlock
@@ -1107,32 +1266,104 @@ const ENEMY_TYPES = {
   hellhound:    { name:'Chó Địa Ngục', emoji:'🔥', hp:300,  dmg:50,  speed:165, radius:22, wave:19, xp:25, gold:12, color:'#dc2626', _charge:true, enrage:0.4 },
   void_crawler: { name:'Bò Hư Không',  emoji:'🌑', hp:900,  dmg:70,  speed:90,  radius:30, wave:20, xp:40, gold:18, color:'#312e81', _teleport:true },
   // ─── BOSSES (theo BOSS_SCHEDULE, HP rất nhiều để thách thức) ──────────
-  // Phút 5 — Boss 1: vừa đủ thách thức
+  // Phút 5 — Boss 1: Vua Slime — chậm, to, triệu hồi slime con
   boss_slime_king:  { name:'Vua Slime Khổng Lồ', emoji:'👑', hp:4000,   dmg:55,  speed:80,  radius:52, wave:5,  xp:80,  gold:60,  color:'#4ade80', isBoss:true,
                       _phases:[{ hpPct:0.6, rage:true }, { hpPct:0.3, speed:110 }] },
-  // Phút 10 — Boss 2: nguy hiểm hơn nhiều
+  // Phút 7 — Boss 2: Linh Hồn Thần Rừng — hồi máu, triệu hồi dây leo
+  boss_forest_guardian: { name:'Linh Thần Đại Mộc', emoji:'🌳', hp:6500,  dmg:65,  speed:60,  radius:60, wave:7, xp:110, gold:90, color:'#86efac', isBoss:true,
+                      summons:true, _heal:true, _healRate:80,
+                      _phases:[{ hpPct:0.55, speed:90, _poisonCloud:true }],
+                      _desc:'Linh hồn thần rừng cổ đại. Hồi máu liên tục, triệu hồi dây leo cản đường.' },
+  // Phút 10 — Boss 3: Lãnh Chúa Bóng Đêm — bắn phép tầm xa, triệu hồi
   boss_dark_lord:   { name:'Lãnh Chúa Bóng Đêm',  emoji:'🌑', hp:9000,   dmg:85,  speed:100, radius:54, wave:10, xp:150, gold:120, color:'#818cf8', isBoss:true, ranged:true, range:420,
                       summons:true, _phases:[{ hpPct:0.5, speed:120 }] },
-  // Phút 15 — Boss 3: phun lửa, nhanh
+  // Phút 12 — Boss 4: Băng Vương — đóng băng theo vùng, phóng lao băng
+  boss_frost_king: { name:'Băng Vương Tuyết Sơn', emoji:'🧊', hp:14000, dmg:90,  speed:75,  radius:58, wave:12, xp:170, gold:150, color:'#7dd3fc', isBoss:true,
+                      ranged:true, range:350, _freeze:true,
+                      _phases:[{ hpPct:0.6, _blizzardAura:true }, { hpPct:0.3, speed:110, range:450 }],
+                      _desc:'Vua của tuyết và băng. Đóng băng người chơi định kỳ và phóng lao băng liên tục.' },
+  // Phút 15 — Boss 5: Nữ Hoàng Rồng — phun lửa, tăng tốc
   boss_dragon_queen:{ name:'Rồng Nữ Hoàng',        emoji:'🐉', hp:20000,  dmg:110, speed:115, radius:66, wave:15, xp:200, gold:200, color:'#f97316', isBoss:true, fireBreath:true,
                       _phases:[{ hpPct:0.5, speed:140, rage:true }] },
-  // Phút 20 — Boss 4: cực mạnh
+  // Phút 17 — Boss 6: Lich Tối Thượng — triệu hồi xương, bắn tia tử thần
+  boss_lich_supreme: { name:'Thần Lich Tối Thượng', emoji:'💀', hp:26000, dmg:105, speed:85,  radius:56, wave:17, xp:240, gold:220, color:'#64748b', isBoss:true,
+                       ranged:true, range:480, summons:true, _undead:true,
+                       _phases:[{ hpPct:0.5, _deathAura:true, summons:true }, { hpPct:0.25, speed:105, enrage:true }],
+                       _desc:'Thần Lich cổ đại triệu hồi quân đội xương sống và bắn tia nguyền rủa màu tím.' },
+  // Phút 20 — Boss 7: Titan Hư Không — giáp cao, cuồng nộ, ground slam
   boss_void_titan:  { name:'Titan Hư Không Vô Cực', emoji:'🌌', hp:50000,  dmg:140, speed:70,  radius:78, wave:20, xp:350, gold:400, color:'#7c3aed', isBoss:true,
                       _phases:[{ hpPct:0.65, enrage:true }, { hpPct:0.35, speed:100 }, { hpPct:0.15, speed:130 }] },
-  // Phút 25 — Tiên phong Tử Thần: nhanh, tàng hình, triệu hồi
-  boss_death_herald:{ name:'Tiên Phong Tử Thần',   emoji:'🕰️', hp:30000,  dmg:95,  speed:135, radius:46, wave:25, xp:200, gold:300, color:'#94a3b8', isBoss:true,
+  // Phút 22 — Boss 8: Quỷ Vương Sa Ngã — xuyên tường, hút sinh lực
+  boss_fallen_demon: { name:'Quỷ Vương Sa Ngã',   emoji:'😈', hp:58000, dmg:130, speed:120, radius:62, wave:22, xp:300, gold:360, color:'#7f1d1d', isBoss:true,
+                       _lifesteal:0.35, _teleport:true, enrage:0.4,
+                       _phases:[{ hpPct:0.55, speed:145, _lifesteal:0.50 }, { hpPct:0.25, rage:true, speed:165 }],
+                       _desc:'Quỷ vương mạo phạm cõi âm. Hút máu mạnh, dịch chuyển tức thời và cuồng nộ khi thấp máu.' },
+  // Phút 25 — Boss 9: Tiên Phong Tử Thần — nhanh, tàng hình, triệu hồi
+  boss_death_herald:{ name:'Tiên Phong Tử Thần',   emoji:'🕰️', hp:72000,  dmg:130, speed:140, radius:52, wave:25, xp:330, gold:450, color:'#94a3b8', isBoss:true,
                       stealth:0.7, summons:true, ranged:true, range:450,
+                      _phases:[{ hpPct:0.5, speed:165, stealth:0.9 }, { hpPct:0.2, enrage:true }],
                       _desc:'Siêu nhanh, tàng hình cao, triệu hồi quái liên tục. Nguy hiểm!' },
-  // Phút 28 — Hình dạng 1 của Tử Thần
-  boss_reaper_form1:{ name:'⚠️ TỬ THẦN THỨC DẬY!',  emoji:'💀', hp:65000,  dmg:165, speed:110, radius:60, wave:28, xp:400, gold:600, color:'#dc2626', isBoss:true,
+  // Phút 27 — Boss 10: Cỗ Máy Địa Ngục — tấn công theo vùng cơ học
+  boss_war_machine: { name:'Cỗ Máy Chiến Tranh',  emoji:'⚙️', hp:80000, dmg:155, speed:55,  radius:74, wave:27, xp:380, gold:550, color:'#b45309', isBoss:true,
+                      armor:0.45, ranged:true, range:500, fireBreath:true,
+                      _phases:[{ hpPct:0.6, _armorBreak:true }, { hpPct:0.3, speed:90, enrage:true, range:550 }],
+                      _desc:'Cỗ máy hủy diệt từ kỷ nguyên cổ đại. Giáp cực dày, bắn liên thanh và tên lửa nhiệt.' },
+  // Phút 28 — Boss 11: Tử Thần Thức Dậy
+  boss_reaper_form1:{ name:'⚠️ TỬ THẦN THỨC DẬY!',  emoji:'💀', hp:95000,  dmg:175, speed:115, radius:60, wave:28, xp:450, gold:700, color:'#dc2626', isBoss:true,
                       ranged:true, range:520, fireBreath:true,
-                      _phases:[{ hpPct:0.5, speed:130, rage:true }],
+                      _phases:[{ hpPct:0.6, speed:130, rage:true }, { hpPct:0.25, speed:155, enrage:true }],
                       _desc:'Hình dạng ban đầu — hãy chuẩn bị cho Tử Thần thực sự!' },
-  // Phút 30 — TỬ THẦN THỰC SỰ: gần như bất khả chiến bại nếu chưa đủ mạnh
+  // Phút 30 — Boss 12: Tử Thần Tối Thượng
   boss_death_reaper:{ name:'💀 TỬ THẦN BẤT TỬ',     emoji:'⚰️', hp:250000, dmg:250, speed:145, radius:70, wave:30, xp:999, gold:2000, color:'#0f0f0f', isBoss:true,
                       fireBreath:true, enrage:0.35, summons:true,
                       _phases:[{ hpPct:0.7, speed:165 }, { hpPct:0.45, speed:190, enrageAll:true }, { hpPct:0.2, invulnFrames:true, speed:220 }],
                       _desc:'Thần Tử — Giết nó là chiến thắng!' },
+
+  // ─── 9 BOSS MỚI ────────────────────────────────────────────
+  // Phù Thủy Ôn Dịch — Stage 2 Boss, xuất hiện phút 5
+  boss_plague_witch:{ name:'Phù Thủy Ôn Dịch',  emoji:'🧙', hp:5200, dmg:60, speed:90, radius:50, wave:5, xp:90, gold:75, color:'#4d7c0f', isBoss:true,
+                      ranged:true, range:380, _poison:true,
+                      _phases:[{ hpPct:0.55, speed:115, _poisonCloud:true }],
+                      _desc:'Phù thủy ôn dịch cổ đại. Tung mây độc và nguyền rủa người chơi.' },
+  // Đô Đốc Phong Bão — Stage 2 Boss, xuất hiện phút 8
+  boss_storm_admiral:{ name:'Đô Đốc Phong Bão',  emoji:'⚓', hp:10500, dmg:88, speed:85, radius:56, wave:8, xp:145, gold:115, color:'#0ea5e9', isBoss:true,
+                       ranged:true, range:420, _lightning:true,
+                       _phases:[{ hpPct:0.6, _stormRage:true, range:480 }, { hpPct:0.3, speed:110 }],
+                       _desc:'Đô đốc chỉ huy chiến hạm ma. Gọi sét đánh liên hoàn.' },
+  // Khổng Lồ Cát — Stage 2 Boss, xuất hiện phút 11
+  boss_sand_colossus:{ name:'Khổng Lồ Cát Sống', emoji:'🏜️', hp:17000, dmg:100, speed:55, radius:72, wave:11, xp:190, gold:165, color:'#d97706', isBoss:true,
+                       _phases:[{ hpPct:0.5, _sandSplit:true, speed:80 }, { hpPct:0.25, speed:100, enrage:true }],
+                       _desc:'Khổng lồ cát sống. Khi cuồng nộ tách thành nhiều phần.' },
+  // Thủy Quái Bóng Tối — Stage 2 Boss, xuất hiện phút 14
+  boss_shadow_hydra: { name:'Thủy Quái Bóng Tối', emoji:'🐍', hp:23000, dmg:108, speed:95, radius:64, wave:14, xp:220, gold:210, color:'#1e1b4b', isBoss:true,
+                       ranged:true, range:400, _poison:true, summons:true,
+                       _phases:[{ hpPct:0.55, speed:118, _headRegen:true }, { hpPct:0.25, enrage:true, speed:138 }],
+                       _desc:'Ba đầu rắn bóng tối. Mỗi đầu bắn độc lập.' },
+  // Golem Pha Lê — Stage 2/3 Boss, xuất hiện phút 18
+  boss_crystal_golem: { name:'Golem Pha Lê Huyền',emoji:'💎', hp:38000, dmg:118, speed:50, radius:70, wave:18, xp:290, gold:320, color:'#22d3ee', isBoss:true,
+                        armor:0.3, _reflect:true,
+                        _phases:[{ hpPct:0.55, _crystalBurst:true, armor:0.15 }, { hpPct:0.3, enrage:true }],
+                        _desc:'Golem pha lê phản chiếu phép thuật thành laser 6 hướng.' },
+  // Thằng Hề Hỗn Loạn — Stage 3 Boss, xuất hiện phút 9
+  boss_chaos_jester:  { name:'Thằng Hề Hỗn Loạn', emoji:'🃏', hp:13500, dmg:92, speed:155, radius:44, wave:9, xp:165, gold:135, color:'#ec4899', isBoss:true,
+                        _teleport:true, summons:true,
+                        _phases:[{ hpPct:0.6, _chaosClone:true, speed:180 }, { hpPct:0.3, enrage:true }],
+                        _desc:'Thằng hề điên rồ. Nhân bản và đảo ngược điều khiển.' },
+  // Bạch Tuộc Vực Thẳm — Stage 3 Boss, xuất hiện phút 13
+  boss_abyssal_kraken:{ name:'Bạch Tuộc Vực Thẳm',emoji:'🐙', hp:20000, dmg:105, speed:70, radius:68, wave:13, xp:210, gold:190, color:'#312e81', isBoss:true,
+                        summons:true, _tentacle:true,
+                        _phases:[{ hpPct:0.55, _tentacleStorm:true, speed:90 }, { hpPct:0.3, enrage:true }],
+                        _desc:'Bạch tuộc khổng lồ từ vực thẳm. Mọc xúc tu khắp nơi.' },
+  // Pharaoh Sắt — Stage 3 Boss, xuất hiện phút 17
+  boss_iron_pharaoh:  { name:'Pharaoh Sắt Bất Tử', emoji:'🏺', hp:32000, dmg:115, speed:65, radius:62, wave:17, xp:265, gold:295, color:'#b45309', isBoss:true,
+                        armor:0.4, ranged:true, range:440, summons:true,
+                        _phases:[{ hpPct:0.55, _shieldBreak:true, speed:85 }, { hpPct:0.3, enrage:true, summons:true }],
+                        _desc:'Pharaoh sắt bất diệt với khiên quan tài. Bắn bọ hung chết chóc.' },
+  // Thiên Sứ Sa Ngã — Stage 3 Boss, xuất hiện phút 21
+  boss_celestial_seraph:{ name:'Thiên Sứ Sa Ngã',  emoji:'👼', hp:46000, dmg:135, speed:120, radius:58, wave:21, xp:340, gold:430, color:'#fbbf24', isBoss:true,
+                          ranged:true, range:460, fireBreath:true, _holy:true,
+                          _phases:[{ hpPct:0.6, _holyBarrage:true, speed:140 }, { hpPct:0.3, enrage:true, speed:160 }],
+                          _desc:'Thiên sứ sa ngã với lửa thiêng. Tạo vùng trọng lực ngược.' },
 };
 
 // ─── GAME STATE ───────────────────────────────────────────────
@@ -2011,9 +2242,189 @@ function renderCodex(tab) {
           <div class="c-type" style="color:#ef4444">BOSS</div>` : '<div class="c-desc">Chưa gặp</div>'}`;
       body.appendChild(card);
     });
+  } else if (tab === 'guide') {
+    body.style.gridTemplateColumns = '1fr';
+    const isVI = currentLang === 'vi';
+    const sections = [
+      {
+        icon: '⚔️', color: '#fbbf24',
+        title: isVI ? '1. Cơ Bản — Cách Chơi' : '1. Basics — How To Play',
+        items: isVI ? [
+          '🕹️ Di chuyển bằng chuột / WASD. Nhân vật tự động tấn công mọi quái gần nhất.',
+          '⏱️ Sinh tồn 30 phút để chiến thắng. Boss Tử Thần xuất hiện vào phút 30.',
+          '❤️ HP về 0 = Game Over. Không có respawn trừ khi mua Hồi Sinh ở Thương Nhân.',
+          '🪙 Diệt quái → nhận Vàng và Kinh Nghiệm. Lên cấp → chọn Kỹ Năng mới.',
+          '📖 Nhấn phím C hoặc nút Codex trên HUD để mở bảng này.',
+        ] : [
+          '🕹️ Move with mouse / WASD. Hero auto-attacks the nearest enemy.',
+          '⏱️ Survive 30 minutes to win. The Reaper boss appears at minute 30.',
+          '❤️ HP reaches 0 = Game Over. No respawn unless you bought Revive at Merchant.',
+          '🪙 Kill enemies → earn Gold & XP. Level up → pick a new Skill.',
+          '📖 Press C key or the Codex button on HUD to open this panel.',
+        ]
+      },
+      {
+        icon: '🌟', color: '#a78bfa',
+        title: isVI ? '2. Hệ Thống Kỹ Năng & Tiến Hóa' : '2. Skills & Evolution System',
+        items: isVI ? [
+          '📦 Mỗi lần lên cấp bạn được chọn 1 trong 3 kỹ năng ngẫu nhiên.',
+          '⬆️ Nâng cùng một kỹ năng nhiều lần → tăng sát thương, hiệu ứng mạnh hơn.',
+          '🔗 Kỹ Năng Common + Passive Item phù hợp → TIẾN HÓA thành kỹ năng Evolved cực mạnh!',
+          '🔗 Kỹ Năng + Kỹ Năng cùng nhóm → SIÊU TIẾN HÓA (Union): sức mạnh gấp đôi!',
+          '📜 Xem tab "Công Thức Tiến Hóa" trong Codex để biết tất cả combo.',
+          '⭐ Kỹ năng Evolved không thể nâng cấp thêm nhưng bắn liên tục với hiệu ứng đặc biệt.',
+        ] : [
+          '📦 Each level-up you pick 1 of 3 random skills.',
+          '⬆️ Level the same skill multiple times → more damage & stronger effects.',
+          '🔗 Common Skill + matching Passive Item → EVOLUTION into a powerful Evolved skill!',
+          '🔗 Skill + Skill of same branch → UNION (Super-Evolution): double power!',
+          '📜 Check the "Evolutions" tab in Codex to see all combos.',
+          '⭐ Evolved skills cannot be further upgraded but fire continuously with special effects.',
+        ]
+      },
+      {
+        icon: '🛡️', color: '#34d399',
+        title: isVI ? '3. Vật Phẩm Passive & Thương Nhân' : '3. Passive Items & Merchant',
+        items: isVI ? [
+          '🧪 Passive Item là vật phẩm hỗ trợ: tăng HP, ATK, tốc độ, v.v.',
+          '🛒 Thương Nhân xuất hiện mỗi 5 phút. Mua vật phẩm bằng Vàng trong trận.',
+          '⚗️ Mua Passive cùng loại với kỹ năng bạn đang dùng để mở khóa Tiến Hóa.',
+          '💰 Hãy tiết kiệm Vàng cho boss wave — vật phẩm đắt tiền rất hữu ích!',
+          '🔄 Mỗi lần gặp Thương Nhân hàng hóa sẽ xoay ngẫu nhiên — không mua là mất cơ hội!',
+        ] : [
+          '🧪 Passive Items provide support buffs: more HP, ATK, speed, etc.',
+          '🛒 The Merchant appears every 5 minutes. Buy items with in-match Gold.',
+          '⚗️ Buy a Passive that matches your current skill to unlock Evolution.',
+          '💰 Save Gold for boss waves — expensive items are very powerful!',
+          '🔄 Each Merchant visit has random stock — miss it and the chance is gone!',
+        ]
+      },
+      {
+        icon: '😈', color: '#f87171',
+        title: isVI ? '4. Bàn Thờ Ác Quỷ (Demonic Altar)' : '4. Demonic Altar',
+        items: isVI ? [
+          '👹 Xuất hiện ngẫu nhiên sau mỗi Boss Wave. Có 3 giao kèo nguy hiểm để chọn.',
+          '⚠️ Mỗi giao kèo yêu cầu hi sinh Max HP để nhận sức mạnh đặc biệt.',
+          '🩸 Giao kèo Crimson Pact: mất 30% Max HP, nhận +60% ATK vĩnh viễn.',
+          '💀 Giao kèo Death Bargain: mất 50% Max HP hiện tại, nhận +100% DMG 60s.',
+          '🌑 Giao kèo Soul Harvest: mỗi lần diệt quái trong 30s hồi 5% Max HP.',
+          '⚡ Khuyên dùng khi HP > 60% và không có quái boss xung quanh.',
+        ] : [
+          '👹 Appears randomly after each Boss Wave. Offers 3 dangerous bargains.',
+          '⚠️ Each bargain requires sacrificing Max HP in exchange for special power.',
+          '🩸 Crimson Pact: lose 30% Max HP, gain +60% ATK permanently.',
+          '💀 Death Bargain: lose 50% current HP, gain +100% DMG for 60s.',
+          '🌑 Soul Harvest: each kill for 30s restores 5% Max HP.',
+          '⚡ Recommended when HP > 60% and no boss nearby.',
+        ]
+      },
+      {
+        icon: '🃏', color: '#60a5fa',
+        title: isVI ? '5. Bài Phép Arcana Tarot' : '5. Arcana Tarot Cards',
+        items: isVI ? [
+          '🔮 Arcana Card được chọn 1 lần vào đầu trận — hiệu ứng kéo dài cả trận.',
+          '🌙 Thẻ Moon: +25% Tốc Độ, +10% Chí Mạng nhưng -15% Max HP.',
+          '☀️ Thẻ Sun: +20% ATK, hồi 3 HP/s nhưng kỹ năng cooldown +15%.',
+          '⚡ Thẻ Tower: +40% Sát Thương Tối Đa nhưng +20% sát thương nhận.',
+          '🌟 Thẻ Star: +15% tất cả chỉ số, balanced nhất cho người mới.',
+          '💀 Thẻ Death: +80% XP nhận được nhưng HP không tự hồi.',
+        ] : [
+          '🔮 Arcana Card is chosen once at match start — effect lasts entire match.',
+          '🌙 Moon: +25% Speed, +10% Crit but -15% Max HP.',
+          '☀️ Sun: +20% ATK, restore 3 HP/s but skill cooldown +15%.',
+          '⚡ Tower: +40% Max Damage but +20% damage taken.',
+          '🌟 Star: +15% all stats, most balanced for beginners.',
+          '💀 Death: +80% XP gained but HP does not regenerate.',
+        ]
+      },
+      {
+        icon: '👹', color: '#ef4444',
+        title: isVI ? '6. Boss & Sóng Quái' : '6. Bosses & Waves',
+        items: isVI ? [
+          '🌊 Quái vật xuất hiện theo sóng liên tục. Số lượng và độ mạnh tăng theo thời gian.',
+          '👑 Boss xuất hiện mỗi 5 phút. Hãy chuẩn bị kỹ trước khi boss đến!',
+          '🗡️ Boss Slime Vương: chậm nhưng cực to, triệu hồi Slime con liên tục.',
+          '💀 Boss Lãnh Chúa Bóng Tối: bắn đạn ma thuật mạnh từ xa, giáp cực dày.',
+          '🐉 Boss Nữ Hoàng Rồng: phun 5 cầu lửa vực thẳm theo hình quạt rộng.',
+          '⚫ Boss Titan Hư Vô: Nhận HP rất cao, điên cuồng khi còn ít máu.',
+          '☠️ Boss Tử Thần (phút 30): Không thể né tránh — Diệt nó hoặc bị diệt!',
+        ] : [
+          '🌊 Enemies spawn in continuous waves. Count and strength scale over time.',
+          '👑 A Boss appears every 5 minutes. Prepare well before the boss arrives!',
+          '🗡️ Slime King: slow but massive, constantly summons mini slimes.',
+          '💀 Dark Lord: fires powerful ranged orbs, very heavy armor.',
+          '🐉 Dragon Queen: breathes 5 fireballs in a wide fan pattern.',
+          '⚫ Void Titan: very high HP, enrages at low health.',
+          '☠️ Death Reaper (minute 30): Cannot be avoided — Kill it or die!',
+        ]
+      },
+      {
+        icon: '⚡', color: '#fbbf24',
+        title: isVI ? '7. Nâng Cấp Vĩnh Viễn & Mastery' : '7. Permanent Upgrades & Mastery',
+        items: isVI ? [
+          '🏆 Vàng kiếm được giữa nguyên sau khi trận kết thúc (kể cả thua).',
+          '📊 Nâng cấp vĩnh viễn: HP, ATK, SPD, DEF, CDR, Gold Rate, v.v.',
+          '🌳 Cây Mastery: mở khóa Passive đặc biệt như "Vampire" (ăn máu), "Glass Cannon" (ATK x2, HP/2).',
+          '💡 Ưu tiên nâng HP và ATK trước — chúng có lợi ngay lập tức nhất.',
+          '🔓 Một số Passive cần phải mở khóa từ Mastery mới được chọn trong trận.',
+        ] : [
+          '🏆 Gold earned persists after each match ends (even if you lose).',
+          '📊 Permanent upgrades: HP, ATK, SPD, DEF, CDR, Gold Rate, etc.',
+          '🌳 Mastery Tree: unlock special passives like "Vampire" (lifesteal), "Glass Cannon" (ATK x2, HP/2).',
+          '💡 Prioritize HP and ATK first — they give the most immediate benefit.',
+          '🔓 Some Passives must be unlocked via Mastery before they can appear in-match.',
+        ]
+      },
+      {
+        icon: '💡', color: '#a3e635',
+        title: isVI ? '8. Mẹo Nâng Cao' : '8. Advanced Tips',
+        items: isVI ? [
+          '🎯 Tập trung vào 1-2 kỹ năng cùng nhánh để tiến hóa nhanh hơn.',
+          '🔄 Nếu không thể tiến hóa, hãy đa dạng hóa kỹ năng để DPS cao hơn.',
+          '🌙 Đêm: quái mạnh hơn +25% nhưng XP gấp đôi — cơ hội farm lên cấp nhanh!',
+          '⛈️ Dông Bão: sát thương sét thêm nhưng giảm tốc độ di chuyển của bạn.',
+          '❄️ Bão Tuyết: quái di chuyển chậm hơn 30% — thời điểm tốt để đẩy công!',
+          '🐾 Kích hoạt thần thú (pets) ở lobby để nhận buff thụ động trong trận.',
+          '💰 Không nên dùng hết vàng ngay — giữ 50+ vàng cho trận khẩn cấp ở Thương Nhân.',
+          '⚡ Kỹ năng Echo Stone lặp lại skill sau 1.5s — kết hợp với skill AOE để tối đa hóa sát thương!',
+        ] : [
+          '🎯 Focus on 1-2 skills of the same branch to evolve faster.',
+          '🔄 If you can\'t evolve, diversify skills for higher overall DPS.',
+          '🌙 Night: enemies +25% stronger but XP doubled — great farming opportunity!',
+          '⛈️ Thunderstorm: bonus lightning damage but your movement slows.',
+          '❄️ Blizzard: enemies 30% slower — great time to push offense!',
+          '🐾 Activate pets in lobby for passive buffs during the match.',
+          '💰 Don\'t spend all gold immediately — keep 50+ gold for Merchant emergencies.',
+          '⚡ Echo Stone skill replays the skill after 1.5s — combine with AOE skills for maximum damage!',
+        ]
+      }
+    ];
+
+    body.innerHTML = '';
+    sections.forEach(sec => {
+      const el = document.createElement('div');
+      el.style.cssText = `
+        background: rgba(255,255,255,0.03);
+        border: 1px solid ${sec.color}33;
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin-bottom: 12px;
+      `;
+      el.innerHTML = `
+        <div style="font-size:15px;font-weight:800;color:${sec.color};margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+          <span style="font-size:20px">${sec.icon}</span> ${sec.title}
+        </div>
+        <ul style="margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:5px;">
+          ${sec.items.map(it => `<li style="font-size:12.5px;color:#cbd5e1;line-height:1.6;">${it}</li>`).join('')}
+        </ul>
+      `;
+      body.appendChild(el);
+    });
+    return; // skip countEl update for guide tab
   }
   if (countEl) countEl.textContent = `${found} / ${total} đã khám phá`;
 }
+
 
 // Lobby preview animation state
 let _lobbyPreviewAnim = null;
@@ -3221,6 +3632,10 @@ class PveGame {
     const baseThorns = (eq.armor && eq.armor.bonus.thorns) ? eq.armor.bonus.thorns / 100 : 0;
     p.thornsDmg = baseThorns + (p.thorns || 0.0);
 
+    // Build passiveItems dict (id -> level) for quick lookup in skill code
+    p.passiveItems = {};
+    this.passiveItems.forEach(item => { p.passiveItems[item.id] = item.level; });
+
     // Apply stat caps
     applyStatCaps(p);
   }
@@ -3235,10 +3650,24 @@ class PveGame {
       if (!def) return;
       const slot = document.createElement('div');
       slot.className = 'pve-passive-slot has-item';
+      const maxLv = def.maxLevel || 5;
+      const isMax = item.level >= maxLv;
       slot.innerHTML = `
         <span style="font-size:16px;">${def.icon}</span>
-        <div class="passive-lv">L${item.level}</div>`;
-      slot.title = def.name + ': ' + def.desc;
+        <div class="passive-lv" style="color:${isMax ? '#fbbf24' : '#a78bfa'}">${isMax ? 'MAX' : 'L' + item.level}</div>`;
+      // Build rich tooltip
+      let tip = `${def.icon} ${def.name}  [Lv.${item.level}/${maxLv}]`;
+      tip += `\n${def.desc}`;
+      // Check if this passive unlocks an EVO
+      const evoCombo = EVO_COMBOS ? EVO_COMBOS.find(c => c.passiveItem === item.id) : null;
+      if (evoCombo) {
+        const baseSkillDef = SKILL_DEFS[evoCombo.baseSkill];
+        const evolvDef    = SKILL_DEFS[evoCombo.evolvedSkill];
+        if (baseSkillDef && evolvDef) {
+          tip += `\n⭐ EVO: ${baseSkillDef.icon}${baseSkillDef.name} Lv.8 + này → ${evolvDef.icon}${evolvDef.name}`;
+        }
+      }
+      slot.title = tip;
       bar.appendChild(slot);
     });
     for (let i = this.passiveItems.length; i < 6; i++) {
@@ -3248,6 +3677,7 @@ class PveGame {
       bar.appendChild(slot);
     }
   }
+
 
   // ──────────────────────────────────────────────
   // SKILL MANAGEMENT
@@ -3306,6 +3736,42 @@ class PveGame {
   showSkillLevelUp(id, level) {
     const def = SKILL_DEFS[id];
     this.addFloat(this.player.x, this.player.y - 60, `${def.icon} LV.${level}!`, '#a78bfa', true);
+    // ── EVO READY HINT khi skill đạt max level 8 ──────────────
+    if (level >= 8) {
+      // Kiểm tra xem có EVO combo nào cần passive không?
+      const needsPassive = EVO_COMBOS.find(c => c.baseSkill === id && !this.skills.some(s => s.id === c.evolvedSkill));
+      if (needsPassive) {
+        const psvDef = PASSIVE_ITEMS_DEFS[needsPassive.passiveItem];
+        const evoDef = SKILL_DEFS[needsPassive.evolvedSkill];
+        if (psvDef && evoDef) {
+          setTimeout(() => {
+            this.addFloat(this.player.x, this.player.y - 95, `⭐ ${def.icon} ĐẠT MAX! SẴN SÀNG TIẾN HÓA!`, '#fbbf24', true);
+            this.addFloat(this.player.x, this.player.y - 130, `Cần: ${psvDef.icon} ${psvDef.name} → ${evoDef.icon} ${evoDef.name}`, '#a78bfa', true);
+            showToast(`⭐ ${def.name} LV.MAX! Cần ${psvDef.icon} ${psvDef.name} để tiến hóa thành ${evoDef.icon}!`, '#fbbf24');
+          }, 400);
+        }
+      }
+      // Kiểm tra UNION combo
+      const needsUnion = UNION_COMBOS.find(c =>
+        (c.baseSkill1 === id || c.baseSkill2 === id) &&
+        !this.skills.some(s => s.id === c.evolvedSkill)
+      );
+      if (needsUnion && !needsPassive) {
+        const otherSkillId = needsUnion.baseSkill1 === id ? needsUnion.baseSkill2 : needsUnion.baseSkill1;
+        const otherDef = SKILL_DEFS[otherSkillId];
+        const evoDef = SKILL_DEFS[needsUnion.evolvedSkill];
+        const otherSkill = this.skills.find(s => s.id === otherSkillId);
+        if (otherDef && evoDef) {
+          setTimeout(() => {
+            if (otherSkill && otherSkill.level >= 8) {
+              this.addFloat(this.player.x, this.player.y - 95, `🔗 UNION SẴN SÀNG! ${def.icon} + ${otherDef.icon}`, '#93c5fd', true);
+            } else {
+              this.addFloat(this.player.x, this.player.y - 95, `⭐ ${def.icon} LV.MAX! Cần ${otherDef.icon} LV.8 để UNION!`, '#93c5fd', true);
+            }
+          }, 400);
+        }
+      }
+    }
   }
 
   updateSkillBar() {
@@ -3552,6 +4018,44 @@ class PveGame {
       }
       p.voidDemonActiveUntil = null;
     }
+
+    // Alchemy Brew: +40% ATK for 30s (sacrifice HP done at purchase)
+    const now_upd = Date.now();
+    if (p._alchemyBrewUntil && now_upd < p._alchemyBrewUntil) {
+      p._alchemyBrewActive = true;
+    } else if (p._alchemyBrewActive) {
+      p._alchemyBrewActive = false;
+      p._alchemyBrewUntil = null;
+    }
+    // Energy Core: -60% CDR for 20s  
+    if (p._energyCoreUntil && now_upd < p._energyCoreUntil) {
+      p._energyCoreActive = true;
+    } else if (p._energyCoreActive) {
+      p._energyCoreActive = false;
+      p._energyCoreUntil = null;
+    }
+    // Crimson Vial: +15% lifesteal for 45s
+    if (p._crimsonVialUntil && now_upd < p._crimsonVialUntil) {
+      p._crimsonVialActive = true;
+    } else if (p._crimsonVialActive) {
+      p._crimsonVialActive = false;
+      p._crimsonVialUntil = null;
+    }
+    // Phantom Step: +25% dodge for 10s
+    if (p._phantomStepUntil && now_upd < p._phantomStepUntil) {
+      p._phantomStepActive = true;
+    } else if (p._phantomStepActive) {
+      p._phantomStepActive = false;
+      p._phantomStepUntil = null;
+    }
+    // Echo Stone: flag to repeat skills
+    if (p._echoStoneUntil && now_upd < p._echoStoneUntil) {
+      p._echoStoneActive = true;
+    } else if (p._echoStoneActive) {
+      p._echoStoneActive = false;
+      p._echoStoneUntil = null;
+    }
+
     let dx = 0, dy = 0;
     if (this.keys['KeyW'] || this.keys['ArrowUp'])    dy -= 1;
     if (this.keys['KeyS'] || this.keys['ArrowDown'])  dy += 1;
@@ -3566,9 +4070,23 @@ class PveGame {
     p.vx = dx;
     p.vy = dy;
 
+    // Freeze check (boss_frost_king freeze attack)
+    const now_mv = Date.now();
+    if (p.frozenUntil && now_mv < p.frozenUntil) {
+      // Completely frozen - cannot move, ice visual
+      if (Math.random() < 0.25) this.spawnParticle(p.x + (Math.random()-0.5)*p.r*2, p.y + (Math.random()-0.5)*p.r*2, '#bae6fd', 6, 0.4);
+      p._vx = 0; p._vy = 0;
+      return; // skip movement entirely
+    } else if (p.frozenUntil && now_mv >= p.frozenUntil) {
+      p.frozenUntil = 0;
+      // Thaw burst
+      for (let i = 0; i < 12; i++) this.spawnParticle(p.x + (Math.random()-0.5)*40, p.y + (Math.random()-0.5)*40, '#e0f2fe', 8, 0.5);
+    }
+
     let weatherSpdMult = 1.0;
     if (this.currentWeather === 'blizzard') weatherSpdMult *= 0.7; // 30% slow
     if (this.activeShrineBuffs && this.activeShrineBuffs.speed > 0) weatherSpdMult *= 1.4; // Shrines speed buff (+40%)
+    // EMP check: if empUntil active, disable skills but still allow movement
     const spd = p.speed * p.spdMult * (Date.now() < p.rallyUntil ? 1.5 : 1) * weatherSpdMult * dt;
     const prevX = p.x, prevY = p.y;
     p.x = Math.max(p.r, Math.min(WORLD_W - p.r, p.x + dx * spd));
@@ -3712,11 +4230,39 @@ class PveGame {
   updateSkills(dt) {
     const now = Date.now();
     const p = this.player;
+
+    // EMP debuff: War Machine disables all skills for duration
+    const empActive = p.empUntil && now < p.empUntil;
+    if (empActive) {
+      // Freeze all cooldown overlays at 100% to show skills disabled
+      this.skills.forEach(s => {
+        const cdEl = document.getElementById(`skillCd_${s.id}`);
+        if (cdEl) cdEl.style.height = '100%';
+        const skillEl = cdEl && cdEl.closest('.pve-skill-slot');
+        if (skillEl) skillEl.style.filter = 'grayscale(1) brightness(0.5)';
+      });
+      // Show EMP flash text every ~1s
+      if (!this._empLastWarn || now - this._empLastWarn > 1000) {
+        this._empLastWarn = now;
+        this.addFloat(p.x, p.y - 55, `⚡ EMP! Kỹ năng bị vô hiệu!`, '#fbbf24');
+      }
+      return;
+    }
+    // Restore skill slot styling when EMP ends
+    if (p._prevEmpActive) {
+      this.skills.forEach(s => {
+        const cdEl = document.getElementById(`skillCd_${s.id}`);
+        const skillEl = cdEl && cdEl.closest('.pve-skill-slot');
+        if (skillEl) skillEl.style.filter = '';
+      });
+    }
+    p._prevEmpActive = empActive;
+
     this.skills.forEach(s => {
       const def = SKILL_DEFS[s.id];
       if (!def) return;
       const state = this.skillState[s.id] || (this.skillState[s.id] = { lastFired: 0 });
-      const cdMs = Math.max(200, def.cd * 1000 * p.cdMult * Math.max(0.25, 1 - (s.level - 1) * 0.10));
+      const cdMs = Math.max(200, def.cd * 1000 * p.cdMult * Math.max(0.25, 1 - (s.level - 1) * 0.10) * (p._energyCoreActive ? 0.4 : 1.0));
       const elapsed = now - state.lastFired;
       const pct = Math.max(0, Math.min(1, elapsed / cdMs));
 
@@ -3797,6 +4343,42 @@ class PveGame {
       case 'glacial_sanctum':this.fireGlacialSanctum(baseDmg, level); break;
       case 'archangel_light':this.fireArchangelLight(baseDmg, level); break;
       case 'void_demon':     this.fireVoidDemon(baseDmg, level); break;
+      // ─── COMMON SKILLS ─────────────────────────────────────────
+      case 'shockwave':      this.fireShockwave(baseDmg, level); break;
+      case 'lifeleech':      this.fireLifeleech(baseDmg, level); break;
+      case 'aura_bolt':      this.fireAuraBolt(baseDmg, level); break;
+      case 'explosive_rush': this.fireExplosiveRush(baseDmg, level); break;
+      case 'chain_lightning':this.fireChainLightning(baseDmg, level); break;
+      // ─── COMMON SKILLS BATCH 2 ─────────────────────────────────
+      case 'gravity_well':   this.fireGravityWell(baseDmg, level); break;
+      case 'mirror_blade':   this.fireMirrorBlade(baseDmg, level); break;
+      case 'soul_burst':     this.fireSoulBurst(baseDmg, level); break;
+      case 'time_warp':      this.fireTimeWarp(baseDmg, level); break;
+      case 'echo_strike':    this.fireEchoStrike(baseDmg, level); break;
+      // ─── EVOLVED COMMON SKILLS ─────────────────────────────────
+      case 'seismic_pulse':  this.fireSeismicPulse(baseDmg, level); break;
+      case 'crimson_nova':   this.fireCrimsonNova(baseDmg, level); break;
+      case 'stellar_barrage':this.fireStellarBarrage(baseDmg, level); break;
+      case 'meteor_slam':    this.fireMeteorSlam(baseDmg, level); break;
+      case 'storm_surge':    this.fireStormSurge(baseDmg, level); break;
+      case 'black_hole':     this.fireBlackHole(baseDmg, level); break;
+      case 'phantom_edge':   this.firePhantomEdge(baseDmg, level); break;
+      case 'soul_tempest':   this.fireSoulTempest(baseDmg, level); break;
+      case 'time_fracture':  this.fireTimeFracture(baseDmg, level); break;
+      case 'chorus_strike':  this.fireChorusStrike(baseDmg, level); break;
+    }
+
+    // ── ECHO STONE: replay skill at 50% dmg after 1.5s ──
+    const echoActive = p._echoStoneUntil && Date.now() < p._echoStoneUntil;
+    if (echoActive && !this._echoFiring) {
+      setTimeout(() => {
+        if (!this.running || this.paused) return;
+        this._echoFiring = true;
+        const echoDef = { ...def, dmg: def.dmg * 0.5 };
+        this.fireSkill(id, level, echoDef);
+        this._echoFiring = false;
+        this.addFloat(p.x, p.y - 50, '🪨 ECHO!', '#a78bfa');
+      }, 1500);
     }
   }
 
@@ -4533,10 +5115,16 @@ class PveGame {
   // ──────────────────────────────────────────────
   dealDamage(enemy, rawDmg) {
     if (!enemy || enemy.hp <= 0) return 0;
+    const p = this.player;
     const armorReduction = enemy.armor || 0;
-    let dmg = rawDmg * (1 - armorReduction);
-    const isCrit = Math.random() < this.player.critChance;
-    if (isCrit) dmg *= 2;
+    // Apply Alchemy Brew ATK bonus
+    const brewMult = (p._alchemyBrewActive ? 1.40 : 1.0);
+    let dmg = rawDmg * brewMult * (1 - armorReduction);
+    // Apply Scope Lens crit bonus
+    const critChance = p.critChance + (p._scopeLensActive ? 0.20 : 0);
+    const critMult = p._scopeLensActive ? 2.4 : 2.0;  // +20% crit dmg when active
+    const isCrit = Math.random() < critChance;
+    if (isCrit) dmg *= critMult;
     dmg = Math.max(1, Math.round(dmg));
     enemy.hp -= dmg;
     enemy.lastHitTime = Date.now(); // Enable quái vật hit flash!
@@ -4554,9 +5142,10 @@ class PveGame {
       this.screenShake(4, 0.10);
     }
 
-    // Lifesteal
-    if (this.player.lifesteal > 0) {
-      this.player.hp = Math.min(this.player.maxHp, this.player.hp + dmg * this.player.lifesteal);
+    // Lifesteal (base + crimson vial bonus)
+    const lifestealRate = p.lifesteal + (p._crimsonVialActive ? 0.15 : 0);
+    if (lifestealRate > 0) {
+      p.hp = Math.min(p.maxHp, p.hp + dmg * lifestealRate);
     }
 
     // Thorns (armor item)
@@ -4570,6 +5159,14 @@ class PveGame {
 
   killEnemy(enemy) {
     enemy.hp = 0;
+    
+    // Crimson Vial: +5 HP on kill while active
+    if (this.player._crimsonVialActive) {
+      this.player.hp = Math.min(this.player.maxHp, this.player.hp + 5);
+      this.addFloat(this.player.x, this.player.y - 30, '+5 HP 🩸', '#ef4444');
+    }
+
+    // Absorb Shield: No interaction on kill (only on taking lethal damage)
     
     // Death Tarot explode & heal
     if (this.activeArcanas.has('arcana_death')) {
@@ -4924,6 +5521,12 @@ class PveGame {
       this.spawnParticles(p.x, p.y, '#c084fc', 8, 2);
       return;
     }
+    // Phantom Step dodge check (+25% dodge chance while active)
+    if (p._phantomStepActive && Math.random() < 0.25) {
+      this.addFloat(p.x, p.y - 45, '👻 PHANTOM STEP NÉ!', '#a78bfa');
+      this.spawnParticles(p.x, p.y, '#a78bfa', 8, 2);
+      return;
+    }
     // Morph damage reduction
     if (p.isMorphed) amt *= 0.5;
     
@@ -4971,7 +5574,40 @@ class PveGame {
 
     if (p.hp <= 0) {
       p.hp = 0;
+      // Absorb Shield: Block one lethal hit
+      if (p._absorbShieldCharges && p._absorbShieldCharges > 0) {
+        p._absorbShieldCharges--;
+        p.hp = p.maxHp * 0.30;
+        p.invincible = true; p.invincibleUntil = Date.now() + 2000;
+        p.iFrameUntil = Date.now() + 2000;
+        const remaining = p._absorbShieldCharges;
+        this.addFloat(p.x, p.y - 60, `🛡️ ABSORB SHIELD! (${remaining} còn lại)`, '#38bdf8', true);
+        this.spawnParticles(p.x, p.y, '#38bdf8', 30, 6);
+        return;
+      }
       // Kiểm tra revive (nhiều lần hồi sinh)
+      // Ward Bell: auto-shockwave when first drop below 25% HP
+      if (p._wardBellActive && !p._wardBellUsed) {
+        p._wardBellUsed = true;
+        // Shockwave push all enemies
+        this.enemies.forEach(e => {
+          const dx = e.x - p.x, dy = e.y - p.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist < 300) {
+            const force = (300 - dist) * 2;
+            e.x += (dx / Math.max(dist, 1)) * force;
+            e.y += (dy / Math.max(dist, 1)) * force;
+            e.stunUntil = Date.now() + 1500;
+          }
+        });
+        p.hp = p.maxHp * 0.30;
+        p.invincible = true; p.invincibleUntil = Date.now() + 2000;
+        p.iFrameUntil = Date.now() + 2000;
+        this.screenShake(15, 0.8);
+        this.addFloat(p.x, p.y - 60, '🔔 CHUÔNG BẢO VỆ! SHOCKWAVE!', '#fbbf24', true);
+        this.spawnParticles(p.x, p.y, '#fbbf24', 40, 8);
+        return;
+      }
       const canRevive = p.reviveCount > 0 || (p.revive && !p.reviveUsed);
       if (canRevive) {
         if (p.reviveCount > 0) {
@@ -5040,6 +5676,26 @@ class PveGame {
         proj.vx = 0;
         proj.vy = 0;
         proj.traveled += dt * 260.0;
+      }
+
+      // Homing missile guidance (War Machine heat-seeking missiles)
+      if (proj._homing && proj._target) {
+        const tgt = proj._target;
+        if (tgt && typeof tgt.x === 'number') {
+          const hdx = tgt.x - proj.x, hdy = tgt.y - proj.y;
+          const hdist = Math.hypot(hdx, hdy);
+          if (hdist > 20) {
+            const desiredVx = (hdx / hdist) * 200;
+            const desiredVy = (hdy / hdist) * 200;
+            const str = proj._homingStrength * dt;
+            proj.vx += (desiredVx - proj.vx) * str;
+            proj.vy += (desiredVy - proj.vy) * str;
+            // Normalize speed to 200px/s
+            const speed = Math.hypot(proj.vx, proj.vy);
+            if (speed > 200) { proj.vx = (proj.vx / speed) * 200; proj.vy = (proj.vy / speed) * 200; }
+            proj.angle = Math.atan2(proj.vy, proj.vx);
+          }
+        }
       }
 
       const dx = proj.vx * dt, dy = proj.vy * dt;
@@ -5303,6 +5959,13 @@ class PveGame {
         if (Math.random() < 0.3) this.spawnParticle(e.x + (Math.random()-0.5)*e.r, e.y + (Math.random()-0.5)*e.r, '#10b981', 5, 0.5);
       }
 
+      // Bleed DoT (fracture_core passive)
+      if (now < e._bleedUntil && e._bleedDmg > 0) {
+        e.hp -= e._bleedDmg * dt;
+        if (e.hp <= 0) { this.killEnemy(e); this.enemies.splice(i, 1); continue; }
+        if (Math.random() < 0.4) this.spawnParticle(e.x + (Math.random()-0.5)*e.r, e.y - e.r*0.5, '#dc2626', 4, 0.35);
+      }
+
       if (now < e.stunUntil) continue; // Stunned, skip movement
 
       // Slow
@@ -5445,7 +6108,8 @@ class PveGame {
         });
       }
 
-      // Physics: Player-Enemy physical collision blocking (Optimized vector push)
+      // Physics: Player-Enemy physical collision blocking
+      // FIX: Only push enemy away - do NOT push player to prevent melee miss
       const pdx = e.x - p.x;
       const pdy = e.y - p.y;
       const pDistSq = pdx * pdx + pdy * pdy;
@@ -5457,10 +6121,11 @@ class PveGame {
           const ratio = overlap / pDist;
           const pushX = pdx * ratio;
           const pushY = pdy * ratio;
-          e.x += pushX * 0.6;
-          e.y += pushY * 0.6;
-          p.x -= pushX * 0.4;
-          p.y -= pushY * 0.4;
+          // Push enemy fully away; push player only 10% so it doesn't break melee range
+          e.x += pushX * 0.9;
+          e.y += pushY * 0.9;
+          p.x -= pushX * 0.1;
+          p.y -= pushY * 0.1;
           p.x = Math.max(p.r, Math.min(WORLD_W - p.r, p.x));
           p.y = Math.max(p.r, Math.min(WORLD_H - p.r, p.y));
         }
@@ -5826,6 +6491,280 @@ class PveGame {
           const deathDist = dist;
           this._deathPresenceIntensity = Math.max(0, Math.min(0.6, (400 - deathDist) / 400 * 0.6));
         }
+
+        // ── BOSS: FOREST GUARDIAN — Nature Regen + Vine Traps ──
+        // Hồi máu mỗi 5s, triệu hồi bẫy dây leo chặn đường
+        if (e.type === 'boss_forest_guardian') {
+          // Passive HP regen
+          e._regenTimer = (e._regenTimer || 0) + dt;
+          if (e._regenTimer > 5.0) {
+            e._regenTimer = 0;
+            const regenAmt = Math.round(e.maxHp * 0.02); // hồi 2% HP mỗi 5s
+            e.hp = Math.min(e.maxHp, e.hp + regenAmt);
+            this.addFloat(e.x, e.y - 30, `+${regenAmt} ♻️`, '#22c55e');
+            this.spawnParticles(e.x, e.y, '#22c55e', 8, 2);
+          }
+          // Vine Trap: mỗi 8s triệu hồi cụm gai xung quanh player
+          e._vineTimer = (e._vineTimer || 0) + dt;
+          const vCd = e.phase >= 3 ? 5 : e.phase >= 2 ? 7 : 10;
+          if (e._vineTimer > vCd && dist < 600) {
+            e._vineTimer = 0;
+            e.attackAnim = { t: now, duration: 600 };
+            this.addFloat(e.x, e.y - 65, '🌿 VINE TRAP!', '#4ade80', true);
+            // Spawn 3 vine obstacles quanh player
+            for (let vi = 0; vi < 3; vi++) {
+              const vAngle = (vi / 3) * Math.PI * 2 + Math.random() * 0.8;
+              const vDist = 80 + Math.random() * 60;
+              const vx = p.x + Math.cos(vAngle) * vDist;
+              const vy = p.y + Math.sin(vAngle) * vDist;
+              // Tạo zone gai ngắn: slow + poison
+              this.particles.push({
+                type: 'vine_zone', x: vx, y: vy, r: 35,
+                color: '#16a34a', life: 4.0, maxLife: 4.0,
+                onTick: (zone, dt2) => {
+                  const dx2 = p.x - zone.x, dy2 = p.y - zone.y;
+                  if (Math.hypot(dx2, dy2) < zone.r + p.r) {
+                    p.slowUntil = now + 1000; p.slow = 0.5;
+                    p.poisonedUntil = Math.max(p.poisonedUntil || 0, now + 2000);
+                    p.poisonDmgPerSec = Math.max(p.poisonDmgPerSec || 0, e.dmg * 0.12);
+                  }
+                }
+              });
+              this.spawnParticles(vx, vy, '#4ade80', 10, 2.5);
+            }
+            this.screenShake(8, 0.3);
+            // Nếu boss low HP: hồi thêm
+            if (e.hp / e.maxHp < 0.3) {
+              const bonusRegen = Math.round(e.maxHp * 0.03);
+              e.hp = Math.min(e.maxHp, e.hp + bonusRegen);
+              this.addFloat(e.x, e.y - 80, `💚 EMERGENCY REGEN +${bonusRegen}`, '#4ade80', true);
+            }
+          }
+        }
+
+        // ── BOSS: FROST KING — Freeze Aura + Ice Lance Barrage ─
+        // Đóng băng player định kỳ, phóng 8 lao băng vào player
+        if (e.type === 'boss_frost_king') {
+          // Freeze Aura: mỗi 10s đóng băng player trong 1.5-2s
+          e._freezeTimer = (e._freezeTimer || 0) + dt;
+          const fzCd = e.phase >= 3 ? 7 : e.phase >= 2 ? 9 : 12;
+          if (e._freezeTimer > fzCd && dist < 350) {
+            e._freezeTimer = 0;
+            e.attackAnim = { t: now, duration: 500 };
+            // Freeze player (stun = không di chuyển được)
+            const freezeDuration = e.phase >= 3 ? 2200 : e.phase >= 2 ? 1800 : 1500;
+            p.frozenUntil = now + freezeDuration;
+            this.addFloat(p.x, p.y - 40, '❄️ BỊ ĐÓNG BĂNG!', '#bae6fd', true);
+            this.addFloat(e.x, e.y - 65, '❄️ FREEZE AURA!', '#38bdf8', true);
+            // Ice crack VFX
+            this.spawnParticles(p.x, p.y, '#bae6fd', 20, 3);
+            this.screenShake(12, 0.4);
+          }
+          // Ice Lance Barrage: 6 lao băng xoay phóng ra
+          e._lanceTimer = (e._lanceTimer || 0) + dt;
+          const lCd = e.phase >= 3 ? 4 : e.phase >= 2 ? 6 : 8;
+          if (e._lanceTimer > lCd) {
+            e._lanceTimer = 0;
+            const lanceCount = e.phase >= 3 ? 10 : e.phase >= 2 ? 8 : 6;
+            for (let li = 0; li < lanceCount; li++) {
+              const lAngle = (li / lanceCount) * Math.PI * 2 + (e._lanceRotation || 0);
+              this.projectiles.push({
+                x: e.x, y: e.y,
+                vx: Math.cos(lAngle) * 260, vy: Math.sin(lAngle) * 260,
+                angle: lAngle,
+                dmg: e.dmg * 0.6, radius: 9, color: '#93c5fd',
+                trail: true, trailColor: '#bae6fd',
+                isEnemyProjectile: true, pierce: true, maxPierces: 3, pierced: 0,
+                maxDist: 700, traveled: 0, life: 99,
+                onHit: () => {
+                  // Slow 50% khi trúng lao băng
+                  p.slowUntil = now + 1200; p.slow = 0.5;
+                }
+              });
+            }
+            e._lanceRotation = ((e._lanceRotation || 0) + Math.PI / lanceCount); // xoay mỗi lần
+            this.addFloat(e.x, e.y - 60, '🔵 ICE LANCE!', '#38bdf8', true);
+          }
+          // Apply freeze on player (stall movement)
+          if (p.frozenUntil && now < p.frozenUntil) {
+            p.speedMult = 0; // frozen = không di chuyển
+          } else if (p.frozenUntil && now >= p.frozenUntil) {
+            p.frozenUntil = 0;
+            p.speedMult = undefined;
+          }
+        }
+
+        // ── BOSS: LICH SUPREME — Skeleton Army + Death Ray ─────
+        // Triệu hồi đội quân xương định kỳ, bắn tia nguyền rủa
+        if (e.type === 'boss_lich_supreme') {
+          // Skeleton Army: triệu hồi 5-8 xương chiến binh
+          e._armyTimer = (e._armyTimer || 0) + dt;
+          const aCd = e.phase >= 3 ? 8 : e.phase >= 2 ? 12 : 18;
+          if (e._armyTimer > aCd) {
+            e._armyTimer = 0;
+            e.attackAnim = { t: now, duration: 700 };
+            const skelCount = e.phase >= 3 ? 8 : e.phase >= 2 ? 6 : 4;
+            this.addFloat(e.x, e.y - 70, '💀 SKELETON ARMY!', '#94a3b8', true);
+            for (let si = 0; si < skelCount; si++) {
+              const sAngle = (si / skelCount) * Math.PI * 2;
+              const sx = e.x + Math.cos(sAngle) * (e.r + 60 + Math.random() * 40);
+              const sy = e.y + Math.sin(sAngle) * (e.r + 60 + Math.random() * 40);
+              const skel = this.spawnEnemy('skeleton', sx, sy);
+              if (skel) {
+                skel.speed *= 1.4;
+                skel.hp *= 1.5;
+                skel.dmg *= 1.2;
+                skel._fromLich = true; // tag để biết
+              }
+            }
+            this.screenShake(10, 0.4);
+          }
+          // Death Ray: tia nguyền rủa thẳng vào player
+          e._rayTimer = (e._rayTimer || 0) + dt;
+          const rCd2 = e.phase >= 3 ? 5 : e.phase >= 2 ? 7 : 10;
+          if (e._rayTimer > rCd2 && dist < 500) {
+            e._rayTimer = 0;
+            // 3 tia phóng về phía player theo hình quạt
+            const toPlayerAngle = Math.atan2(p.y - e.y, p.x - e.x);
+            const spread = e.phase >= 3 ? 0.35 : 0.25;
+            for (let ri = -1; ri <= 1; ri++) {
+              const rayAngle = toPlayerAngle + ri * spread;
+              this.projectiles.push({
+                x: e.x, y: e.y,
+                vx: Math.cos(rayAngle) * 320, vy: Math.sin(rayAngle) * 320,
+                angle: rayAngle,
+                dmg: e.dmg * 0.85, radius: 14, color: '#a855f7',
+                trail: true, trailColor: '#6d28d9',
+                isEnemyProjectile: true, pierce: true, maxPierces: 3, pierced: 0,
+                maxDist: 600, traveled: 0, life: 99
+              });
+            }
+            this.addFloat(e.x, e.y - 60, '☠️ DEATH RAY!', '#a855f7', true);
+            this.spawnParticles(e.x, e.y, '#a855f7', 15, 3);
+          }
+        }
+
+        // ── BOSS: FALLEN DEMON — Lifesteal + Berserk Teleport ──
+        // Hút máu mạnh khi đánh, teleport vào mặt player khi low HP
+        if (e.type === 'boss_fallen_demon') {
+          // Lifesteal passive: mỗi đòn melee hút 25% dmg thành HP
+          // (Handled via _lifesteal flag — set at spawn if not already)
+          if (!e._lifesteal) e._lifesteal = 0.25;
+
+          // Berserk: khi HP < 40%, tăng tốc độ và teleport
+          const dHpPct = e.hp / e.maxHp;
+          if (dHpPct < 0.40 && !e._berserkMode) {
+            e._berserkMode = true;
+            e.speed *= 1.5;
+            this.addFloat(e.x, e.y - 70, '😈 BERSERK!', '#ef4444', true);
+            this.screenShake(20, 1.0);
+            this.spawnParticles(e.x, e.y, '#ef4444', 30, 5);
+          }
+          // Teleport behind player mỗi 6s khi berserk
+          if (e._berserkMode) {
+            e._demonTeleTimer = (e._demonTeleTimer || 0) + dt;
+            if (e._demonTeleTimer > 6.0 && dist > 200) {
+              e._demonTeleTimer = 0;
+              const teleAngle = Math.atan2(e.y - p.y, e.x - p.x) + Math.PI; // phía sau player
+              e.x = p.x + Math.cos(teleAngle) * (p.r + e.r + 20);
+              e.y = p.y + Math.sin(teleAngle) * (p.r + e.r + 20);
+              this.spawnParticles(e.x, e.y, '#ef4444', 15, 4);
+              this.addFloat(e.x, e.y - 50, '😈 BLINK!', '#dc2626', true);
+            }
+          }
+          // Hellfire AoE: mỗi 8s phóng cầu lửa xung quanh
+          e._hellfireTimer = (e._hellfireTimer || 0) + dt;
+          const hfCd = e.phase >= 3 ? 5 : e.phase >= 2 ? 7 : 10;
+          if (e._hellfireTimer > hfCd) {
+            e._hellfireTimer = 0;
+            e.attackAnim = { t: now, duration: 600 };
+            const fireCount = e.phase >= 3 ? 10 : e.phase >= 2 ? 8 : 6;
+            for (let fi = 0; fi < fireCount; fi++) {
+              const fAngle = (fi / fireCount) * Math.PI * 2;
+              this.projectiles.push({
+                x: e.x, y: e.y,
+                vx: Math.cos(fAngle) * 200, vy: Math.sin(fAngle) * 200,
+                angle: fAngle,
+                dmg: e.dmg * 0.65, radius: 12, color: '#ef4444',
+                trail: true, trailColor: '#f97316',
+                isEnemyProjectile: true, pierce: false, pierced: 0,
+                maxDist: 550, traveled: 0, life: 99
+              });
+            }
+            this.addFloat(e.x, e.y - 60, '🔥 HELLFIRE!', '#f97316', true);
+            this.screenShake(10, 0.3);
+          }
+        }
+
+        // ── BOSS: WAR MACHINE — Machine Gun + Missiles ──────────
+        // Bắn liên thanh xoay + phóng tên lửa tầm nhiệt
+        if (e.type === 'boss_war_machine') {
+          // Machine Gun burst: mỗi 3s bắn nhanh 12 viên theo hình nón vào player
+          e._mgTimer = (e._mgTimer || 0) + dt;
+          const mgCd = e.phase >= 3 ? 2.5 : e.phase >= 2 ? 3.0 : 4.0;
+          if (e._mgTimer > mgCd && dist < 600) {
+            e._mgTimer = 0;
+            e.attackAnim = { t: now, duration: 400 };
+            const toPlayer = Math.atan2(p.y - e.y, p.x - e.x);
+            const bulletCount = e.phase >= 3 ? 8 : e.phase >= 2 ? 6 : 4;
+            const spreadAngle = 0.4;
+            for (let bi = 0; bi < bulletCount; bi++) {
+              const bAngle = toPlayer + (Math.random() - 0.5) * spreadAngle;
+              this.projectiles.push({
+                x: e.x + Math.cos(toPlayer) * (e.r + 10),
+                y: e.y + Math.sin(toPlayer) * (e.r + 10),
+                vx: Math.cos(bAngle) * 380, vy: Math.sin(bAngle) * 380,
+                angle: bAngle,
+                dmg: e.dmg * 0.35, radius: 7, color: '#fbbf24',
+                trail: false,
+                isEnemyProjectile: true, pierce: false, pierced: 0,
+                maxDist: 700, traveled: 0, life: 99
+              });
+            }
+            this.addFloat(e.x, e.y - 60, '🔫 MACHINE GUN!', '#fbbf24', true);
+            this.spawnParticles(e.x + Math.cos(toPlayer) * e.r, e.y + Math.sin(toPlayer) * e.r, '#fbbf24', 6, 2);
+          }
+
+          // Heat-Seeking Missiles: mỗi 8s phóng 2-3 tên lửa theo dõi player
+          e._missileTimer = (e._missileTimer || 0) + dt;
+          const msCd = e.phase >= 3 ? 5 : e.phase >= 2 ? 7 : 10;
+          if (e._missileTimer > msCd) {
+            e._missileTimer = 0;
+            const missileCount = e.phase >= 3 ? 3 : 2;
+            this.addFloat(e.x, e.y - 75, '🚀 MISSILES!', '#f97316', true);
+            for (let mi = 0; mi < missileCount; mi++) {
+              const mDelay = mi * 0.3; // stagger launches
+              const missileDir = Math.atan2(p.y - e.y, p.x - e.x) + (mi - 1) * 0.25;
+              // Use deferred launch pattern
+              ((delay, dir) => {
+                setTimeout(() => {
+                  if (!this.enemies || !this.projectiles) return;
+                  this.projectiles.push({
+                    x: e.x, y: e.y,
+                    vx: Math.cos(dir) * 200, vy: Math.sin(dir) * 200,
+                    angle: dir,
+                    dmg: e.dmg * 1.5, radius: 16, color: '#f97316',
+                    trail: true, trailColor: '#ef4444',
+                    isEnemyProjectile: true, pierce: false, pierced: 0,
+                    maxDist: 900, traveled: 0, life: 99,
+                    _homing: true, _homingStrength: 3.5, _target: p
+                  });
+                }, delay * 1000);
+              })(mDelay, missileDir);
+            }
+            this.screenShake(14, 0.5);
+          }
+
+          // EMP Pulse: mỗi 15s làm chậm tất cả kỹ năng player 2s
+          e._empTimer = (e._empTimer || 0) + dt;
+          if (e._empTimer > 15.0) {
+            e._empTimer = 0;
+            this.addFloat(e.x, e.y - 80, '⚡ EMP PULSE!', '#f97316', true);
+            p.empUntil = now + 2000; // disable skills for 2s
+            this.spawnParticles(e.x, e.y, '#f97316', 25, 5);
+            this.screenShake(16, 0.6);
+          }
+        }
       }
 
 
@@ -5840,7 +6779,11 @@ class PveGame {
           this.addFloat(this.merchant.x, this.merchant.y - this.merchant.r, `-${finalDmg} HP`, '#ef4444');
         }
       } else {
-        if (dist < p.r + e.r + 5 && now - e.lastAttack > 800) {
+        // FIX: Use fresh distance after collision push; melee threshold +20 for reliability
+        const freshMeleeDx = e.x - p.x;
+        const freshMeleeDy = e.y - p.y;
+        const freshMeleeDist = Math.sqrt(freshMeleeDx * freshMeleeDx + freshMeleeDy * freshMeleeDy);
+        if (freshMeleeDist < p.r + e.r + 20 && now - e.lastAttack > 800) {
           e.lastAttack = now;
           e.attackAnim = { t: now, duration: 200 };
           const finalMeleeDmg = e.dmg * nightDmgMult * (1 - p.defMult * 0.3);
@@ -6226,6 +7169,23 @@ class PveGame {
           p.vy *= 0.88;
         }
       }
+      else if (p.type === 'vine_zone') {
+        // Stationary zone — animate vine tendrils and apply effects to player
+        // Decay pulsing visual
+        p._pulse = ((p._pulse || 0) + dt * 3) % (Math.PI * 2);
+        // Call onTick to apply slow/poison
+        if (p.onTick) p.onTick(p, dt);
+        // Spawn occasional leaf particles to mark the zone
+        if (Math.random() < 0.15) {
+          const leafA = Math.random() * Math.PI * 2;
+          const leafR = Math.random() * p.r;
+          this.spawnParticle(p.x + Math.cos(leafA)*leafR, p.y + Math.sin(leafA)*leafR, '#22c55e', 4 + Math.random()*3, 0.6);
+        }
+      }
+      // Generic onTick dispatch for any other zone-type particles
+      else if (p.onTick) {
+        p.onTick(p, dt);
+      }
     }
   }
 
@@ -6556,8 +7516,24 @@ class PveGame {
       return;
     }
 
+    // ── BOSS INCOMING WARNING (30s trước) ────────────────────
+    for (const entry of this._bossSchedule) {
+      const timeToSpawn = entry.t - elapsed;
+      if (!entry.warned && !entry.done && timeToSpawn > 0 && timeToSpawn <= 30) {
+        entry.warned = true;
+        const bwdef = ENEMY_TYPES[entry.b];
+        const bossMinute = Math.floor(entry.t / 60);
+        if (bwdef) {
+          this.addFloat(p.x, p.y - 100, `🚨 BOSS SẮP XUẤT HIỆN! 🚨`, '#fbbf24', true);
+          this.addFloat(p.x, p.y - 140, `${bwdef.emoji || '👹'} ${bwdef.name} — Phút ${bossMinute}`, '#ef4444', true);
+          this.screenShake(8, 0.4);
+          showToast(`🚨 BOSS SẮP ĐẾN! ${bwdef.emoji || '👹'} ${bwdef.name} — Còn ~30s!`, '#fbbf24');
+          this._showBossWarningPulse = Date.now() + 8000;
+        }
+      }
+    }
+
     // ── BOSS SCHEDULE CHECK ──
-    const p = this.player;
     for (const entry of this._bossSchedule) {
       if (!entry.done && elapsed >= entry.t && !this.bossActive) {
         entry.done = true;
@@ -6602,9 +7578,9 @@ class PveGame {
           } else {
             this.spawnEnemy(entry.b, p.x + Math.cos(angle) * dist, p.y + Math.sin(angle) * dist, 1, false);
             const bossMinute = Math.floor(entry.t / 60);
-            this.addFloat(p.x, p.y - 120, `💀 ${bdef.name} XUẤT HIỆN! [Phút ${bossMinute}]`, '#ef4444', true);
+            this.addFloat(p.x, p.y - 120, `💀 ${bdef.emoji || '👹'} ${bdef.name} XUẤT HIỆN! [Phút ${bossMinute}]`, '#ef4444', true);
             this.screenShake(18, 0.6);
-            showToast(`⚠️ BOSS: ${bdef.name} (Phút ${bossMinute})`, '#ef4444');
+            showToast(`👹 BOSS: ${bdef.emoji || ''} ${bdef.name} (Phút ${bossMinute})`, '#ef4444');
           }
         }
       }
@@ -6724,10 +7700,26 @@ class PveGame {
     const choices = [];
     const ownedSkillIds = this.skills.map(s => s.id);
     const playerBranch = this.player.branch || 'assassin';
-    // ★ CLASS-EXCLUSIVE: Only allow skills matching the player's branch
+    // ★ CLASS-BASED: Player's branch + any 'common' skills available to all classes
+    // Also include up to 2 skills from adjacent/compatible branches for diversity
+    const BRANCH_AFFINITIES = {
+      assassin:    ['assassin', 'ranger'],
+      fighter:     ['fighter', 'paladin'],
+      mage:        ['mage', 'druid'],
+      ranger:      ['ranger', 'assassin'],
+      paladin:     ['paladin', 'fighter'],
+      necromancer: ['necromancer', 'mage'],
+      druid:       ['druid', 'ranger']
+    };
+    const allowedBranches = BRANCH_AFFINITIES[playerBranch] || [playerBranch];
     const allSkillIds = Object.keys(SKILL_DEFS).filter(id => {
       const def = SKILL_DEFS[id];
-      return !def.isLegendary && def.branch === playerBranch;
+      if (def.isLegendary) return false;
+      // Primary class always included; affinity branch skills have 40% chance of appearing
+      if (def.branch === playerBranch) return true;
+      if (def.branch === 'common') return true;
+      if (allowedBranches.includes(def.branch)) return Math.random() < 0.4;
+      return false;
     });
 
     // Filter active skills that can be upgraded (Lv < 8)
@@ -6778,7 +7770,7 @@ class PveGame {
           icon: def.icon,
           name: SKILLS_I18N[currentLang][id]?.name || def.name,
           desc: SKILLS_I18N[currentLang][id]?.desc || def.desc,
-          typeLabel: currentLang === 'en' ? `✨ ${clsName} Exclusive Skill` : `✨ Kỹ Năng ${clsName} Đặc Quyền`,
+          typeLabel: currentLang === 'vi' ? `✨ Kỹ Năng ${clsName} Đặc Quyền` : `✨ ${clsName} Exclusive Skill`,
           color: def.color,
           cardClass: 'new-skill',
           apply: () => this.addSkill(id)
@@ -7070,6 +8062,38 @@ class PveGame {
         rescueDisp.classList.add('hidden');
       }
     }
+
+    // ── BOSS HP BAR ─────────────────────────────────────────────
+    const bossSection = document.getElementById('pveBossHpSection');
+    if (bossSection) {
+      const activeBoss = this.enemies.find(e => e.isBoss && e.hp > 0);
+      if (activeBoss) {
+        bossSection.classList.remove('hidden');
+        const bossEmojiEl = document.getElementById('pveBossEmoji');
+        const bossNameEl  = document.getElementById('pveBossName');
+        const bossHpText  = document.getElementById('pveBossHpText');
+        const bossHpFill  = document.getElementById('pveBossHpFill');
+        const hpPct = Math.max(0, activeBoss.hp / activeBoss.maxHp);
+        if (bossEmojiEl) bossEmojiEl.textContent = activeBoss.emoji || '👹';
+        if (bossNameEl)  bossNameEl.textContent  = activeBoss.name || activeBoss.type;
+        if (bossHpText)  bossHpText.textContent   = Math.round(hpPct * 100) + '%';
+        if (bossHpFill) {
+          bossHpFill.style.width = (hpPct * 100) + '%';
+          // Color shifts: green (full) → yellow (50%) → orange (25%) → red (10%)
+          const col = hpPct > 0.5 ? '#22c55e'
+                    : hpPct > 0.25 ? '#eab308'
+                    : hpPct > 0.10 ? '#f97316'
+                    : '#ef4444';
+          bossHpFill.style.background = `linear-gradient(90deg, ${col}, ${col}cc)`;
+        }
+        // Pulsing border when boss is in rage phase (≤25% HP)
+        if (bossSection.style) {
+          bossSection.style.borderColor = hpPct <= 0.25 ? `rgba(239,68,68,${0.55 + Math.sin(Date.now()/200)*0.45})` : 'rgba(239,68,68,0.55)';
+        }
+      } else {
+        bossSection.classList.add('hidden');
+      }
+    }
   }
 
   // ──────────────────────────────────────────────
@@ -7279,11 +8303,19 @@ class PveGame {
     if (cardsContainer) {
       cardsContainer.innerHTML = '';
       const shopItems = [
-        { id: 'chicken', name: EXTRA_I18N[currentLang].item_chicken, icon: '🍗', cost: 15, desc: EXTRA_I18N[currentLang].item_chicken_desc },
-        { id: 'gold_egg', name: EXTRA_I18N[currentLang].item_gold_egg, icon: '🥚', cost: 45, desc: EXTRA_I18N[currentLang].item_gold_egg_desc },
-        { id: 'super_vacuum', name: EXTRA_I18N[currentLang].item_super_vacuum, icon: '🧲', cost: 30, desc: EXTRA_I18N[currentLang].item_super_vacuum_desc },
-        { id: 'reroll_die', name: EXTRA_I18N[currentLang].item_reroll_die, icon: '🎲', cost: 35, desc: EXTRA_I18N[currentLang].item_reroll_die_desc },
-        { id: 'invuln_potion', name: EXTRA_I18N[currentLang].item_invuln_potion, icon: '🧪', cost: 60, desc: EXTRA_I18N[currentLang].item_invuln_potion_desc }
+        // New unique shop items - distinct from Vampire Survivors
+        { id: 'elixir',         name: EXTRA_I18N[currentLang].item_elixir,        icon: '🍶', cost: 20,  desc: EXTRA_I18N[currentLang].item_elixir_desc },
+        { id: 'ward_bell',      name: EXTRA_I18N[currentLang].item_ward_bell,     icon: '🔔', cost: 30,  desc: EXTRA_I18N[currentLang].item_ward_bell_desc },
+        { id: 'scope_lens',     name: EXTRA_I18N[currentLang].item_scope_lens,    icon: '🎯', cost: 35,  desc: EXTRA_I18N[currentLang].item_scope_lens_desc },
+        { id: 'alchemy_brew',   name: EXTRA_I18N[currentLang].item_alchemy_brew,  icon: '⚗️', cost: 25,  desc: EXTRA_I18N[currentLang].item_alchemy_brew_desc },
+        { id: 'absorb_shield',  name: EXTRA_I18N[currentLang].item_absorb_shield, icon: '🛡️', cost: 55,  desc: EXTRA_I18N[currentLang].item_absorb_shield_desc },
+        { id: 'xp_crystal',     name: EXTRA_I18N[currentLang].item_xp_crystal,    icon: '💎', cost: 30,  desc: EXTRA_I18N[currentLang].item_xp_crystal_desc },
+        { id: 'space_scroll',   name: EXTRA_I18N[currentLang].item_space_scroll,  icon: '🌀', cost: 20,  desc: EXTRA_I18N[currentLang].item_space_scroll_desc },
+        { id: 'radar_map',      name: EXTRA_I18N[currentLang].item_radar_map,     icon: '🗺️', cost: 15,  desc: EXTRA_I18N[currentLang].item_radar_map_desc },
+        { id: 'energy_core',    name: EXTRA_I18N[currentLang].item_energy_core,   icon: '⚡', cost: 45,  desc: EXTRA_I18N[currentLang].item_energy_core_desc },
+        { id: 'crimson_vial',   name: EXTRA_I18N[currentLang].item_crimson_vial,  icon: '🩸', cost: 40,  desc: EXTRA_I18N[currentLang].item_crimson_vial_desc },
+        { id: 'phantom_step',   name: EXTRA_I18N[currentLang].item_phantom_step,  icon: '👻', cost: 35,  desc: EXTRA_I18N[currentLang].item_phantom_step_desc },
+        { id: 'echo_stone',     name: EXTRA_I18N[currentLang].item_echo_stone,    icon: '🪨', cost: 60,  desc: EXTRA_I18N[currentLang].item_echo_stone_desc }
       ];
 
       const mult = this.merchantPriceDiscount || 1.0;
@@ -7297,7 +8329,7 @@ class PveGame {
           <div class="up-icon" style="font-size: 32px; margin-bottom: 8px;">${item.icon}</div>
           <div class="up-name" style="font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 6px;">${item.name}</div>
           <div class="up-desc" style="font-size: 11px; color: #94a3b8; line-height: 1.4; min-height: 38px; margin-bottom: 12px;">${item.desc}</div>
-          <button class="pve-btn pve-btn-primary" style="margin: 0; width: 100%; font-weight: 800; padding: 6px 0; font-size: 13px; text-shadow: 0 0 4px #000;" ${this.totalGold < finalCost ? 'disabled style="background: #374151; color: #94a3b8; cursor: not-allowed; border-color: #4b5563;"' : ''}>MUA ${finalCost} 🪙</button>
+          <button class="pve-btn pve-btn-primary" style="margin: 0; width: 100%; font-weight: 800; padding: 6px 0; font-size: 13px; text-shadow: 0 0 4px #000;" ${this.totalGold < finalCost ? 'disabled style="background: #374151; color: #94a3b8; cursor: not-allowed; border-color: #4b5563;"' : ''}>${currentLang === 'vi' ? 'MUA' : 'BUY'} ${finalCost} 🪙</button>
         `;
 
         const btn = card.querySelector('button');
@@ -7339,10 +8371,15 @@ class PveGame {
       
       const descMap = {
         boss_slime_king: EXTRA_I18N[currentLang].boss_slime_king_desc,
+        boss_forest_guardian: EXTRA_I18N[currentLang].boss_forest_guardian_desc,
         boss_dark_lord: EXTRA_I18N[currentLang].boss_dark_lord_desc,
+        boss_frost_king: EXTRA_I18N[currentLang].boss_frost_king_desc,
         boss_dragon_queen: EXTRA_I18N[currentLang].boss_dragon_queen_desc,
+        boss_lich_supreme: EXTRA_I18N[currentLang].boss_lich_supreme_desc,
         boss_void_titan: EXTRA_I18N[currentLang].boss_void_titan_desc,
+        boss_fallen_demon: EXTRA_I18N[currentLang].boss_fallen_demon_desc,
         boss_death_herald: EXTRA_I18N[currentLang].boss_death_herald_desc,
+        boss_war_machine: EXTRA_I18N[currentLang].boss_war_machine_desc,
         boss_reaper_form1: EXTRA_I18N[currentLang].boss_reaper_form1_desc,
         boss_death_reaper: EXTRA_I18N[currentLang].boss_death_reaper_desc
       };
@@ -7373,60 +8410,101 @@ class PveGame {
 
     this.totalGold -= cost;
     const p = this.player;
+    const lv = currentLang === 'vi';
 
-    // Apply item logic
-    if (id === 'chicken') {
-      p.hp = Math.min(p.maxHp, p.hp + 50);
-      this.spawnParticles(p.x, p.y, '#4ade80', 25, 4);
-      this.addFloat(p.x, p.y - 40, '+50 HP 🍗', '#4ade80', true);
-      showToast(currentLang === 'en' ? '🍗 Roast Chicken: +50 HP!' : '🍗 Đùi Gà Nướng: +50 HP!', '#4ade80');
-    } 
-    else if (id === 'gold_egg') {
-      const stats = ['atkMult', 'defMult', 'spdMult', 'critChance', 'cdMult'];
-      const chosen = stats[Math.floor(Math.random() * stats.length)];
-      let statLabel = '';
-            if (chosen === 'cdMult') {
-        p.eggCdBonus = (p.eggCdBonus || 0.0) + 0.03;
-        this.recalculatePassiveStats();
-        statLabel = '-3% Hồi Chiêu ⏱️';
-      } else if (chosen === 'critChance') {
-        p.eggCritBonus = (p.eggCritBonus || 0.0) + 0.03;
-        this.recalculatePassiveStats();
-        statLabel = '+3% Chí Mạng ⚡';
-      } else if (chosen === 'atkMult') {
-        p.eggDmgBonus = (p.eggDmgBonus || 0.0) + 0.03;
-        this.recalculatePassiveStats();
-        statLabel = '+3% Tấn Công ⚔️';
-      } else if (chosen === 'defMult') {
-        p.eggDefBonus = (p.eggDefBonus || 0.0) + 0.03;
-        this.recalculatePassiveStats();
-        statLabel = '+3% Phòng Thủ 🛡️';
-      } else {
-        p.eggSpdMultBonus = (p.eggSpdMultBonus || 0.0) + 0.03;
-        this.recalculatePassiveStats();
-        statLabel = '+3% Tốc Độ 💨';
-      }
-      this.spawnParticles(p.x, p.y, '#fbbf24', 30, 4.5);
-      this.addFloat(p.x, p.y - 40, statLabel, '#fbbf24', true);
-      showToast(`🥚 TRỨNG VÀNG: ${statLabel}!`, '#fbbf24');
+    if (id === 'elixir') {
+      const healed = Math.min(p.maxHp - p.hp, 80);
+      p.hp = Math.min(p.maxHp, p.hp + 80);
+      p.poisonedUntil = 0;
+      p.slowUntil = 0;
+      this.spawnParticles(p.x, p.y, '#4ade80', 30, 4);
+      this.addFloat(p.x, p.y - 40, `+${Math.round(healed)} HP 🍶`, '#4ade80', true);
+      showToast(lv ? '🍶 Linh Dược: +80 HP! Giải độc!' : '🍶 Elixir Flask: +80 HP! Cleansed!', '#4ade80');
     }
-    else if (id === 'super_vacuum') {
-      this.autoVacuumActive = true;
-      setTimeout(() => { this.autoVacuumActive = false; }, 3000);
-      this.spawnParticles(p.x, p.y, '#38bdf8', 25, 4);
-      showToast('🧲 Kích hoạt lực hút ngọc cực đại!', '#38bdf8');
+    else if (id === 'ward_bell') {
+      p._wardBellActive = true;
+      p._wardBellUsed = false;
+      this.spawnParticles(p.x, p.y, '#fbbf24', 20, 3);
+      this.addFloat(p.x, p.y - 40, '🔔 Chuông Cảnh Vệ!', '#fbbf24', true);
+      showToast(lv ? '🔔 Chuông Cảnh Vệ kích hoạt!' : '🔔 Guardian Bell active!', '#fbbf24');
+    }
+    else if (id === 'scope_lens') {
+      p._scopeLensUntil = Date.now() + 60000;
+      this.spawnParticles(p.x, p.y, '#f87171', 25, 4);
+      this.addFloat(p.x, p.y - 40, '🎯 +20% Crit!', '#f87171', true);
+      showToast(lv ? '🎯 Kính Ngắm: +20% chí mạng 60s!' : '🎯 Scope Lens: +20% Crit for 60s!', '#fbbf24');
+    }
+    else if (id === 'alchemy_brew') {
+      const hpSacrifice = p.hp * 0.25;
+      p.hp = Math.max(1, p.hp - hpSacrifice);
+      p._alchemyBrewUntil = Date.now() + 30000;
+      this.spawnParticles(p.x, p.y, '#a855f7', 30, 4);
+      this.addFloat(p.x, p.y - 40, '⚗️ +40% ATK!', '#a855f7', true);
+      showToast(lv ? '⚗️ Luyện Kim: -25% HP → +40% STH 30s!' : '⚗️ Alchemy: -25% HP → +40% ATK 30s!', '#a855f7');
+    }
+    else if (id === 'absorb_shield') {
+      p._absorbShieldCharges = (p._absorbShieldCharges || 0) + 1;
+      this.spawnParticles(p.x, p.y, '#38bdf8', 35, 5);
+      this.addFloat(p.x, p.y - 40, `🛡️ KHIÊN BẢO VỆ x${p._absorbShieldCharges}!`, '#38bdf8', true);
+      showToast(lv ? `🛡️ Khiên Hấp Thụ: ${p._absorbShieldCharges} lớp bảo vệ!` : `🛡️ Absorb Shield: ${p._absorbShieldCharges} block charge!`, '#38bdf8');
+    }
+    else if (id === 'xp_crystal') {
+      this.addXp(500);
+      this.spawnParticles(p.x, p.y, '#fbbf24', 40, 5);
+      this.addFloat(p.x, p.y - 40, '+500 XP 💎', '#fbbf24', true);
+      showToast(lv ? '💎 Tinh Thể: +500 XP!' : '💎 XP Crystal: +500 XP!', '#fbbf24');
+    }
+    else if (id === 'space_scroll') {
+      // Teleport + leave decoy for 2s
+      const oldX = p.x, oldY = p.y;
+      const margin = 300;
+      p.x = margin + Math.random() * (WORLD_W - margin * 2);
+      p.y = margin + Math.random() * (WORLD_H - margin * 2);
+      this.spawnParticles(oldX, oldY, '#818cf8', 30, 4);
+      this.spawnParticles(p.x, p.y, '#818cf8', 25, 3);
+      this.addFloat(p.x, p.y - 40, '🌀 Dịch chuyển!', '#818cf8', true);
+      showToast(lv ? '🌀 Cuộn Không Gian: Dịch chuyển an toàn!' : '🌀 Space Scroll: Teleported!', '#818cf8');
       this.closeMerchantShop();
       return;
     }
-    else if (id === 'reroll_die') {
-      this.rerolls = (this.rerolls || 0) + 1;
-      this.spawnParticles(p.x, p.y, '#a855f7', 20, 4);
-      showToast('+1 Lượt Reroll! 🎲', '#a855f7');
+    else if (id === 'radar_map') {
+      p._radarMapUntil = Date.now() + 60000;
+      this.spawnParticles(p.x, p.y, '#10b981', 20, 3);
+      this.addFloat(p.x, p.y - 40, '🗺️ Boss Radar!', '#10b981', true);
+      showToast(lv ? '🗺️ Radar: Vị trí boss hiện trên minimap!' : '🗺️ Radar: Boss location on minimap!', '#10b981');
+    }
+    else if (id === 'energy_core') {
+      p._energyCoreUntil = Date.now() + 20000;
+      this.spawnParticles(p.x, p.y, '#fde047', 35, 5);
+      this.addFloat(p.x, p.y - 40, '⚡ CDR -60%!', '#fde047', true);
+      showToast(lv ? '⚡ Lõi Năng Lượng: -60% CD trong 20s!' : '⚡ Energy Core: -60% CD for 20s!', '#fde047');
+    }
+    else if (id === 'crimson_vial') {
+      p._crimsonVialUntil = Date.now() + 45000;
+      this.spawnParticles(p.x, p.y, '#ef4444', 30, 4);
+      this.addFloat(p.x, p.y - 40, '🩸 +15% Hút Máu!', '#ef4444', true);
+      showToast(lv ? '🩸 Lọ Máu: +15% hút máu 45s!' : '🩸 Crimson Vial: +15% lifesteal 45s!', '#ef4444');
+    }
+    else if (id === 'phantom_step') {
+      p._phantomStepUntil = Date.now() + 10000;
+      this.spawnParticles(p.x, p.y, '#a78bfa', 25, 4);
+      this.addFloat(p.x, p.y - 40, '👻 +25% NÉ TRÁNH!', '#a78bfa', true);
+      showToast(lv ? '👻 Bước Ảo Ảnh: +25% né tránh 10s!' : '👻 Phantom Step: +25% Dodge for 10s!', '#a78bfa');
+    }
+    else if (id === 'echo_stone') {
+      p._echoStoneUntil = Date.now() + 30000;
+      this.spawnParticles(p.x, p.y, '#6d28d9', 30, 5);
+      this.addFloat(p.x, p.y - 40, '🪨 ECHO +50% DMG!', '#6d28d9', true);
+      showToast(lv ? '🪨 Đá Vang Vọng: Kỹ năng echo 50% STH trong 30s!' : '🪨 Echo Stone: Skills echo at 50% dmg for 30s!', '#6d28d9');
+    }
+    // Legacy items kept for backward compatibility
+    else if (id === 'chicken') {
+      p.hp = Math.min(p.maxHp, p.hp + 50);
+      this.addFloat(p.x, p.y - 40, '+50 HP 🍗', '#4ade80', true);
     }
     else if (id === 'invuln_potion') {
       p.invulnUntil = Date.now() + 8000;
-      this.spawnParticles(p.x, p.y, '#fbbf24', 35, 5);
-      showToast('🧪 Bất tử hoàn toàn trong 8 giây!', '#fde68a');
+      showToast('🧪 Bất tử 8 giây!', '#fde68a');
       this.closeMerchantShop();
       return;
     }
@@ -8344,13 +9422,27 @@ class PveGame {
         case 'titan_minion':  drawEnemyVoidCrawler(ctx, e, t, hitFlash, rage); break;
         case 'death_knight':  drawEnemyKnight(ctx, e, t, hitFlash, rage); break;
         case 'hellhound':     drawEnemyWolf(ctx, e, t, hitFlash, rage); break;
-        case 'boss_slime_king':    drawBossSlimeKing(ctx, e, t, hitFlash, rage); break;
-        case 'boss_dark_lord':     drawBossDarkLord(ctx, e, t, hitFlash, rage); break;
-        case 'boss_dragon_queen':  drawBossDragonQueen(ctx, e, t, hitFlash, rage); break;
-        case 'boss_void_titan':    drawBossVoidTitan(ctx, e, t, hitFlash, rage); break;
-        case 'boss_death_herald':  drawBossDeathHerald(ctx, e, t, hitFlash, rage); break;
-        case 'boss_reaper_form1':  drawBossReaperForm1(ctx, e, t, hitFlash, rage); break;
-        case 'boss_death_reaper':  drawBossDeathReaper(ctx, e, t, hitFlash, rage); break;
+        case 'boss_slime_king':      drawBossSlimeKing(ctx, e, t, hitFlash, rage); break;
+        case 'boss_forest_guardian':  drawBossForestGuardian(ctx, e, t, hitFlash, rage); break;
+        case 'boss_dark_lord':        drawBossDarkLord(ctx, e, t, hitFlash, rage); break;
+        case 'boss_frost_king':       drawBossFrostKing(ctx, e, t, hitFlash, rage); break;
+        case 'boss_dragon_queen':     drawBossDragonQueen(ctx, e, t, hitFlash, rage); break;
+        case 'boss_lich_supreme':     drawBossLichSupreme(ctx, e, t, hitFlash, rage); break;
+        case 'boss_void_titan':       drawBossVoidTitan(ctx, e, t, hitFlash, rage); break;
+        case 'boss_fallen_demon':     drawBossFallenDemon(ctx, e, t, hitFlash, rage); break;
+        case 'boss_death_herald':     drawBossDeathHerald(ctx, e, t, hitFlash, rage); break;
+        case 'boss_war_machine':      drawBossWarMachine(ctx, e, t, hitFlash, rage); break;
+        case 'boss_reaper_form1':     drawBossReaperForm1(ctx, e, t, hitFlash, rage); break;
+        case 'boss_death_reaper':     drawBossDeathReaper(ctx, e, t, hitFlash, rage); break;
+        case 'boss_plague_witch':     drawBossPlagueWitch(ctx, e, t, hitFlash, rage); break;
+        case 'boss_storm_admiral':    drawBossStormAdmiral(ctx, e, t, hitFlash, rage); break;
+        case 'boss_sand_colossus':    drawBossSandColossus(ctx, e, t, hitFlash, rage); break;
+        case 'boss_shadow_hydra':     drawBossShadowHydra(ctx, e, t, hitFlash, rage); break;
+        case 'boss_crystal_golem':    drawBossCrystalGolem(ctx, e, t, hitFlash, rage); break;
+        case 'boss_chaos_jester':     drawBossChaosJester(ctx, e, t, hitFlash, rage); break;
+        case 'boss_abyssal_kraken':   drawBossAbyssalKraken(ctx, e, t, hitFlash, rage); break;
+        case 'boss_iron_pharaoh':     drawBossIronPharaoh(ctx, e, t, hitFlash, rage); break;
+        case 'boss_celestial_seraph': drawBossCelestialSeraph(ctx, e, t, hitFlash, rage); break;
         default:
           // Fallback: vẽ hình tròn màu của enemy type
           ctx.fillStyle = hitFlash ? '#fff' : (e.color || '#ef4444');
@@ -8369,6 +9461,26 @@ class PveGame {
         ctx.arc(e.x + Math.cos(sAngle) * (e.r + 8), e.y + Math.sin(sAngle) * (e.r + 8) - 5, 4, 0, Math.PI*2);
         ctx.fill();
       }
+    }
+    // ── Attack animation flash ring (Bug #4 fix) ──────────────────────────
+    if (e.attackAnim && (t - e.attackAnim.t) < e.attackAnim.duration) {
+      const prog = (t - e.attackAnim.t) / e.attackAnim.duration; // 0→1
+      const ringR = e.r * (1.1 + prog * 0.6);
+      const alpha = (1 - prog) * 0.85;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = e.isBoss ? '#ff6b6b' : '#fca5a5';
+      ctx.lineWidth = e.isBoss ? 5 : 3;
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, ringR, 0, Math.PI * 2);
+      ctx.stroke();
+      // Secondary inner flash
+      ctx.globalAlpha = alpha * 0.4;
+      ctx.fillStyle = '#fef2f2';
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, e.r * (1 - prog * 0.3), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
     }
     // Slow rings
     if (slowed) {
@@ -8648,6 +9760,38 @@ class PveGame {
         ctx.lineTo(0, -p.h * alpha);
         ctx.lineTo(p.w/2, 0);
         ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.restore();
+      } else if (p.type === 'vine_zone') {
+        // Pulsing toxic zone — green gradient circle with vine tentacles
+        const pulse = 1 + 0.15 * Math.sin((p._pulse || 0));
+        const zr = p.r * pulse;
+        // Toxic fill
+        const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, zr);
+        g.addColorStop(0, `rgba(74,222,128,${0.28 * alpha})`);
+        g.addColorStop(0.6, `rgba(22,163,74,${0.18 * alpha})`);
+        g.addColorStop(1, `rgba(5,46,22,0)`);
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(p.x, p.y, zr, 0, Math.PI*2); ctx.fill();
+        // Border
+        ctx.strokeStyle = `rgba(74,222,128,${0.65 * alpha})`;
+        ctx.lineWidth = 2.5;
+        ctx.setLineDash([8, 4]);
+        ctx.beginPath(); ctx.arc(p.x, p.y, zr, 0, Math.PI*2); ctx.stroke();
+        ctx.setLineDash([]);
+        // Vine tentacles (4 lines rotating)
+        ctx.strokeStyle = `rgba(21,128,61,${0.7 * alpha})`; ctx.lineWidth = 2;
+        ctx.save(); ctx.translate(p.x, p.y);
+        for (let vi = 0; vi < 4; vi++) {
+          const va = (vi / 4) * Math.PI * 2 + (p._pulse || 0) * 0.5;
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.bezierCurveTo(
+            Math.cos(va + 0.5) * zr * 0.5, Math.sin(va + 0.5) * zr * 0.5,
+            Math.cos(va - 0.3) * zr * 0.8, Math.sin(va - 0.3) * zr * 0.8,
+            Math.cos(va) * zr, Math.sin(va) * zr
+          );
+          ctx.stroke();
+        }
         ctx.restore();
       } else if (p.type === 'cathedral_rune') {
         ctx.strokeStyle = '#fde68a'; ctx.lineWidth = 2.5 * alpha;
@@ -9889,20 +11033,32 @@ class PveGame {
     if (psvIcon) psvIcon.textContent = psvIconChar;
     if (resIcon) resIcon.textContent = resDef ? resDef.icon : '❓';
     
+    let typeColor = '#fbbf24';
     if (typeLabel) {
       typeLabel.textContent = typeName;
-      if (typeName === 'UNION') typeLabel.style.color = '#93c5fd';
-      else if (typeName === 'GIFT') typeLabel.style.color = '#fde68a';
-      else if (typeName === 'MORPH') typeLabel.style.color = '#c084fc';
-      else typeLabel.style.color = '#fbbf24';
+      if (typeName === 'UNION')      { typeLabel.style.color = '#93c5fd'; typeColor = '#93c5fd'; }
+      else if (typeName === 'GIFT')  { typeLabel.style.color = '#fde68a'; typeColor = '#fde68a'; }
+      else if (typeName === 'MORPH') { typeLabel.style.color = '#c084fc'; typeColor = '#c084fc'; }
+      else                           { typeLabel.style.color = '#fbbf24'; typeColor = '#fbbf24'; }
     }
     if (nameLabel) nameLabel.textContent = resDef ? resDef.name : 'Unknown';
     if (descLabel) descLabel.textContent = resDef ? resDef.desc : '';
     
     screen.classList.remove('hidden');
     
-    this.screenShake(10, 0.4);
-    this.spawnParticles(this.player.x, this.player.y, '#fbbf24', 30, 8);
+    // ── Enhanced EVO notifications ────────────────────────────
+    const evoIcon = resDef ? resDef.icon : '⭐';
+    const evoName = resDef ? resDef.name : 'Tiến Hóa';
+    const typeLabel_str = typeName === 'UNION' ? '🔗 UNION'   
+                        : typeName === 'GIFT'  ? '🎁 GIFT'
+                        : typeName === 'MORPH' ? '🌀 MORPH'
+                        : '⭐ EVOLUTION';
+    showToast(`${typeLabel_str}: ${evoIcon} ${evoName} ĐÃ THỨC TỈNH!`, typeColor);
+    this.addFloat(this.player.x, this.player.y - 80,  `${evoIcon} ${evoName}`, typeColor, true);
+    this.addFloat(this.player.x, this.player.y - 115, `⭐ ${typeLabel_str} UNLOCK! ⭐`, '#fbbf24', true);
+    this.screenShake(20, 0.7);
+    this.spawnParticles(this.player.x, this.player.y, typeColor, 50, 10);
+    this.spawnParticles(this.player.x, this.player.y, '#fbbf24', 20, 6);
   }
 
   openGoldChestFallback() {
@@ -10282,7 +11438,1020 @@ class PveGame {
     }
   }
 
+  // ─── COMMON SKILL IMPLEMENTATIONS ─────────────────────────────
+
+  fireShockwave(dmg, lv) {
+    const p = this.player;
+    const fcLv = (p.passiveItems?.fracture_core || 0); // fracture_core: +range +bleed
+    const radius = 180 + lv * 30 + fcLv * 25;
+    const bleedDmg = fcLv > 0 ? dmg * 0.08 * fcLv : 0; // bleed DoT per tick
+    const knockback = 80 + lv * 15 + fcLv * 20;
+    this.spawnParticles(p.x, p.y, '#f97316', 14 + fcLv * 4, 4);
+    this.particles.push({ type: 'ring', x: p.x, y: p.y, r: 0, maxR: radius, color: fcLv > 0 ? '#ef4444' : '#f97316', life: 0.4, maxLife: 0.4 });
+    if (fcLv > 0) this.particles.push({ type: 'ring', x: p.x, y: p.y, r: 0, maxR: radius * 0.6, color: '#dc2626', life: 0.6, maxLife: 0.6 });
+    this.screenShake(5 + fcLv * 2, 0.2);
+    this.enemies.forEach(e => {
+      if (e.hp <= 0) return;
+      const dist = Math.hypot(e.x - p.x, e.y - p.y);
+      if (dist < radius) {
+        this.dealDamage(e, dmg * (1 - dist / radius * 0.4));
+        const ang = Math.atan2(e.y - p.y, e.x - p.x);
+        e.x += Math.cos(ang) * knockback;
+        e.y += Math.sin(ang) * knockback;
+        // fracture_core: apply bleed DoT
+        if (fcLv > 0) {
+          e._bleedDmg = Math.max(e._bleedDmg || 0, bleedDmg);
+          e._bleedUntil = Date.now() + (2000 + fcLv * 500);
+          this.spawnParticle(e.x, e.y, '#dc2626', 10, 0.5);
+        }
+      }
+    });
+    if (fcLv > 0) this.addFloat(p.x, p.y - 45, `💢 FRACTURE! +Bleed`, '#ef4444');
+  }
+
+  fireLifeleech(dmg, lv) {
+    const p = this.player;
+    const bpLv = (p.passiveItems?.blood_prism || 0); // blood_prism: AoE heal splash + lifesteal %
+    const target = this.nearestEnemy();
+    if (!target) return;
+    // Beam visual — series of particles along line
+    const steps = 8;
+    const beamColor = bpLv > 0 ? '#f43f5e' : '#ef4444';
+
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      this.spawnParticle(
+        p.x + (target.x - p.x) * t,
+        p.y + (target.y - p.y) * t,
+        beamColor, 6 + bpLv, 0.3
+      );
+    }
+    // blood_prism: hit nearby enemies in AoE splash too
+    const splashRadius = bpLv > 0 ? 80 + bpLv * 30 : 0;
+    let extraDealt = 0;
+    if (bpLv > 0) {
+      this.enemies.forEach(e => {
+        if (e.hp <= 0 || e === target) return;
+        if (Math.hypot(e.x - target.x, e.y - target.y) < splashRadius) {
+          const splashDmg = dmg * 0.4 * bpLv;
+          extraDealt += this.dealDamage(e, splashDmg);
+          this.spawnParticle(e.x, e.y, '#f43f5e', 8, 0.3);
+        }
+      });
+      this.particles.push({ type: 'ring', x: target.x, y: target.y, r: 0, maxR: splashRadius, color: '#f43f5e', life: 0.35, maxLife: 0.35 });
+    }
+    const dealt = this.dealDamage(target, dmg);
+    const leechPct = 0.30 + lv * 0.05 + bpLv * 0.08; // blood_prism increases lifesteal %
+    const heal = Math.round((dealt + extraDealt * 0.5) * leechPct);
+    p.hp = Math.min(p.maxHp, p.hp + heal);
+    this.addFloat(p.x, p.y - 40, `+${heal} HP 🩸`, bpLv > 0 ? '#f43f5e' : '#4ade80');
+    if (bpLv > 0 && extraDealt > 0) this.addFloat(target.x, target.y - 50, `💉 BLOOD PRISM`, '#f43f5e');
+  }
+
+  fireAuraBolt(dmg, lv) {
+    const p = this.player;
+    const rlLv = (p.passiveItems?.radiant_lens || 0); // radiant_lens: extra bolts + piercing
+    const baseCount = 4 + (lv >= 3 ? 4 : lv >= 2 ? 2 : 0); // 4/6/8 bolts
+    const count = baseCount + rlLv * 2; // radiant_lens adds 2 bolts per level
+    const maxPierces = 3 + rlLv * 2; // radiant_lens increases piercing
+    const boltDmg = dmg * (1 + rlLv * 0.10);
+    const speed = 380 * (p.projSpeedMult || 1.0);
+    const boltColor = rlLv > 0 ? '#fffde7' : '#fde047';
+    const trailColor = rlLv > 0 ? '#fff176' : '#fbbf24';
+    for (let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 / count) * i;
+      this.spawnProjectile({
+        x: p.x, y: p.y, angle, speed, dmg: boltDmg,
+        radius: 9 + rlLv, color: boltColor, trail: true, trailColor, pierce: true,
+        maxPierces
+      });
+    }
+    this.spawnParticles(p.x, p.y, boltColor, 8 + rlLv * 4, 3);
+    if (rlLv > 0) {
+      this.particles.push({ type: 'ring', x: p.x, y: p.y, r: 0, maxR: 60 + rlLv * 20, color: '#fde047', life: 0.3, maxLife: 0.3 });
+      this.addFloat(p.x, p.y - 35, `✨ RADIANT LENS x${count}`, '#fde047');
+    }
+  }
+
+  fireExplosiveRush(dmg, lv) {
+    const p = this.player;
+    const icLv = (p.passiveItems?.impact_core || 0); // impact_core: longer stun + +dmg% + wider AoE
+    const target = this.nearestEnemy();
+    if (!target) return;
+    const ang = Math.atan2(target.y - p.y, target.x - p.x);
+    // Dash toward target
+    p.x = Math.max(50, Math.min(WORLD_W - 50, target.x - Math.cos(ang) * 55));
+    p.y = Math.max(50, Math.min(WORLD_H - 50, target.y - Math.sin(ang) * 55));
+    const radius = 120 + lv * 25 + icLv * 20;
+    const rushDmg = dmg * (1 + icLv * 0.18);
+    const stunDur = 1000 + icLv * 500; // impact_core: +0.5s stun per level
+    const shockColor = icLv > 0 ? '#fed7aa' : '#fb923c';
+    this.spawnParticles(p.x, p.y, shockColor, 18 + icLv * 6, 5);
+    this.particles.push({ type: 'ring', x: p.x, y: p.y, r: 0, maxR: radius, color: shockColor, life: 0.45, maxLife: 0.45 });
+    if (icLv > 0) this.particles.push({ type: 'ring', x: p.x, y: p.y, r: 0, maxR: radius * 0.5, color: '#f97316', life: 0.6, maxLife: 0.6 });
+    this.screenShake(8 + icLv * 3, 0.25);
+    this.enemies.forEach(e => {
+      if (e.hp <= 0) return;
+      const dist = Math.hypot(e.x - p.x, e.y - p.y);
+      if (dist < radius) {
+        this.dealDamage(e, rushDmg);
+        e.stunUntil = Date.now() + stunDur;
+        const pa = Math.atan2(e.y - p.y, e.x - p.x);
+        e.x += Math.cos(pa) * (70 + icLv * 20);
+        e.y += Math.sin(pa) * (70 + icLv * 20);
+        if (icLv > 0) this.spawnParticle(e.x, e.y, '#f97316', 14, 0.4);
+      }
+    });
+    if (icLv > 0) this.addFloat(p.x, p.y - 50, `💥 IMPACT CORE! +${icLv*18}% DMG`, '#f97316');
+  }
+
+  fireChainLightning(dmg, lv) {
+    const p = this.player;
+    const scLv = (p.passiveItems?.storm_coil || 0); // storm_coil: more chains + wider range + stun
+    const maxChain = 3 + lv * 2 + scLv * 2; // storm_coil adds 2 extra chains per level
+    const chainRange = 200 + scLv * 40; // storm_coil increases jump range
+    const boltDmg = dmg * (1 + scLv * 0.12);
+    let current = this.nearestEnemy();
+    if (!current) return;
+    const hit = new Set();
+    let currentDmg = boltDmg;
+    let prevX = p.x, prevY = p.y;
+    const boltColor = scLv > 0 ? '#38bdf8' : '#facc15';
+    for (let i = 0; i < maxChain && current; i++) {
+      if (hit.has(current)) break;
+      hit.add(current);
+      // Lightning bolt visual — more jagged with storm_coil
+      const steps = 6 + scLv * 2;
+      for (let s = 0; s <= steps; s++) {
+        const t = s / steps;
+        const jitterX = (Math.random() - 0.5) * (20 + scLv * 8);
+        const jitterY = (Math.random() - 0.5) * (20 + scLv * 8);
+        this.spawnParticle(
+          prevX + (current.x - prevX) * t + jitterX,
+          prevY + (current.y - prevY) * t + jitterY,
+          boltColor, 5 + scLv, 0.25
+        );
+      }
+      this.dealDamage(current, currentDmg);
+      this.addFloat(current.x, current.y - 30, `⚡${Math.round(currentDmg)}`, boltColor);
+      // storm_coil: stun briefly on each hit
+      if (scLv > 0) {
+        current.stunUntil = Date.now() + 300 + scLv * 100;
+        this.spawnParticle(current.x, current.y, '#7dd3fc', 12, 0.3);
+      }
+      currentDmg *= 0.80;
+      prevX = current.x; prevY = current.y;
+      // Find next closest unchained enemy
+      let next = null, best = Infinity;
+      this.enemies.forEach(e => {
+        if (hit.has(e) || e.hp <= 0) return;
+        const d = Math.hypot(e.x - current.x, e.y - current.y);
+        if (d < chainRange && d < best) { best = d; next = e; }
+      });
+      current = next;
+    }
+    if (scLv > 0) this.addFloat(p.x, p.y - 40, `🌩️ STORM COIL x${maxChain} chains`, '#38bdf8');
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // ─── COMMON SKILLS BATCH 2 — Fire Functions ─────────────────
+  // ═══════════════════════════════════════════════════════════════
+
+  // 🌀 GRAVITY WELL — pull vortex, sustained DoT 3s
+  fireGravityWell(dmg, lv) {
+    const p = this.player;
+    const singLv = (p.passiveItems?.singularity || 0);
+    const radius = 160 + lv * 20 + singLv * 20;
+    const pullForce = 180 + singLv * 50;
+    const dotDmg = (dmg * 0.15 + singLv * dmg * 0.10) * (p.dmgMult || 1);
+    const dur = 3.0;
+    const cx = p.x, cy = p.y;
+
+    // Spawn vortex swirl particles
+    for (let i = 0; i < 30; i++) {
+      const a = (i / 30) * Math.PI * 2;
+      const r = radius * (0.3 + Math.random() * 0.7);
+      this.spawnParticle(cx + Math.cos(a) * r, cy + Math.sin(a) * r, '#818cf8', 8 + Math.random() * 6, 0.6 + Math.random() * 0.4);
+    }
+    this.spawnParticle(cx, cy, '#c4b5fd', 24, 0.8);
+    this.addFloat(cx, cy - 40, '🌀 Hố Hấp Dẫn!', '#818cf8');
+
+    // Screen shake small
+    this.screenShake = Math.max(this.screenShake || 0, 3);
+
+    // Timed pull + DoT effect
+    let elapsed = 0;
+    const tickRate = 0.4;
+    let ticks = 0;
+    const maxTicks = Math.ceil(dur / tickRate);
+    const interval = setInterval(() => {
+      if (!this.running || this.paused) { clearInterval(interval); return; }
+      ticks++;
+      if (ticks > maxTicks) { clearInterval(interval); return; }
+
+      this.enemies.forEach(e => {
+        if (e.hp <= 0) return;
+        const dx = cx - e.x, dy = cy - e.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < radius) {
+          // Pull towards center
+          const force = pullForce * tickRate * (1 - dist / radius);
+          e.x += (dx / dist) * force * 0.5;
+          e.y += (dy / dist) * force * 0.5;
+          e.x = Math.max(20, Math.min(WORLD_W - 20, e.x));
+          e.y = Math.max(20, Math.min(WORLD_H - 20, e.y));
+          // DoT
+          this.dealDamage(e, dotDmg);
+          // Spiral particles
+          if (Math.random() < 0.4) {
+            this.spawnParticle(e.x + (Math.random()-0.5)*20, e.y + (Math.random()-0.5)*20, '#a78bfa', 5, 0.3);
+          }
+        }
+      });
+      // Vortex center pulse
+      for (let i = 0; i < 6; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const r = Math.random() * radius * 0.4;
+        this.spawnParticle(cx + Math.cos(a)*r, cy + Math.sin(a)*r, '#6d28d9', 6, 0.25);
+      }
+    }, tickRate * 1000);
+  }
+
+  // 🗡️ MIRROR BLADE — bouncing blade with wall reflection
+  fireMirrorBlade(dmg, lv) {
+    const p = this.player;
+    const voidEdgeLv = (p.passiveItems?.void_edge || 0);
+    const maxBounces = 4 + voidEdgeLv;
+    const bladeDmg = dmg * (1 + voidEdgeLv * 0.08) * (p.dmgMult || 1);
+
+    // Fire toward nearest enemy or random direction
+    const target = this.nearestEnemy();
+    let angle = target ? Math.atan2(target.y - p.y, target.x - p.x) : Math.random() * Math.PI * 2;
+
+    let bx = p.x, by = p.y;
+    let vx = Math.cos(angle) * 14, vy = Math.sin(angle) * 14;
+    let bounces = 0;
+    let curDmg = bladeDmg;
+    const hitEnemies = new Set();
+
+    this.addFloat(p.x, p.y - 30, '🗡️ Lưỡi Giao Thủ!', '#38bdf8');
+
+    const step = () => {
+      if (!this.running || this.paused) return;
+      if (bounces > maxBounces) return;
+
+      // Move blade
+      bx += vx; by += vy;
+
+      // Wall bounces
+      if (bx < 20)  { bx = 20;  vx = Math.abs(vx);  bounces++; this.spawnParticle(bx, by, '#38bdf8', 14, 0.4); }
+      if (bx > WORLD_W-20) { bx = WORLD_W-20; vx = -Math.abs(vx); bounces++; this.spawnParticle(bx, by, '#38bdf8', 14, 0.4); }
+      if (by < 20)  { by = 20;  vy = Math.abs(vy);  bounces++; this.spawnParticle(bx, by, '#38bdf8', 14, 0.4); }
+      if (by > WORLD_H-20) { by = WORLD_H-20; vy = -Math.abs(vy); bounces++; this.spawnParticle(bx, by, '#38bdf8', 14, 0.4); }
+
+      // Blade trail particles
+      this.spawnParticle(bx, by, '#7dd3fc', 7 - bounces, 0.15);
+      this.spawnParticle(bx + (Math.random()-0.5)*8, by + (Math.random()-0.5)*8, '#bae6fd', 4, 0.1);
+
+      // Hit enemies
+      this.enemies.forEach(e => {
+        if (e.hp <= 0 || hitEnemies.has(e)) return;
+        if (Math.hypot(e.x - bx, e.y - by) < 28) {
+          hitEnemies.add(e);
+          const thisDmg = curDmg * Math.pow(0.85, bounces);
+          this.dealDamage(e, thisDmg);
+          this.addFloat(e.x, e.y - 20, `🗡️${Math.round(thisDmg)}`, '#38bdf8');
+          // Blade bounces off enemy too
+          const ex = e.x - bx, ey = e.y - by;
+          const len = Math.hypot(ex, ey) || 1;
+          vx = -(ex/len) * 14; vy = -(ey/len) * 14;
+          bounces++;
+          for (let i = 0; i < 8; i++) this.spawnParticle(bx + (Math.random()-0.5)*20, by + (Math.random()-0.5)*20, '#e0f2fe', 8, 0.3);
+        }
+      });
+
+      if (bounces <= maxBounces) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  // 👻 SOUL BURST — nova that heals per enemy hit
+  fireSoulBurst(dmg, lv) {
+    const p = this.player;
+    const svLv = (p.passiveItems?.spirit_vessel || 0);
+    const radius = 140 + lv * 25;
+    const burstDmg = dmg * (1 + svLv * 0.20) * (p.dmgMult || 1);
+    const healPerHit = 8 + lv * 4 + svLv * 8;
+
+    // Big soul explosion particles
+    for (let i = 0; i < 48; i++) {
+      const a = (i / 48) * Math.PI * 2;
+      const r = radius * (0.5 + Math.random() * 0.5);
+      const speed = 2 + Math.random() * 3;
+      this.spawnParticle(
+        p.x + Math.cos(a) * r * 0.3,
+        p.y + Math.sin(a) * r * 0.3,
+        i % 3 === 0 ? '#f0abfc' : i % 3 === 1 ? '#e879f9' : '#c026d3',
+        10 + Math.random() * 8, 0.5 + Math.random() * 0.4
+      );
+    }
+    // Center glow
+    this.spawnParticle(p.x, p.y, '#fae8ff', 32, 0.7);
+    this.screenShake = Math.max(this.screenShake || 0, 5);
+    this.addFloat(p.x, p.y - 50, '👻 Vụ Nổ Linh Hồn!', '#e879f9', true);
+
+    let totalHeal = 0;
+    this.enemies.forEach(e => {
+      if (e.hp <= 0) return;
+      const dist = Math.hypot(e.x - p.x, e.y - p.y);
+      if (dist < radius) {
+        this.dealDamage(e, burstDmg);
+        totalHeal += healPerHit;
+        // Per-enemy burst
+        this.spawnParticle(e.x, e.y, '#c084fc', 12, 0.4);
+      }
+    });
+
+    // Heal player
+    if (totalHeal > 0) {
+      p.hp = Math.min(p.maxHp, (p.hp || 0) + totalHeal);
+      this.addFloat(p.x, p.y - 70, `+${totalHeal} HP 👻`, '#86efac');
+    }
+  }
+
+  // ⏰ TIME WARP — slow field, no damage
+  fireTimeWarp(dmg, lv) {
+    const p = this.player;
+    const csLv = (p.passiveItems?.chrono_shard || 0);
+    const radius = 200 + lv * 30 + csLv * 30;
+    const slowFactor = 0.4; // enemies move at 40% speed
+    const dur = 3.0 + csLv * 0.5; // balance: max ~5.5s
+
+    // Visual: clock rings expanding outward
+    for (let ring = 0; ring < 3; ring++) {
+      setTimeout(() => {
+        if (!this.running) return;
+        for (let i = 0; i < 24; i++) {
+          const a = (i / 24) * Math.PI * 2;
+          const r = (ring + 1) * radius / 3;
+          this.spawnParticle(
+            p.x + Math.cos(a) * r, p.y + Math.sin(a) * r,
+            '#a78bfa', 9, 0.5 + ring * 0.1
+          );
+        }
+      }, ring * 200);
+    }
+    this.addFloat(p.x, p.y - 45, '⏰ Lệch Phá Thời Gian!', '#a78bfa', true);
+
+    // Apply slow to enemies
+    const affectedEnemies = [];
+    this.enemies.forEach(e => {
+      if (e.hp <= 0) return;
+      if (Math.hypot(e.x - p.x, e.y - p.y) < radius) {
+        if (!e._timeWarpSlowed) {
+          e._timeWarpSlowed = true;
+          e._origSpeed = e.speed;
+          e.speed *= slowFactor;
+          affectedEnemies.push(e);
+          // Freeze particle
+          this.spawnParticle(e.x, e.y, '#ddd6fe', 16, dur);
+        }
+      }
+    });
+
+    // Cancel slow after duration
+    setTimeout(() => {
+      affectedEnemies.forEach(e => {
+        if (e._timeWarpSlowed) {
+          e.speed = e._origSpeed;
+          e._timeWarpSlowed = false;
+          if (this.running) this.spawnParticle(e.x, e.y, '#7c3aed', 10, 0.3);
+        }
+      });
+    }, dur * 1000);
+  }
+
+  // 📢 ECHO STRIKE — chain to 3 adjacent targets
+  fireEchoStrike(dmg, lv) {
+    const p = this.player;
+    const resLv = (p.passiveItems?.resonance || 0);
+    const chainCount = 3 + resLv;
+    const chainDmgMult = [1.0, 0.75, 0.55, 0.40, 0.30];
+    const chainRange = 180;
+
+    const primary = this.nearestEnemy();
+    if (!primary) return;
+
+    const hit = [primary];
+    let chainDmg = dmg * (1 + resLv * 0.10) * (p.dmgMult || 1);
+
+    // Primary strike
+    this.dealDamage(primary, chainDmg);
+    this.addFloat(primary.x, primary.y - 25, `📢${Math.round(chainDmg)}`, '#fb7185');
+    for (let i = 0; i < 10; i++) {
+      this.spawnParticle(
+        primary.x + (Math.random()-0.5)*30, primary.y + (Math.random()-0.5)*30,
+        '#fb7185', 10, 0.4
+      );
+    }
+
+    // Chain targets with delay
+    for (let c = 1; c <= chainCount; c++) {
+      setTimeout(() => {
+        if (!this.running || this.paused) return;
+        const prev = hit[hit.length - 1];
+        if (!prev) return;
+        // Find closest unchained enemy
+        let next = null, bestDist = Infinity;
+        this.enemies.forEach(e => {
+          if (e.hp <= 0 || hit.includes(e)) return;
+          const d = Math.hypot(e.x - prev.x, e.y - prev.y);
+          if (d < chainRange && d < bestDist) { bestDist = d; next = e; }
+        });
+        if (!next) return;
+        hit.push(next);
+        const cDmg = chainDmg * (chainDmgMult[c] || 0.25);
+        this.dealDamage(next, cDmg);
+        this.addFloat(next.x, next.y - 20, `📢${Math.round(cDmg)}`, '#fda4af');
+        // Arc line particles from prev to next
+        for (let i = 0; i <= 6; i++) {
+          const t = i/6;
+          this.spawnParticle(
+            prev.x + (next.x-prev.x)*t + (Math.random()-0.5)*15,
+            prev.y + (next.y-prev.y)*t + (Math.random()-0.5)*15,
+            '#fecdd3', 6, 0.25
+          );
+        }
+        this.spawnParticle(next.x, next.y, '#f43f5e', 14, 0.35);
+      }, c * 160);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // ─── EVOLVED COMMON SKILLS — Fire Functions ──────────────────
+  // ═══════════════════════════════════════════════════════════════
+
+  // 🗣️ SEISMIC PULSE — massive ground crack + 3 damage zones + bleed
+  fireSeismicPulse(dmg, lv) {
+    const p = this.player;
+    const radius = 220 + lv * 30;
+    const baseDmg = dmg * (p.dmgMult || 1);
+    this.screenShake = Math.max(this.screenShake || 0, 12);
+    this.addFloat(p.x, p.y - 60, '💥 Xung Địa Chấn!', '#f97316', true);
+
+    // Massive ring shockwave
+    for (let i = 0; i < 72; i++) {
+      const a = (i/72)*Math.PI*2;
+      for (let r = 0; r < 3; r++) {
+        this.spawnParticle(
+          p.x + Math.cos(a)*(radius*0.3*r + 60),
+          p.y + Math.sin(a)*(radius*0.3*r + 60),
+          r===0?'#fed7aa':r===1?'#fb923c':'#ea580c', 10+r*4, 0.5+r*0.15
+        );
+      }
+    }
+    // Ground crack lines
+    for (let i = 0; i < 8; i++) {
+      const a = (i/8)*Math.PI*2;
+      for (let j = 0; j < 6; j++) {
+        this.spawnParticle(
+          p.x + Math.cos(a+0.1*j)*radius*0.15*j,
+          p.y + Math.sin(a+0.1*j)*radius*0.15*j,
+          '#78350f', 8, 0.6
+        );
+      }
+    }
+
+    // Damage all in radius + apply bleed
+    this.enemies.forEach(e => {
+      if (e.hp <= 0) return;
+      if (Math.hypot(e.x-p.x, e.y-p.y) < radius) {
+        this.dealDamage(e, baseDmg);
+        e._bleedDmg = (baseDmg * 0.05);
+        e._bleedUntil = Date.now() + 4000;
+      }
+    });
+
+    // 3 persistent damage zones
+    const zoneAngles = [0, Math.PI*2/3, Math.PI*4/3];
+    zoneAngles.forEach((za, zi) => {
+      const zx = p.x + Math.cos(za) * radius * 0.6;
+      const zy = p.y + Math.sin(za) * radius * 0.6;
+      const zRadius = 70;
+      let zoneTick = 0;
+      const zoneInterval = setInterval(() => {
+        if (!this.running || this.paused || zoneTick >= 8) { clearInterval(zoneInterval); return; }
+        zoneTick++;
+        this.spawnParticle(zx, zy, '#f97316', 14, 0.3);
+        this.enemies.forEach(e => {
+          if (e.hp <= 0) return;
+          if (Math.hypot(e.x-zx, e.y-zy) < zRadius) this.dealDamage(e, baseDmg*0.3);
+        });
+      }, 500);
+    });
+  }
+
+  // 🖤 CRIMSON NOVA — AoE life drain field around player (180px), 80% lifesteal
+  fireCrimsonNova(dmg, lv) {
+    const p = this.player;
+    const bpLv = (p.passiveItems?.blood_prism || 0);
+    const radius = 180 + lv * 20 + bpLv * 20;
+    const baseDmg = dmg * (p.dmgMult || 1);
+    const lifesteal = 0.80 + bpLv * 0.05;
+    const dur = 4.0;
+    this.addFloat(p.x, p.y - 55, '🖤 Nova Thẫm Đỏ!', '#ef4444', true);
+
+    // Blood nova ring
+    for (let i = 0; i < 56; i++) {
+      const a = (i/56)*Math.PI*2;
+      this.spawnParticle(p.x+Math.cos(a)*radius, p.y+Math.sin(a)*radius, '#fca5a5', 10, 0.8);
+      this.spawnParticle(p.x+Math.cos(a)*radius*0.5, p.y+Math.sin(a)*radius*0.5, '#dc2626', 7, 0.6);
+    }
+    this.spawnParticle(p.x, p.y, '#fef2f2', 36, 0.9);
+
+    let totalHealed = 0;
+    let elapsed = 0;
+    const tickInterval = 0.5;
+    const maxTicks = Math.ceil(dur / tickInterval);
+    let ticks = 0;
+    const interval = setInterval(() => {
+      if (!this.running || this.paused || ticks >= maxTicks) { clearInterval(interval); return; }
+      ticks++;
+      // Drain ring animation
+      for (let i = 0; i < 8; i++) {
+        const a = Math.random()*Math.PI*2;
+        const r = radius * (0.5 + Math.random()*0.5);
+        this.spawnParticle(p.x+Math.cos(a)*r, p.y+Math.sin(a)*r, '#f87171', 6, 0.3);
+      }
+      this.enemies.forEach(e => {
+        if (e.hp <= 0) return;
+        if (Math.hypot(e.x-p.x, e.y-p.y) < radius) {
+          const d = baseDmg * 0.4 * tickInterval;
+          this.dealDamage(e, d);
+          const heal = d * lifesteal;
+          totalHealed += heal;
+          p.hp = Math.min(p.maxHp, (p.hp||0) + heal);
+          if (Math.random() < 0.3) {
+            // Blood particle pulled from enemy toward player
+            this.spawnParticle(e.x, e.y, '#b91c1c', 8, 0.2);
+          }
+        }
+      });
+    }, tickInterval * 1000);
+  }
+
+  // 🌟 STELLAR BARRAGE — 8 homing energy bolts that pierce
+  fireStellarBarrage(dmg, lv) {
+    const p = this.player;
+    const rlLv = (p.passiveItems?.radiant_lens || 0);
+    const boltCount = 8;
+    const boltDmg = dmg * (1 + rlLv * 0.12) * (p.dmgMult || 1);
+    this.addFloat(p.x, p.y - 50, '🌟 Tràng Pháo Sao!', '#fde047', true);
+
+    // Starburst fanfare
+    for (let i = 0; i < 32; i++) {
+      const a = (i/32)*Math.PI*2;
+      this.spawnParticle(p.x+Math.cos(a)*30, p.y+Math.sin(a)*30, '#fef08a', 8, 0.3);
+    }
+
+    for (let bi = 0; bi < boltCount; bi++) {
+      setTimeout(() => {
+        if (!this.running || this.paused) return;
+        // Find a target (prefer unchached)
+        const target = this.nearestEnemy();
+        if (!target) return;
+        let bx = p.x, by = p.y;
+        let angle = Math.atan2(target.y - by, target.x - bx) + (bi * Math.PI*2/boltCount)*0.15;
+        let vx = Math.cos(angle)*15, vy = Math.sin(angle)*15;
+        const hitSet = new Set();
+        let steps = 0;
+        const maxSteps = 60;
+
+        const moveStep = () => {
+          if (!this.running || steps > maxSteps) return;
+          steps++;
+          // Homing: slightly steer toward nearest unhit enemy
+          const nearest = this.enemies.filter(e => e.hp > 0 && !hitSet.has(e))
+            .sort((a, b) => Math.hypot(a.x-bx,a.y-by) - Math.hypot(b.x-bx,b.y-by))[0];
+          if (nearest && steps > 5) {
+            const ta = Math.atan2(nearest.y-by, nearest.x-bx);
+            const da = ta - Math.atan2(vy,vx);
+            const norm = ((da + Math.PI*3) % (Math.PI*2)) - Math.PI;
+            const turn = Math.min(0.12, Math.abs(norm)) * Math.sign(norm);
+            const curA = Math.atan2(vy,vx) + turn;
+            vx = Math.cos(curA)*15; vy = Math.sin(curA)*15;
+          }
+          bx += vx; by += vy;
+          if (bx < 0 || bx > WORLD_W || by < 0 || by > WORLD_H) return;
+          // Trail
+          this.spawnParticle(bx, by, '#fde047', 7, 0.2);
+          if (steps % 3 === 0) this.spawnParticle(bx, by, '#fbbf24', 5, 0.15);
+          // Hit
+          this.enemies.forEach(e => {
+            if (e.hp <= 0 || hitSet.has(e)) return;
+            if (Math.hypot(e.x-bx, e.y-by) < 25) {
+              hitSet.add(e);
+              this.dealDamage(e, boltDmg);
+              this.addFloat(e.x, e.y-15, `⭐${Math.round(boltDmg)}`, '#fde047');
+              for (let i=0; i<8; i++) this.spawnParticle(e.x+(Math.random()-0.5)*25, e.y+(Math.random()-0.5)*25, '#fef9c3', 7, 0.3);
+              // Pierce: continue through
+            }
+          });
+          requestAnimationFrame(moveStep);
+        };
+        requestAnimationFrame(moveStep);
+      }, bi * 100);
+    }
+  }
+
+  // 💥 METEOR SLAM — explosive dash + 3 aftershock waves
+  fireMeteorSlam(dmg, lv) {
+    const p = this.player;
+    const icLv = (p.passiveItems?.impact_core || 0);
+    const baseDmg = dmg * (1 + icLv * 0.20) * (p.dmgMult || 1);
+    const stunDur = 1000 + icLv * 500;
+    const target = this.nearestEnemy();
+    if (!target) return;
+
+    this.addFloat(p.x, p.y - 50, '💥 Đập Thiên Thạch!', '#fb923c', true);
+    this.screenShake = Math.max(this.screenShake||0, 14);
+
+    const dashX = target.x, dashY = target.y;
+    const origX = p.x, origY = p.y;
+
+    // Dash visual — trail
+    const steps = 8;
+    for (let i = 0; i <= steps; i++) {
+      const t = i/steps;
+      setTimeout(() => {
+        if (!this.running) return;
+        this.spawnParticle(
+          origX + (dashX-origX)*t + (Math.random()-0.5)*20,
+          origY + (dashY-origY)*t + (Math.random()-0.5)*20,
+          '#fed7aa', 14, 0.4
+        );
+      }, i*30);
+    }
+
+    // Teleport to target
+    setTimeout(() => {
+      if (!this.running) return;
+      p.x = Math.max(40, Math.min(WORLD_W-40, dashX));
+      p.y = Math.max(40, Math.min(WORLD_H-40, dashY));
+
+      // Primary explosion
+      const explRadius = 120 + lv*20;
+      for (let i=0; i<64; i++) {
+        const a = (i/64)*Math.PI*2;
+        this.spawnParticle(dashX+Math.cos(a)*explRadius*Math.random(), dashY+Math.sin(a)*explRadius*Math.random(), i%2===0?'#fb923c':'#fef3c7', 12+Math.random()*8, 0.6);
+      }
+      this.spawnParticle(dashX, dashY, '#fffbeb', 44, 0.8);
+
+      this.enemies.forEach(e => {
+        if (e.hp<=0) return;
+        const d = Math.hypot(e.x-dashX, e.y-dashY);
+        if (d < explRadius) {
+          this.dealDamage(e, baseDmg);
+          e._stunUntil = Date.now() + stunDur;
+          // Knockback
+          const angle = Math.atan2(e.y-dashY, e.x-dashX);
+          e.x += Math.cos(angle)*60; e.y += Math.sin(angle)*60;
+          this.addFloat(e.x, e.y-20, `🔥${Math.round(baseDmg)}`, '#f97316');
+        }
+      });
+
+      // 3 aftershock waves with growing radius
+      [1,2,3].forEach(wave => {
+        setTimeout(() => {
+          if (!this.running) return;
+          const wR = explRadius * (0.6 + wave*0.4);
+          for (let i=0; i<32; i++) {
+            const a=(i/32)*Math.PI*2;
+            this.spawnParticle(dashX+Math.cos(a)*wR, dashY+Math.sin(a)*wR, '#fdba74', 9, 0.35);
+          }
+          this.enemies.forEach(e => {
+            if (e.hp<=0) return;
+            const d=Math.hypot(e.x-dashX, e.y-dashY);
+            if (d < wR && d > wR*0.4) {
+              this.dealDamage(e, baseDmg*0.35);
+            }
+          });
+          this.screenShake = Math.max(this.screenShake||0, 6-wave*2);
+        }, wave*350);
+      });
+    }, 250);
+  }
+
+  // ⛈️ STORM SURGE — lightning all visible enemies simultaneously
+  fireStormSurge(dmg, lv) {
+    const p = this.player;
+    const scLv = (p.passiveItems?.storm_coil || 0);
+    const boltDmg = dmg * (1 + scLv * 0.10) * (p.dmgMult || 1);
+    const stunChance = 0.30;
+
+    this.addFloat(p.x, p.y - 55, '⛈️ Bão Thần Sấm!', '#facc15', true);
+    this.screenShake = Math.max(this.screenShake||0, 8);
+
+    // Storm cloud overhead flash
+    for (let i=0; i<40; i++) {
+      this.spawnParticle(p.x+(Math.random()-0.5)*300, p.y-30+(Math.random()-0.5)*40, '#fef08a', 8+Math.random()*6, 0.4+Math.random()*0.3);
+    }
+
+    const targets = this.enemies.filter(e => e.hp > 0);
+    targets.forEach((e, idx) => {
+      setTimeout(() => {
+        if (!this.running || e.hp<=0) return;
+        // Lightning bolt visual from sky to enemy
+        const topY = Math.min(p.y, e.y) - 80;
+        for (let s=0; s<=8; s++) {
+          const t=s/8;
+          const jx=(Math.random()-0.5)*16, jy=(Math.random()-0.5)*8;
+          this.spawnParticle(e.x+jx, topY+(e.y-topY)*t+jy, '#fde047', 7, 0.3);
+        }
+        this.spawnParticle(e.x, e.y, '#fef9c3', 20, 0.5);
+        this.dealDamage(e, boltDmg);
+        this.addFloat(e.x, e.y-25, `⚡${Math.round(boltDmg)}`, '#facc15');
+        if (Math.random() < stunChance) e._stunUntil = Date.now() + 800;
+      }, idx * 50);
+    });
+  }
+
+  // ▫️ BLACK HOLE — massive gravity vortex that crushes all, slows time
+  fireBlackHole(dmg, lv) {
+    const p = this.player;
+    const singLv = (p.passiveItems?.singularity || 0);
+    const radius = 240 + lv*30;
+    const dur = 3.0;
+    const baseDmg = dmg * (p.dmgMult || 1);
+    this.addFloat(p.x, p.y - 65, '🕳️ Hố Đen Vũ Trụ!', '#818cf8', true);
+    this.screenShake = Math.max(this.screenShake||0, 10);
+
+    // Outer ring collapse
+    for (let i=0; i<80; i++) {
+      const a=(i/80)*Math.PI*2;
+      const r=radius*(0.8+Math.random()*0.3);
+      this.spawnParticle(p.x+Math.cos(a)*r, p.y+Math.sin(a)*r, i%4===0?'#c4b5fd':i%4===1?'#818cf8':'#4f46e5', 8+Math.random()*6, 0.6+Math.random()*0.3);
+    }
+    // Core singularity
+    this.spawnParticle(p.x, p.y, '#1e1b4b', 60, 1.2);
+    this.spawnParticle(p.x, p.y, '#312e81', 40, 1.0);
+
+    // Time slow effect on all enemies (40%)
+    const affectedEnemies = [];
+    this.enemies.forEach(e => {
+      if (e.hp<=0) return;
+      if (!e._blackHoleSlowed) {
+        e._blackHoleSlowed = true;
+        e._bhOrigSpeed = e.speed;
+        e.speed *= 0.60;
+        affectedEnemies.push(e);
+      }
+    });
+
+    let ticks=0;
+    const maxTicks=18;
+    const interval=setInterval(()=>{
+      if (!this.running || this.paused || ticks>=maxTicks) {
+        clearInterval(interval);
+        affectedEnemies.forEach(e => {
+          if (e._blackHoleSlowed) { e.speed=e._bhOrigSpeed; e._blackHoleSlowed=false; }
+        });
+        return;
+      }
+      ticks++;
+      const progress = ticks/maxTicks;
+      this.enemies.forEach(e => {
+        if (e.hp<=0) return;
+        const dx=p.x-e.x, dy=p.y-e.y;
+        const dist=Math.hypot(dx,dy);
+        if (dist < radius) {
+          // Pull toward center with increasing force
+          const force = 200 * (1-dist/radius) * (1+progress);
+          const fdt = 0.17;
+          e.x += (dx/dist)*force*fdt;
+          e.y += (dy/dist)*force*fdt;
+          e.x=Math.max(20,Math.min(WORLD_W-20,e.x));
+          e.y=Math.max(20,Math.min(WORLD_H-20,e.y));
+          // DoT — increases near center
+          const dotDmg = baseDmg * 0.12 * (1.5 - dist/radius);
+          this.dealDamage(e, dotDmg);
+          // Particle sucked in
+          if (Math.random()<0.3) this.spawnParticle(e.x,e.y,'#6d28d9',5,0.15);
+        }
+      });
+      // Swirling core glow
+      for (let i=0;i<4;i++) {
+        const a=Math.random()*Math.PI*2;
+        this.spawnParticle(p.x+Math.cos(a)*20, p.y+Math.sin(a)*20,'#a78bfa',8,0.2);
+      }
+    }, dur*1000/maxTicks);
+  }
+
+  // 🗡️ PHANTOM EDGE — 3 infinite-bouncing ghost blades 4s
+  firePhantomEdge(dmg, lv) {
+    const p = this.player;
+    const veLv = (p.passiveItems?.void_edge || 0);
+    const bladeCount = 3;
+    const bDmg = dmg * (1+veLv*0.08) * (p.dmgMult||1);
+    const dur = 4000;
+    this.addFloat(p.x, p.y-55, '👻 Lưỡi Hồn Ảo!', '#38bdf8', true);
+
+    for (let bi=0; bi<bladeCount; bi++) {
+      const angle = (bi/bladeCount)*Math.PI*2 + Math.random()*0.5;
+      let bx=p.x, by=p.y;
+      let vx=Math.cos(angle)*13, vy=Math.sin(angle)*13;
+      const hitCooldown=new Map();
+      const startTime=Date.now();
+
+      const step=()=>{
+        if (!this.running||this.paused||Date.now()-startTime>dur) {
+          // Fade-out
+          this.spawnParticle(bx,by,'#7dd3fc',14,0.5);
+          return;
+        }
+        bx+=vx; by+=vy;
+        // Wall bounce (infinite)
+        if (bx<10){bx=10; vx=Math.abs(vx); this.spawnParticle(bx,by,'#bae6fd',10,0.3);}
+        if (bx>WORLD_W-10){bx=WORLD_W-10; vx=-Math.abs(vx); this.spawnParticle(bx,by,'#bae6fd',10,0.3);}
+        if (by<10){by=10; vy=Math.abs(vy); this.spawnParticle(bx,by,'#bae6fd',10,0.3);}
+        if (by>WORLD_H-10){by=WORLD_H-10; vy=-Math.abs(vy); this.spawnParticle(bx,by,'#bae6fd',10,0.3);}
+        // Ghost trail
+        this.spawnParticle(bx,by,'#7dd3fc',7,0.15);
+        if (Math.random()<0.4) this.spawnParticle(bx+(Math.random()-0.5)*12,by+(Math.random()-0.5)*12,'#e0f2fe',5,0.1);
+        // Hit (with per-enemy cooldown to avoid rapid repeat)
+        this.enemies.forEach(e=>{
+          if (e.hp<=0) return;
+          const lastHit=hitCooldown.get(e)||0;
+          if (Date.now()-lastHit<600 && lastHit>0) return;
+          if (Math.hypot(e.x-bx,e.y-by)<22) {
+            hitCooldown.set(e, Date.now());
+            this.dealDamage(e, bDmg);
+            this.addFloat(e.x,e.y-18,`🗡️${Math.round(bDmg)}`,'#7dd3fc');
+            // Blade bounces off enemy
+            const ex=bx-e.x, ey=by-e.y;
+            const el=Math.hypot(ex,ey)||1;
+            vx=(ex/el)*13; vy=(ey/el)*13;
+            for(let i=0;i<6;i++) this.spawnParticle(bx+(Math.random()-0.5)*18,by+(Math.random()-0.5)*18,'#bae6fd',8,0.3);
+          }
+        });
+        requestAnimationFrame(step);
+      };
+      // Stagger blade launches
+      setTimeout(()=>requestAnimationFrame(step), bi*200);
+    }
+  }
+
+  // 👻 SOUL TEMPEST — orbiting soul tornado 5s, 3HP/s regen
+  fireSoulTempest(dmg, lv) {
+    const p = this.player;
+    const svLv = (p.passiveItems?.spirit_vessel||0);
+    const bDmg = dmg * (1+svLv*0.20) * (p.dmgMult||1);
+    const dur = 5000;
+    const orbitRadius = 90 + lv*15;
+    const regenPerSec = 3 + svLv*2;
+    this.addFloat(p.x,p.y-60,'💫 Bão Linh Hồn!','#e879f9',true);
+
+    let angle=0;
+    const startTime=Date.now();
+    let lastRegen=Date.now();
+
+    const step=()=>{
+      if (!this.running||this.paused||Date.now()-startTime>dur) return;
+      angle+=0.08;
+      // HP regen tick
+      const now=Date.now();
+      if (now-lastRegen>=1000) {
+        lastRegen=now;
+        p.hp=Math.min(p.maxHp, (p.hp||0)+regenPerSec);
+        this.addFloat(p.x,p.y-40,`+${regenPerSec}HP 💚`,'#86efac');
+      }
+      // 3 orbiting soul orbs
+      for (let oi=0;oi<3;oi++) {
+        const oa=angle + oi*(Math.PI*2/3);
+        const ox=p.x+Math.cos(oa)*orbitRadius;
+        const oy=p.y+Math.sin(oa)*orbitRadius;
+        // Orb particles
+        this.spawnParticle(ox,oy,'#f0abfc',10,0.2);
+        this.spawnParticle(ox+(Math.random()-0.5)*12,oy+(Math.random()-0.5)*12,'#c084fc',6,0.15);
+        // Hit check
+        this.enemies.forEach(e=>{
+          if (e.hp<=0) return;
+          if (Math.hypot(e.x-ox,e.y-oy)<30) {
+            this.dealDamage(e, bDmg*0.08);
+          }
+        });
+      }
+      // Outer swirl
+      if (Math.random()<0.4) {
+        const a2=Math.random()*Math.PI*2;
+        this.spawnParticle(p.x+Math.cos(a2)*(orbitRadius*1.3), p.y+Math.sin(a2)*(orbitRadius*1.3),'#7c3aed',5,0.2);
+      }
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  // ⏳ TIME FRACTURE — full time stop 2.5s, enemies pushed back on resume
+  fireTimeFracture(dmg, lv) {
+    const p = this.player;
+    const csLv = (p.passiveItems?.chrono_shard||0);
+    const freezeDur = 2500 + csLv*400; // max ~4.5s, balanced
+    const bDmg = dmg * (p.dmgMult||1);
+    this.addFloat(p.x,p.y-65,'⏳ Vỡ Thời Gian!','#a78bfa',true);
+
+    // Clock shatter visual
+    for (let i=0;i<60;i++) {
+      const a=(i/60)*Math.PI*2;
+      const r=80+Math.random()*120;
+      this.spawnParticle(p.x+Math.cos(a)*r,p.y+Math.sin(a)*r,'#c4b5fd',10,0.8);
+    }
+    this.spawnParticle(p.x,p.y,'#ede9fe',50,1.0);
+    this.screenShake=Math.max(this.screenShake||0,6);
+
+    // Freeze all enemies
+    const frozenEnemies=[];
+    this.enemies.forEach(e=>{
+      if (e.hp<=0) return;
+      frozenEnemies.push({ e, spd:e.speed });
+      e.speed=0;
+      e._timeFrozen=true;
+      // Freeze visual
+      this.spawnParticle(e.x,e.y,'#ddd6fe',20,freezeDur/1000*0.6);
+    });
+
+    // Pulse particles during freeze
+    let pulses=0;
+    const pulseInterval=setInterval(()=>{
+      if (!this.running||pulses>=6){clearInterval(pulseInterval);return;}
+      pulses++;
+      for(let i=0;i<16;i++){
+        const a=(i/16)*Math.PI*2;
+        this.spawnParticle(p.x+Math.cos(a)*60*pulses,p.y+Math.sin(a)*60*pulses,'#a78bfa',7,0.3);
+      }
+    }, freezeDur/6);
+
+    // Unfreeze + push back + damage
+    setTimeout(()=>{
+      clearInterval(pulseInterval);
+      frozenEnemies.forEach(({e, spd})=>{
+        e.speed=spd;
+        e._timeFrozen=false;
+        if (e.hp<=0) return;
+        // Push back from player
+        const dx=e.x-p.x, dy=e.y-p.y;
+        const dist=Math.hypot(dx,dy)||1;
+        e.x+=dx/dist*120; e.y+=dy/dist*120;
+        e.x=Math.max(20,Math.min(WORLD_W-20,e.x));
+        e.y=Math.max(20,Math.min(WORLD_H-20,e.y));
+        // Resume damage
+        this.dealDamage(e, bDmg);
+        this.addFloat(e.x,e.y-20,`💥${Math.round(bDmg)}`,'#a78bfa');
+        this.spawnParticle(e.x,e.y,'#7c3aed',16,0.4);
+      });
+      this.addFloat(p.x,p.y-50,'⏱️ Thời gian hồi phục!','#8b5cf6');
+    }, freezeDur);
+  }
+
+  // 🌊 CHORUS STRIKE — hit ALL visible enemies simultaneously
+  fireChorusStrike(dmg, lv) {
+    const p = this.player;
+    const resLv = (p.passiveItems?.resonance||0);
+    const bDmg = dmg * (1+resLv*0.10) * (p.dmgMult||1);
+    this.addFloat(p.x,p.y-65,'🌊 Đồng Thanh Tấn Công!','#fb7185',true);
+    this.screenShake=Math.max(this.screenShake||0,10);
+
+    // Radial shockwave ring
+    for (let i=0;i<80;i++) {
+      const a=(i/80)*Math.PI*2;
+      const r=80+Math.random()*180;
+      this.spawnParticle(p.x+Math.cos(a)*r,p.y+Math.sin(a)*r,i%3===0?'#fda4af':i%3===1?'#f43f5e':'#be123c',10+Math.random()*6,0.5);
+    }
+    this.spawnParticle(p.x,p.y,'#fff1f2',48,0.9);
+
+    // Strike all enemies with staggered delay for visual impact
+    const allEnemies=this.enemies.filter(e=>e.hp>0);
+    allEnemies.forEach((e,idx)=>{
+      setTimeout(()=>{
+        if (!this.running||e.hp<=0) return;
+        this.dealDamage(e, bDmg);
+        this.addFloat(e.x,e.y-20,`🌊${Math.round(bDmg)}`,'#fb7185');
+        // Strike impact at enemy position
+        for (let i=0;i<12;i++) {
+          this.spawnParticle(e.x+(Math.random()-0.5)*30,e.y+(Math.random()-0.5)*30,'#fecdd3',9,0.4);
+        }
+        this.spawnParticle(e.x,e.y,'#ffe4e6',20,0.5);
+        // Arc line from player to enemy
+        const steps=5;
+        for(let s=0;s<=steps;s++){
+          const t=s/steps;
+          this.spawnParticle(p.x+(e.x-p.x)*t+(Math.random()-0.5)*15,p.y+(e.y-p.y)*t+(Math.random()-0.5)*15,'#fda4af',5,0.2);
+        }
+      }, idx * 40);
+    });
+  }
+
   updateMerchantRescue(dt) {
+
     // ★ MERCHANT RANDOM SPAWN: check every 2-3 mins if merchant should appear
     if (!this.merchantRescueActive) {
       if (this.merchantSpawnNextCheck > 0) {
@@ -11498,7 +13667,18 @@ const EVO_COMBOS = [
   { baseSkill: 'briar_patch', passiveItem: 'hollow_heart', evolvedSkill: 'genesis_bloom', type: 'EVOLUTION' },
   { baseSkill: 'summon_skeleton', passiveItem: 'attractorb', evolvedSkill: 'grim_reaper', type: 'EVOLUTION' },
   { baseSkill: 'holy_light', passiveItem: 'empty_tome', evolvedSkill: 'archangel_light', type: 'GIFT' },
-  { baseSkill: 'shadow_clone', passiveItem: 'clover', evolvedSkill: 'void_demon', type: 'MORPH' }
+  { baseSkill: 'shadow_clone', passiveItem: 'clover', evolvedSkill: 'void_demon', type: 'MORPH' },
+  // ─── COMMON SKILL EVOLUTIONS ──────────────────────────
+  { baseSkill: 'shockwave',       passiveItem: 'fracture_core',  evolvedSkill: 'seismic_pulse',   type: 'EVOLUTION' },
+  { baseSkill: 'lifeleech',       passiveItem: 'blood_prism',    evolvedSkill: 'crimson_nova',    type: 'EVOLUTION' },
+  { baseSkill: 'aura_bolt',       passiveItem: 'radiant_lens',   evolvedSkill: 'stellar_barrage', type: 'EVOLUTION' },
+  { baseSkill: 'explosive_rush',  passiveItem: 'impact_core',    evolvedSkill: 'meteor_slam',     type: 'EVOLUTION' },
+  { baseSkill: 'chain_lightning', passiveItem: 'storm_coil',     evolvedSkill: 'storm_surge',     type: 'EVOLUTION' },
+  { baseSkill: 'gravity_well',    passiveItem: 'singularity',    evolvedSkill: 'black_hole',      type: 'EVOLUTION' },
+  { baseSkill: 'mirror_blade',    passiveItem: 'void_edge',      evolvedSkill: 'phantom_edge',    type: 'EVOLUTION' },
+  { baseSkill: 'soul_burst',      passiveItem: 'spirit_vessel',  evolvedSkill: 'soul_tempest',    type: 'EVOLUTION' },
+  { baseSkill: 'time_warp',       passiveItem: 'chrono_shard',   evolvedSkill: 'time_fracture',   type: 'EVOLUTION' },
+  { baseSkill: 'echo_strike',     passiveItem: 'resonance',      evolvedSkill: 'chorus_strike',   type: 'EVOLUTION' }
 ];
 
 const UNION_COMBOS = [
@@ -15180,9 +17360,562 @@ function drawBossDeathReaper(ctx, e, t, hitFlash, rage) {
 }
 
 
-// ----------------------------------------------------------------
-// -- HELPER FUNCTIONS CHO BOSS RENDER -------------------------
-// ----------------------------------------------------------------
+
+// ──────────────────────────────────────────────────────────────
+// BOSS: FOREST GUARDIAN — Linh thần rừng cổ đại
+// Cây khổng lồ biết di chuyển, hồi máu tự nhiên
+// ──────────────────────────────────────────────────────────────
+function drawBossForestGuardian(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const sway = Math.sin(t / 400) * 0.08;
+  const breathe = 1 + Math.sin(t / 300) * 0.03;
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(breathe, breathe);
+
+  // Fire ring — green nature energy
+  const ringCount = 8;
+  const ringRot = t / 600;
+  for (let ri = 0; ri < ringCount; ri++) {
+    const angle = (ri / ringCount) * Math.PI * 2 + ringRot;
+    const fr = r * 1.28 + Math.sin(t / 100 + ri) * r * 0.07;
+    const alpha = 0.35 + Math.sin(t / 80 + ri * 0.8) * 0.2;
+    ctx.fillStyle = `rgba(34,197,94,${alpha})`;
+    ctx.beginPath();
+    ctx.ellipse(Math.cos(angle) * fr, Math.sin(angle) * fr, r * 0.06, r * 0.14, angle, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Roots / base (dark brown)
+  ctx.fillStyle = '#451a03';
+  for (let ri = 0; ri < 5; ri++) {
+    const ra = (ri / 5) * Math.PI * 2 + Math.PI / 10;
+    ctx.beginPath();
+    ctx.moveTo(0, r * 0.7);
+    ctx.quadraticCurveTo(Math.cos(ra) * r * 0.7, r * 1.1 + Math.sin(t / 200 + ri) * 5, Math.cos(ra) * r * 1.2, r * 1.4);
+    ctx.lineWidth = 8; ctx.strokeStyle = '#78350f'; ctx.stroke();
+  }
+
+  // Main trunk body
+  const g = ctx.createRadialGradient(-r * 0.2, -r * 0.1, r * 0.05, 0, 0, r);
+  g.addColorStop(0, hitFlash ? '#fff' : '#bbf7d0');
+  g.addColorStop(0.4, hitFlash ? '#eee' : (rage ? '#16a34a' : '#22c55e'));
+  g.addColorStop(0.8, '#15803d');
+  g.addColorStop(1, '#14532d');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(0, 0, r * 0.78, r * 0.9, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = rage ? '#ef4444' : '#166534'; ctx.lineWidth = 4; ctx.stroke();
+
+  // Bark texture lines
+  ctx.strokeStyle = 'rgba(20,83,45,0.5)'; ctx.lineWidth = 2;
+  for (let li = 0; li < 4; li++) {
+    const lx = (li - 1.5) * r * 0.3;
+    ctx.beginPath(); ctx.moveTo(lx, -r * 0.7); ctx.quadraticCurveTo(lx + r * 0.08, 0, lx, r * 0.7); ctx.stroke();
+  }
+
+  // Vine arms (animated)
+  ctx.strokeStyle = '#4ade80'; ctx.lineWidth = 5;
+  for (let vi = 0; vi < 2; vi++) {
+    const side = vi === 0 ? -1 : 1;
+    const vSway = Math.sin(t / 300 + vi * Math.PI) * 0.4;
+    ctx.save();
+    ctx.translate(side * r * 0.75, -r * 0.1);
+    ctx.rotate(vSway);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.bezierCurveTo(side * r * 0.4, -r * 0.3, side * r * 0.8, 0, side * r * 0.6, r * 0.5);
+    ctx.stroke();
+    // Vine leaves
+    ctx.fillStyle = '#16a34a';
+    for (let li = 0; li < 3; li++) {
+      const lp = (li + 1) / 4;
+      const lx = side * (r * 0.4 * lp + r * 0.8 * (1 - lp));
+      const ly = (-r * 0.3 + r * 0.5 * lp);
+      ctx.beginPath(); ctx.ellipse(lx, ly, 7, 4, Math.sin(t / 200 + li), 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // Ancient face — glowing eyes
+  ctx.fillStyle = '#fff'; 
+  ctx.beginPath(); ctx.ellipse(-r * 0.28, -r * 0.05, r * 0.17, r * 0.2, -0.1, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r * 0.28, -r * 0.05, r * 0.17, r * 0.2, 0.1, 0, Math.PI * 2); ctx.fill();
+  const eyeCol = rage ? '#ef4444' : '#86efac';
+  ctx.fillStyle = eyeCol;
+  ctx.beginPath(); ctx.ellipse(-r * 0.26, -r * 0.04, r * 0.09, r * 0.13, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r * 0.26, -r * 0.04, r * 0.09, r * 0.13, 0, 0, Math.PI * 2); ctx.fill();
+  // Glow
+  ctx.shadowColor = eyeCol; ctx.shadowBlur = 12;
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(-r * 0.26, -r * 0.05, r * 0.04, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(r * 0.26, -r * 0.05, r * 0.04, 0, Math.PI * 2); ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Ancient brows (angry wood grain)
+  ctx.strokeStyle = '#166534'; ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.moveTo(-r * 0.48, -r * 0.28); ctx.lineTo(-r * 0.12, -r * 0.2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(r * 0.48, -r * 0.28); ctx.lineTo(r * 0.12, -r * 0.2); ctx.stroke();
+
+  // Mouth — wide bark crack grin
+  ctx.strokeStyle = '#166534'; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.arc(0, r * 0.18, r * 0.42, 0.2, Math.PI - 0.2); ctx.stroke();
+
+  // Ancient rune crown (leaf crown)
+  ctx.fillStyle = '#15803d';
+  const crownY = -r * 0.96;
+  for (let li = 0; li < 7; li++) {
+    const la = ((li - 3) / 6) * Math.PI * 0.9;
+    const lx = Math.sin(la) * r * 0.52;
+    const h = r * (0.18 + Math.abs(Math.cos(la)) * 0.12);
+    ctx.save();
+    ctx.translate(lx, crownY - h * 0.5);
+    ctx.rotate(la * 0.5);
+    ctx.beginPath(); ctx.ellipse(0, 0, r * 0.1, h * 0.7, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// BOSS: FROST KING — Vua băng tuyết
+// Giáp băng trong suốt, vương miện pha lê, phát sáng xanh
+// ──────────────────────────────────────────────────────────────
+function drawBossFrostKing(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const pulse = 1 + Math.sin(t / 200) * 0.04;
+  const iceSpin = t / 800;
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(pulse, pulse);
+
+  // Ice aura — rotating ice shards
+  for (let ii = 0; ii < 10; ii++) {
+    const ia = (ii / 10) * Math.PI * 2 + iceSpin;
+    const id = r * 1.3 + Math.sin(t / 150 + ii) * r * 0.08;
+    const alpha = 0.3 + Math.sin(t / 100 + ii) * 0.2;
+    ctx.fillStyle = `rgba(147,197,253,${alpha})`;
+    ctx.save();
+    ctx.translate(Math.cos(ia) * id, Math.sin(ia) * id);
+    ctx.rotate(ia + Math.PI / 4);
+    ctx.beginPath();
+    ctx.moveTo(0, -r * 0.12); ctx.lineTo(r * 0.05, 0); ctx.lineTo(0, r * 0.12); ctx.lineTo(-r * 0.05, 0);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+
+  // Snowflake background shimmer
+  ctx.strokeStyle = 'rgba(186,230,253,0.15)'; ctx.lineWidth = 1.5;
+  for (let si = 0; si < 6; si++) {
+    const sa = (si / 6) * Math.PI * 2 - iceSpin;
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(sa) * r * 0.9, Math.sin(sa) * r * 0.9); ctx.stroke();
+  }
+
+  // Ice armor body
+  const g = ctx.createRadialGradient(-r * 0.25, -r * 0.2, r * 0.05, 0, 0, r);
+  g.addColorStop(0, hitFlash ? '#fff' : '#e0f2fe');
+  g.addColorStop(0.3, hitFlash ? '#ddd' : (rage ? '#1d4ed8' : '#38bdf8'));
+  g.addColorStop(0.7, '#0369a1');
+  g.addColorStop(1, '#0c4a6e');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(0, 0, r * 0.82, r * 0.92, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = rage ? '#ef4444' : '#7dd3fc'; ctx.lineWidth = 4; ctx.stroke();
+
+  // Ice plate armor shards
+  ctx.fillStyle = 'rgba(186,230,253,0.2)';
+  const platePoints = [[-0.5, -0.6, 0.12, 0.32], [0.5, -0.6, 0.12, 0.32], [0, -0.85, 0.25, 0.18], [-0.62, 0.1, 0.1, 0.35], [0.62, 0.1, 0.1, 0.35]];
+  for (const [px, py, pw, ph] of platePoints) {
+    ctx.beginPath(); ctx.ellipse(px * r, py * r, pw * r, ph * r, Math.atan2(py, px), 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = 'rgba(147,197,253,0.4)'; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+
+  // Icy eyes (crystal blue)
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.ellipse(-r * 0.3, -r * 0.1, r * 0.18, r * 0.21, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r * 0.3, -r * 0.1, r * 0.18, r * 0.21, 0, 0, Math.PI * 2); ctx.fill();
+  const eCol = rage ? '#ef4444' : '#38bdf8';
+  ctx.fillStyle = eCol;
+  ctx.beginPath(); ctx.ellipse(-r * 0.28, -r * 0.09, r * 0.1, r * 0.13, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r * 0.28, -r * 0.09, r * 0.1, r * 0.13, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.shadowColor = '#38bdf8'; ctx.shadowBlur = 15;
+  ctx.fillStyle = '#e0f2fe';
+  ctx.beginPath(); ctx.arc(-r * 0.29, -r * 0.1, r * 0.04, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(r * 0.29, -r * 0.1, r * 0.04, 0, Math.PI * 2); ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Stern brow ice plates
+  ctx.fillStyle = '#0369a1';
+  ctx.beginPath(); ctx.moveTo(-r * 0.5, -r * 0.32); ctx.lineTo(-r * 0.1, -r * 0.24); ctx.lineTo(-r * 0.12, -r * 0.3); ctx.lineTo(-r * 0.5, -r * 0.38); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(r * 0.5, -r * 0.32); ctx.lineTo(r * 0.1, -r * 0.24); ctx.lineTo(r * 0.12, -r * 0.3); ctx.lineTo(r * 0.5, -r * 0.38); ctx.closePath(); ctx.fill();
+
+  // Cold mouth (thin grim line)
+  ctx.strokeStyle = '#0c4a6e'; ctx.lineWidth = 3.5;
+  ctx.beginPath(); ctx.arc(0, r * 0.22, r * 0.35, 0.25, Math.PI - 0.25); ctx.stroke();
+  // Icy teeth
+  ctx.fillStyle = '#e0f2fe';
+  for (let ti = 0; ti < 5; ti++) {
+    const ta = 0.45 + ti * (Math.PI - 0.9) / 4;
+    ctx.beginPath(); ctx.moveTo(Math.cos(ta) * r * 0.35, r * 0.22 + Math.sin(ta) * r * 0.35);
+    ctx.lineTo(Math.cos(ta) * r * 0.35 - 3, r * 0.22 + Math.sin(ta) * r * 0.35 + 10);
+    ctx.lineTo(Math.cos(ta) * r * 0.35 + 3, r * 0.22 + Math.sin(ta) * r * 0.35 + 10);
+    ctx.closePath(); ctx.fill();
+  }
+
+  // Crystal Crown
+  ctx.fillStyle = '#bae6fd';
+  const crownBase = -r * 0.98;
+  ctx.beginPath();
+  ctx.moveTo(-r * 0.52, crownBase + r * 0.14);
+  ctx.lineTo(-r * 0.52, crownBase - r * 0.05);
+  ctx.lineTo(-r * 0.3, crownBase + r * 0.1);
+  ctx.lineTo(-r * 0.16, crownBase - r * 0.28);
+  ctx.lineTo(0, crownBase + r * 0.06);
+  ctx.lineTo(r * 0.16, crownBase - r * 0.28);
+  ctx.lineTo(r * 0.3, crownBase + r * 0.1);
+  ctx.lineTo(r * 0.52, crownBase - r * 0.05);
+  ctx.lineTo(r * 0.52, crownBase + r * 0.14);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.stroke();
+  // Crystal gems
+  ctx.shadowColor = '#38bdf8'; ctx.shadowBlur = 8;
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(0, crownBase - r * 0.22, 5, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#93c5fd';
+  ctx.beginPath(); ctx.arc(-r * 0.33, crownBase + r * 0.06, 3.5, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(r * 0.33, crownBase + r * 0.06, 3.5, 0, Math.PI * 2); ctx.fill();
+  ctx.shadowBlur = 0;
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// BOSS: LICH SUPREME — Thần Lich tối thượng
+// Đầu lâu lơ lửng trong bào khói tím, vầng hào quang tử thần
+// ──────────────────────────────────────────────────────────────
+function drawBossLichSupreme(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const float = Math.sin(t / 350) * r * 0.06;
+  const spin = t / 700;
+
+  ctx.save();
+  ctx.translate(x, y + float);
+
+  // Death halo — orbiting purple orbs
+  for (let oi = 0; oi < 6; oi++) {
+    const oa = (oi / 6) * Math.PI * 2 + spin * 2;
+    const od = r * 1.2;
+    const alpha = 0.5 + Math.sin(t / 120 + oi) * 0.3;
+    ctx.fillStyle = `rgba(168,85,247,${alpha})`;
+    ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 10;
+    ctx.beginPath(); ctx.arc(Math.cos(oa) * od, Math.sin(oa) * od, r * 0.1, 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  // Soul smoke cloak (dark purple mist)
+  ctx.fillStyle = 'rgba(88,28,135,0.3)';
+  ctx.beginPath(); ctx.ellipse(0, r * 0.25, r * 0.95, r * 0.75, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Main robe body
+  const g = ctx.createRadialGradient(0, 0, r * 0.1, 0, 0, r);
+  g.addColorStop(0, hitFlash ? '#fff' : '#e9d5ff');
+  g.addColorStop(0.35, hitFlash ? '#ddd' : (rage ? '#7c3aed' : '#a855f7'));
+  g.addColorStop(0.75, '#581c87');
+  g.addColorStop(1, '#1e1b4b');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(0, 0, r * 0.8, r * 0.9, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = rage ? '#ef4444' : '#7c3aed'; ctx.lineWidth = 4; ctx.stroke();
+
+  // Skull face overlay
+  // Skull base (white)
+  ctx.fillStyle = hitFlash ? '#fff' : '#f5f3ff';
+  ctx.beginPath(); ctx.ellipse(0, -r * 0.05, r * 0.5, r * 0.52, 0, 0, Math.PI * 2); ctx.fill();
+  // Dark jaw
+  ctx.fillStyle = '#2e1065';
+  ctx.beginPath(); ctx.ellipse(0, r * 0.28, r * 0.4, r * 0.22, 0, 0, Math.PI * 2); ctx.fill();
+  // Teeth
+  ctx.fillStyle = '#f5f3ff';
+  for (let ti = -2; ti <= 2; ti++) {
+    if (ti === 0) continue;
+    ctx.beginPath(); ctx.rect(ti * r * 0.13 - r * 0.05, r * 0.15, r * 0.09, r * 0.2); ctx.fill();
+  }
+  // Eye sockets (dark hollow)
+  ctx.fillStyle = '#1e1b4b';
+  ctx.beginPath(); ctx.ellipse(-r * 0.22, -r * 0.1, r * 0.18, r * 0.2, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r * 0.22, -r * 0.1, r * 0.18, r * 0.2, 0, 0, Math.PI * 2); ctx.fill();
+  // Glowing eye flames
+  const eCol = rage ? '#ef4444' : '#c084fc';
+  ctx.fillStyle = eCol;
+  ctx.shadowColor = eCol; ctx.shadowBlur = 16;
+  ctx.beginPath(); ctx.ellipse(-r * 0.22, -r * 0.1, r * 0.1, r * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r * 0.22, -r * 0.1, r * 0.1, r * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.shadowBlur = 0;
+  // Nose void (triangle)
+  ctx.fillStyle = '#1e1b4b';
+  ctx.beginPath(); ctx.moveTo(0, r * 0.05); ctx.lineTo(-r * 0.07, r * 0.18); ctx.lineTo(r * 0.07, r * 0.18); ctx.closePath(); ctx.fill();
+
+  // Staff / scepter
+  ctx.save();
+  ctx.translate(r * 0.7, -r * 0.2);
+  ctx.rotate(Math.PI * 0.08 + Math.sin(t / 400) * 0.04);
+  // Staff pole
+  ctx.strokeStyle = '#4c1d95'; ctx.lineWidth = 7;
+  ctx.beginPath(); ctx.moveTo(0, r * 0.8); ctx.lineTo(0, -r * 0.6); ctx.stroke();
+  ctx.strokeStyle = '#7c3aed'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0, r * 0.8); ctx.lineTo(0, -r * 0.6); ctx.stroke();
+  // Skull orb atop
+  ctx.fillStyle = '#c084fc'; ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 15;
+  ctx.beginPath(); ctx.arc(0, -r * 0.7, r * 0.16, 0, Math.PI * 2); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#2e1065';
+  ctx.beginPath(); ctx.ellipse(-r * 0.06, -r * 0.73, r * 0.04, r * 0.05, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r * 0.06, -r * 0.73, r * 0.04, r * 0.05, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+
+  // Bone crown
+  ctx.fillStyle = '#ede9fe';
+  const ckY = -r * 0.98;
+  for (let pi = -2; pi <= 2; pi++) {
+    const h = r * (0.15 + (1 - Math.abs(pi) * 0.25) * 0.12);
+    ctx.beginPath(); ctx.moveTo(pi * r * 0.22 - r * 0.06, ckY + r * 0.12);
+    ctx.lineTo(pi * r * 0.22, ckY - h);
+    ctx.lineTo(pi * r * 0.22 + r * 0.06, ckY + r * 0.12);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#7c3aed'; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// BOSS: FALLEN DEMON — Quỷ vương sa ngã
+// Cơ thể lửa địa ngục, cánh ác quỷ, mắt đỏ rực
+// ──────────────────────────────────────────────────────────────
+function drawBossFallenDemon(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const pulse = 1 + Math.sin(t / 180) * 0.04;
+  const wingFlap = Math.sin(t / 250) * 0.35;
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(pulse, pulse);
+
+  // Hellfire ring
+  for (let fi = 0; fi < 12; fi++) {
+    const fa = (fi / 12) * Math.PI * 2 + t / 300;
+    const fd = r * 1.25 + Math.sin(t / 80 + fi) * r * 0.1;
+    const alpha = 0.45 + Math.sin(t / 60 + fi * 0.7) * 0.3;
+    ctx.fillStyle = fi % 2 === 0 ? `rgba(239,68,68,${alpha})` : `rgba(251,146,60,${alpha})`;
+    ctx.beginPath();
+    ctx.ellipse(Math.cos(fa) * fd, Math.sin(fa) * fd, r * 0.07, r * 0.16, fa, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Bat wings (dark red membranes)
+  for (let wi = 0; wi < 2; wi++) {
+    const side = wi === 0 ? -1 : 1;
+    ctx.save();
+    ctx.translate(side * r * 0.55, -r * 0.15);
+    ctx.rotate(side * (Math.PI * 0.15 + wingFlap));
+    ctx.fillStyle = `rgba(127,29,29,0.8)`;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.bezierCurveTo(side * r * 0.6, -r * 0.8, side * r * 1.2, -r * 0.5, side * r * 1.0, r * 0.3);
+    ctx.bezierCurveTo(side * r * 0.7, r * 0.5, side * r * 0.3, r * 0.15, 0, 0);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#991b1b'; ctx.lineWidth = 2; ctx.stroke();
+    // Wing ribs
+    ctx.strokeStyle = 'rgba(153,27,27,0.5)'; ctx.lineWidth = 1.5;
+    for (let ri = 0; ri < 3; ri++) {
+      const rp = (ri + 1) / 4;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(side * r * (0.6 + rp * 0.5), -r * (0.8 - rp * 0.5) + r * rp * 0.3);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // Main body — hellfire demon
+  const g = ctx.createRadialGradient(-r * 0.2, -r * 0.15, r * 0.05, 0, 0, r);
+  g.addColorStop(0, hitFlash ? '#fff' : '#fecaca');
+  g.addColorStop(0.35, hitFlash ? '#eee' : (rage ? '#dc2626' : '#ef4444'));
+  g.addColorStop(0.7, '#991b1b');
+  g.addColorStop(1, '#450a0a');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(0, 0, r * 0.8, r * 0.88, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = rage ? '#fbbf24' : '#7f1d1d'; ctx.lineWidth = 4; ctx.stroke();
+
+  // Muscle definition lines
+  ctx.strokeStyle = 'rgba(127,29,29,0.4)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(-r * 0.05, -r * 0.7); ctx.lineTo(-r * 0.05, r * 0.7); ctx.stroke();
+  ctx.beginPath(); ctx.arc(-r * 0.25, r * 0.1, r * 0.25, -Math.PI * 0.8, Math.PI * 0.2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(r * 0.25, r * 0.1, r * 0.25, -Math.PI * 0.2, Math.PI * 0.8, true); ctx.stroke();
+
+  // Horns
+  ctx.fillStyle = '#1c0606';
+  for (let hi = 0; hi < 2; hi++) {
+    const side = hi === 0 ? -1 : 1;
+    ctx.save();
+    ctx.translate(side * r * 0.42, -r * 0.82);
+    ctx.rotate(side * Math.PI * 0.08);
+    ctx.beginPath(); ctx.moveTo(-r * 0.1, r * 0.08);
+    ctx.lineTo(side * r * 0.04, -r * 0.42);
+    ctx.lineTo(r * 0.1, r * 0.08); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#7f1d1d';
+    ctx.beginPath(); ctx.moveTo(side * r * 0.04, -r * 0.42);
+    ctx.lineTo(side * r * 0.04, -r * 0.38); ctx.lineTo(0, -r * 0.4); ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+
+  // Demonic eyes (burning red/orange)
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.ellipse(-r * 0.28, -r * 0.08, r * 0.19, r * 0.22, -0.1, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r * 0.28, -r * 0.08, r * 0.19, r * 0.22, 0.1, 0, Math.PI * 2); ctx.fill();
+  const dEyeCol = rage ? '#fbbf24' : '#dc2626';
+  ctx.fillStyle = dEyeCol; ctx.shadowColor = dEyeCol; ctx.shadowBlur = 18;
+  ctx.beginPath(); ctx.ellipse(-r * 0.27, -r * 0.07, r * 0.11, r * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r * 0.27, -r * 0.07, r * 0.11, r * 0.14, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.shadowBlur = 0;
+  // Slit pupils
+  ctx.fillStyle = '#000';
+  ctx.beginPath(); ctx.ellipse(-r * 0.27, -r * 0.07, r * 0.03, r * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r * 0.27, -r * 0.07, r * 0.03, r * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Fanged grin
+  ctx.strokeStyle = '#7f1d1d'; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.arc(0, r * 0.22, r * 0.42, 0.1, Math.PI - 0.1); ctx.stroke();
+  ctx.fillStyle = '#fff';
+  const fangPositions = [-0.42, -0.22, 0, 0.22, 0.42];
+  for (const fx of fangPositions) {
+    ctx.beginPath();
+    ctx.moveTo(fx * r, r * 0.22);
+    ctx.lineTo(fx * r - r * 0.04, r * 0.38);
+    ctx.lineTo(fx * r + r * 0.04, r * 0.38);
+    ctx.closePath(); ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// BOSS: WAR MACHINE — Cỗ máy chiến tranh
+// Robot thép cổ đại, đại pháo, đèn radar đỏ
+// ──────────────────────────────────────────────────────────────
+function drawBossWarMachine(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const marchStep = Math.sin(t / 150) * r * 0.015;
+  const radarRot = t / 250;
+
+  ctx.save();
+  ctx.translate(x, y + marchStep);
+
+  // Electromagnetic pulse rings
+  for (let ei = 0; ei < 3; ei++) {
+    const ep = ((t / 600 + ei / 3) % 1);
+    const er = r * (1.1 + ep * 0.6);
+    const ea = (1 - ep) * 0.4;
+    ctx.strokeStyle = `rgba(${rage ? '239,68,68' : '251,146,60'},${ea})`;
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(0, 0, er, 0, Math.PI * 2); ctx.stroke();
+  }
+
+  // Heavy steel body — main chassis
+  const g = ctx.createLinearGradient(-r, -r, r, r);
+  g.addColorStop(0, hitFlash ? '#fff' : '#d1d5db');
+  g.addColorStop(0.3, hitFlash ? '#eee' : (rage ? '#ef4444' : '#9ca3af'));
+  g.addColorStop(0.7, '#4b5563');
+  g.addColorStop(1, '#111827');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.roundRect(-r * 0.75, -r * 0.82, r * 1.5, r * 1.65, r * 0.12); ctx.fill();
+  ctx.strokeStyle = rage ? '#ef4444' : '#6b7280'; ctx.lineWidth = 5; ctx.stroke();
+
+  // Armor plating lines
+  ctx.strokeStyle = 'rgba(107,114,128,0.5)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(-r * 0.75, -r * 0.2); ctx.lineTo(r * 0.75, -r * 0.2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-r * 0.75, r * 0.2); ctx.lineTo(r * 0.75, r * 0.2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, -r * 0.82); ctx.lineTo(0, r * 0.83); ctx.stroke();
+
+  // Cannon barrels (2 side guns)
+  for (let ci = 0; ci < 2; ci++) {
+    const side = ci === 0 ? -1 : 1;
+    ctx.fillStyle = '#374151';
+    ctx.beginPath(); ctx.roundRect(side * r * 0.65, -r * 0.55, side * r * 0.55, r * 0.25, 4); ctx.fill();
+    ctx.fillStyle = '#111827';
+    ctx.beginPath(); ctx.ellipse(side * (r * 0.65 + side * r * 0.55), -r * 0.43, r * 0.08, r * 0.08, 0, 0, Math.PI * 2); ctx.fill();
+    // Muzzle flash when firing (simulated with pulse)
+    if (Math.sin(t / 200 + ci * Math.PI) > 0.8) {
+      ctx.fillStyle = `rgba(251,191,36,0.7)`;
+      ctx.shadowColor = '#fbbf24'; ctx.shadowBlur = 12;
+      ctx.beginPath(); ctx.arc(side * (r * 0.65 + side * r * 0.55), -r * 0.43, r * 0.12, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+  }
+
+  // Missile launcher (top center)
+  ctx.fillStyle = '#1f2937';
+  ctx.beginPath(); ctx.roundRect(-r * 0.22, -r * 1.1, r * 0.44, r * 0.35, 6); ctx.fill();
+  ctx.strokeStyle = '#374151'; ctx.lineWidth = 2; ctx.stroke();
+  // Missile tubes
+  for (let mi = 0; mi < 3; mi++) {
+    ctx.fillStyle = '#111827';
+    ctx.beginPath(); ctx.ellipse((mi - 1) * r * 0.14, -r * 0.97, r * 0.06, r * 0.06, 0, 0, Math.PI * 2); ctx.fill();
+  }
+
+  // Sensor eyes (LED panel)
+  ctx.fillStyle = '#111827';
+  ctx.beginPath(); ctx.roundRect(-r * 0.5, -r * 0.62, r, r * 0.28, r * 0.04); ctx.fill();
+  // Left eye — targeting laser
+  const eyeGlow = rage ? '#ef4444' : '#f97316';
+  ctx.fillStyle = eyeGlow; ctx.shadowColor = eyeGlow; ctx.shadowBlur = 12;
+  ctx.beginPath(); ctx.rect(-r * 0.45, -r * 0.58, r * 0.38, r * 0.18); ctx.fill();
+  ctx.shadowBlur = 0;
+  // Right eye — radar
+  ctx.fillStyle = '#0d9488';
+  ctx.beginPath(); ctx.arc(r * 0.22, -r * 0.49, r * 0.14, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#2dd4bf'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(r * 0.22, -r * 0.49);
+  ctx.lineTo(r * 0.22 + Math.cos(radarRot) * r * 0.13, -r * 0.49 + Math.sin(radarRot) * r * 0.13);
+  ctx.stroke();
+
+  // Radar dish (top-left)
+  ctx.save();
+  ctx.translate(-r * 0.6, -r * 0.92);
+  ctx.rotate(radarRot * 0.7);
+  ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.arc(0, 0, r * 0.18, -Math.PI * 0.8, Math.PI * 0.2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -r * 0.18); ctx.stroke();
+  ctx.fillStyle = '#6b7280'; ctx.beginPath(); ctx.arc(0, 0, r * 0.04, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+
+  // Warning light (blinking)
+  const blinkOn = Math.sin(t / 200) > 0;
+  if (blinkOn) {
+    ctx.fillStyle = rage ? '#ef4444' : '#fbbf24';
+    ctx.shadowColor = rage ? '#ef4444' : '#fbbf24'; ctx.shadowBlur = 15;
+    ctx.beginPath(); ctx.arc(r * 0.6, -r * 0.9, r * 0.08, 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0;
+  } else {
+    ctx.fillStyle = '#374151'; ctx.beginPath(); ctx.arc(r * 0.6, -r * 0.9, r * 0.08, 0, Math.PI * 2); ctx.fill();
+  }
+
+  // Treads/legs (bottom)
+  ctx.fillStyle = '#1f2937';
+  ctx.beginPath(); ctx.roundRect(-r * 0.9, r * 0.62, r * 0.42, r * 0.28, 6); ctx.fill();
+  ctx.beginPath(); ctx.roundRect(r * 0.48, r * 0.62, r * 0.42, r * 0.28, 6); ctx.fill();
+  ctx.strokeStyle = '#374151'; ctx.lineWidth = 2;
+  for (let ti = 0; ti < 2; ti++) {
+    const tx = ti === 0 ? -r * 0.9 : r * 0.48;
+    for (let si = 0; si < 3; si++) {
+      ctx.beginPath(); ctx.moveTo(tx + si * r * 0.14, r * 0.62); ctx.lineTo(tx + si * r * 0.14, r * 0.9); ctx.stroke();
+    }
+  }
+
+  ctx.restore();
+}
+
+
 
 // V? v�ng l?a xung quanh boss (level-scaled)
 function drawBossFireRing(ctx, r, t, bossLevel) {
@@ -15225,6 +17958,615 @@ function drawOmegaRing(ctx, r, t) {
   ctx.restore();
 }
 
+// ─────────────────────────────────────────────────────────────────
+// 9 BOSS MỚI — Hoạt ảnh Canvas độc đáo
+// ─────────────────────────────────────────────────────────────────
+
+// Boss 13: Phù Thủy Ôn Dịch — cauldron + toxic rings + witch hat
+function drawBossPlagueWitch(ctx, e, t, hitFlash, rage) {
+  const r = e.r; const x = e.x; const y = e.y;
+  const bob = Math.sin(t / 350) * 4;
+  ctx.save(); ctx.translate(x, y + bob);
+
+  // Toxic aura rings
+  for (let ri = 0; ri < 3; ri++) {
+    const ringR = r * (1.2 + ri * 0.28) + Math.sin(t / 200 + ri * 2) * 4;
+    const alpha = rage ? 0.45 - ri * 0.1 : 0.25 - ri * 0.07;
+    ctx.strokeStyle = `rgba(${rage?'200,255,0':'77,124,15'},${alpha})`;
+    ctx.lineWidth = rage ? 3 : 2;
+    ctx.beginPath(); ctx.arc(0, 0, ringR, 0, Math.PI * 2); ctx.stroke();
+  }
+
+  // Cauldron body
+  const cg = ctx.createRadialGradient(0, 4, r * 0.1, 0, 4, r * 0.88);
+  cg.addColorStop(0, rage ? '#86efac' : '#4d7c0f');
+  cg.addColorStop(1, rage ? '#166534' : '#1a2e05');
+  ctx.fillStyle = hitFlash ? '#fff' : cg;
+  ctx.beginPath();
+  ctx.ellipse(0, 8, r * 0.7, r * 0.52, 0, 0, Math.PI * 2); ctx.fill();
+  // Cauldron rim
+  ctx.strokeStyle = '#065f46'; ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.ellipse(0, 2, r * 0.72, r * 0.2, 0, 0, Math.PI * 2); ctx.stroke();
+
+  // Bubbling liquid
+  const bubPos = [{x:-8,y:-4},{x:4,y:-10},{x:12,y:-2},{x:-2,y:-12}];
+  bubPos.forEach((b, i) => {
+    const bs = Math.abs(Math.sin(t/180 + i * 1.5)) * 5 + 3;
+    const ba = 0.5 + Math.sin(t/120 + i) * 0.3;
+    ctx.fillStyle = `rgba(134,239,172,${ba})`;
+    ctx.beginPath(); ctx.arc(b.x, b.y, bs, 0, Math.PI*2); ctx.fill();
+  });
+
+  // Witch hat
+  ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#4ade80' : '#1a2e05');
+  ctx.beginPath();
+  ctx.moveTo(-r * 0.55, -r * 0.35);
+  ctx.lineTo(r * 0.55, -r * 0.35);
+  ctx.lineTo(0, -r * 1.15);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = rage ? '#a3e635' : '#4d7c0f';
+  ctx.lineWidth = 2; ctx.stroke();
+
+  // Hat brim
+  ctx.fillStyle = rage ? '#4ade80' : '#3f6212';
+  ctx.beginPath();
+  ctx.ellipse(0, -r * 0.35, r * 0.65, r * 0.15, 0, 0, Math.PI*2); ctx.fill();
+
+  // Floating hex symbols
+  const hexAngles = [0.3, 2.1, 4.0];
+  hexAngles.forEach((a, i) => {
+    const hx = Math.cos(a + t/600) * r * 1.35;
+    const hy = Math.sin(a + t/600) * r * 1.35;
+    ctx.fillStyle = `rgba(163,230,53,${0.6 + Math.sin(t/200+i)*0.3})`;
+    ctx.font = `${12 + i * 2}px serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('☠', hx, hy);
+  });
+
+  ctx.restore();
+}
+
+// Boss 14: Đô Đốc Phong Bão — ship wheel + lightning + navy coat
+function drawBossStormAdmiral(ctx, e, t, hitFlash, rage) {
+  const r = e.r; const x = e.x; const y = e.y;
+  const sway = Math.sin(t / 400) * 5;
+  ctx.save(); ctx.translate(x, y);
+
+  // Storm aura — rotating arcs
+  for (let sa = 0; sa < 6; sa++) {
+    const arcAngle = (sa / 6) * Math.PI * 2 + t / 300;
+    const arcR = r * 1.35 + Math.sin(t / 150 + sa) * 6;
+    ctx.strokeStyle = rage ? `rgba(56,189,248,${0.6+Math.sin(t/80+sa)*0.3})` : `rgba(14,165,233,${0.35+Math.sin(t/100+sa)*0.2})`;
+    ctx.lineWidth = rage ? 4 : 2.5;
+    ctx.beginPath();
+    ctx.arc(0, 0, arcR, arcAngle, arcAngle + Math.PI * 0.45); ctx.stroke();
+  }
+
+  // Body / navy coat
+  ctx.save(); ctx.translate(0, sway);
+  const bg = ctx.createRadialGradient(0, 0, r*0.1, 0, 0, r*0.95);
+  bg.addColorStop(0, rage ? '#7dd3fc' : '#0369a1');
+  bg.addColorStop(1, rage ? '#0284c7' : '#0c2e3e');
+  ctx.fillStyle = hitFlash ? '#fff' : bg;
+  ctx.beginPath(); ctx.arc(0, 0, r * 0.88, 0, Math.PI * 2); ctx.fill();
+
+  // Ship wheel
+  const wSpokes = 8;
+  const wR = r * 0.5;
+  ctx.strokeStyle = hitFlash ? '#fff' : (rage ? '#fef9c3' : '#fbbf24');
+  ctx.lineWidth = 3;
+  for (let s = 0; s < wSpokes; s++) {
+    const wa = (s / wSpokes) * Math.PI * 2 + t / 800;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(Math.cos(wa) * wR, Math.sin(wa) * wR);
+    ctx.stroke();
+  }
+  ctx.beginPath(); ctx.arc(0, 0, wR, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(0, 0, wR * 0.22, 0, Math.PI * 2);
+  ctx.fillStyle = rage ? '#fbbf24' : '#92400e'; ctx.fill();
+
+  // Admiral hat
+  ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#7dd3fc' : '#0c4a6e');
+  ctx.beginPath();
+  ctx.ellipse(0, -r*0.82, r*0.68, r*0.18, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillRect(-r*0.45, -r*1.15, r*0.9, r*0.35);
+  // Gold stripe
+  ctx.fillStyle = '#fbbf24';
+  ctx.fillRect(-r*0.45, -r*0.82, r*0.9, 4);
+
+  ctx.restore();
+
+  // Lightning bolts orbiting
+  for (let lb = 0; lb < 3; lb++) {
+    const lba = (lb / 3) * Math.PI * 2 + t / 500;
+    const lbx = Math.cos(lba) * r * 1.5;
+    const lby = Math.sin(lba) * r * 1.5;
+    ctx.fillStyle = `rgba(186,230,253,${0.7+Math.sin(t/80+lb)*0.25})`;
+    ctx.font = '14px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('⚡', lbx, lby);
+  }
+
+  ctx.restore();
+}
+
+// Boss 15: Khổng Lồ Cát Sống — giant sand figure + pillar arms
+function drawBossSandColossus(ctx, e, t, hitFlash, rage) {
+  const r = e.r; const x = e.x; const y = e.y;
+  ctx.save(); ctx.translate(x, y);
+
+  // Sand particle aura
+  for (let sp = 0; sp < 12; sp++) {
+    const spa = (sp / 12) * Math.PI * 2 + t / 700;
+    const spr = r * (1.1 + Math.sin(t/200+sp)*0.25);
+    const spSize = 3 + Math.sin(t/150+sp*0.8)*2;
+    const spAlpha = rage ? 0.6 + Math.sin(t/80+sp)*0.3 : 0.35 + Math.sin(t/100+sp)*0.2;
+    ctx.fillStyle = `rgba(217,119,6,${spAlpha})`;
+    ctx.beginPath();
+    ctx.arc(Math.cos(spa)*spr, Math.sin(spa)*spr, spSize, 0, Math.PI*2); ctx.fill();
+  }
+
+  // Main body — sandy pillar
+  const sg = ctx.createLinearGradient(0, -r, 0, r);
+  sg.addColorStop(0, rage ? '#fbbf24' : '#d97706');
+  sg.addColorStop(0.5, rage ? '#f59e0b' : '#b45309');
+  sg.addColorStop(1, rage ? '#92400e' : '#78350f');
+  ctx.fillStyle = hitFlash ? '#fff' : sg;
+  ctx.beginPath();
+  // Rough hexagonal shape
+  ctx.moveTo(-r*0.6, -r*0.9);
+  ctx.lineTo(r*0.6, -r*0.9);
+  ctx.lineTo(r*0.82, 0);
+  ctx.lineTo(r*0.65, r*0.88);
+  ctx.lineTo(-r*0.65, r*0.88);
+  ctx.lineTo(-r*0.82, 0);
+  ctx.closePath(); ctx.fill();
+
+  // Sand crack lines
+  if (!hitFlash) {
+    ctx.strokeStyle = rage ? 'rgba(120,53,15,0.6)' : 'rgba(120,53,15,0.4)';
+    ctx.lineWidth = 2;
+    [[-r*0.3,-r*0.5,r*0.1,r*0.3],[r*0.2,-r*0.6,-r*0.2,r*0.2],[-r*0.1,r*0.1,r*0.3,r*0.7]].forEach(([x1,y1,x2,y2]) => {
+
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    });
+  }
+
+  // Eyes — glowing amber
+  [[-r*0.22,-r*0.2],[r*0.22,-r*0.2]].forEach(([ex,ey]) => {
+    ctx.fillStyle = rage ? '#fde047' : '#fbbf24';
+    ctx.shadowColor = rage ? '#fbbf24' : '#f59e0b';
+    ctx.shadowBlur = rage ? 14 : 8;
+    ctx.beginPath(); ctx.ellipse(ex, ey, r*0.1, r*0.14, 0, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+  });
+
+  // Shoulder arms
+  const armSway = Math.sin(t/600) * 0.15;
+  [[-1,1]].forEach(([dir]) => {
+    ctx.save(); ctx.rotate(dir * (0.35 + armSway));
+    ctx.translate(dir * r * 0.8, -r * 0.2);
+    ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#d97706' : '#b45309');
+    ctx.beginPath();
+    ctx.roundRect(-r*0.18, 0, r*0.36, r*0.7, r*0.1); ctx.fill();
+    ctx.restore();
+  });
+
+  ctx.restore();
+}
+
+// Boss 16: Thủy Quái Bóng Tối — 3-headed snake, dark purple
+function drawBossShadowHydra(ctx, e, t, hitFlash, rage) {
+  const r = e.r; const x = e.x; const y = e.y;
+  ctx.save(); ctx.translate(x, y);
+
+  // Dark void aura
+  const vg = ctx.createRadialGradient(0, 0, r*0.5, 0, 0, r*1.6);
+  vg.addColorStop(0, 'rgba(30,27,76,0)');
+  vg.addColorStop(1, `rgba(30,27,76,${rage ? 0.55 : 0.32})`);
+  ctx.fillStyle = vg;
+  ctx.beginPath(); ctx.arc(0, 0, r*1.6, 0, Math.PI*2); ctx.fill();
+
+  // Main body
+  const hg = ctx.createRadialGradient(0, 0, r*0.1, 0, 0, r*0.9);
+  hg.addColorStop(0, rage ? '#818cf8' : '#4338ca');
+  hg.addColorStop(1, rage ? '#312e81' : '#1e1b4b');
+  ctx.fillStyle = hitFlash ? '#fff' : hg;
+  ctx.beginPath(); ctx.arc(0, 0, r * 0.85, 0, Math.PI * 2); ctx.fill();
+
+  // 3 snake heads
+  const headAngles = [-Math.PI/3, 0, Math.PI/3];
+  const headColors = ['#818cf8', '#a5b4fc', '#6366f1'];
+  headAngles.forEach((ha, hi) => {
+    const neckWave = Math.sin(t / 300 + hi * 2.1) * 0.15;
+    const ha2 = ha - Math.PI/2 + neckWave;
+    const neckLen = r * 0.65;
+    const hx = Math.cos(ha2) * neckLen;
+    const hy = Math.sin(ha2) * neckLen;
+
+    // Neck
+    ctx.strokeStyle = hitFlash ? '#fff' : headColors[hi];
+    ctx.lineWidth = r * 0.2;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(hx*0.5 + Math.sin(t/200+hi)*10, hy*0.5, hx, hy);
+    ctx.stroke();
+
+    // Head
+    ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#c7d2fe' : headColors[hi]);
+    ctx.beginPath(); ctx.ellipse(hx, hy, r*0.22, r*0.16, ha2, 0, Math.PI*2); ctx.fill();
+
+    // Eye glow
+    ctx.fillStyle = rage ? '#fde047' : '#a5f3fc';
+    ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 8;
+    ctx.beginPath();
+    const ex = hx + Math.cos(ha2 + 0.4) * r * 0.1;
+    const ey = hy + Math.sin(ha2 + 0.4) * r * 0.1;
+    ctx.arc(ex, ey, r * 0.05, 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0;
+  });
+
+  // Scale pattern on body
+  if (!hitFlash) {
+    ctx.strokeStyle = 'rgba(99,102,241,0.4)';
+    ctx.lineWidth = 1.5;
+    for (let si = 0; si < 5; si++) {
+      const sr = r * (0.25 + si * 0.13);
+      ctx.beginPath(); ctx.arc(0, 0, sr, 0, Math.PI*2); ctx.stroke();
+    }
+  }
+
+  ctx.restore();
+}
+
+// Boss 17: Golem Pha Lê — prismatic crystal shell + laser beams
+function drawBossCrystalGolem(ctx, e, t, hitFlash, rage) {
+  const r = e.r; const x = e.x; const y = e.y;
+  ctx.save(); ctx.translate(x, y);
+
+  // Prismatic outer glow
+  const hue = (t / 15) % 360;
+  ctx.shadowColor = `hsl(${hue},100%,65%)`;
+  ctx.shadowBlur = rage ? 28 : 16;
+
+  // Crystal shell segments (hexagonal facets)
+  const facets = 6;
+  for (let fi = 0; fi < facets; fi++) {
+    const fa = (fi / facets) * Math.PI * 2 + t / 1200;
+    const fHue = (hue + fi * 60) % 360;
+    ctx.fillStyle = hitFlash ? '#fff' : `hsla(${fHue},80%,60%,${rage ? 0.75 : 0.5})`;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(Math.cos(fa) * r * 0.95, Math.sin(fa) * r * 0.95);
+    ctx.lineTo(Math.cos(fa + Math.PI * 2 / facets) * r * 0.95, Math.sin(fa + Math.PI * 2 / facets) * r * 0.95);
+    ctx.closePath(); ctx.fill();
+  }
+
+  // Core gem
+  ctx.shadowBlur = 0;
+  const cg = ctx.createRadialGradient(0, 0, r*0.05, 0, 0, r*0.45);
+  cg.addColorStop(0, '#fff');
+  cg.addColorStop(0.5, `hsl(${hue},90%,70%)`);
+  cg.addColorStop(1, `hsl(${(hue+120)%360},70%,40%)`);
+  ctx.fillStyle = hitFlash ? '#fff' : cg;
+  ctx.beginPath(); ctx.arc(0, 0, r * 0.42, 0, Math.PI * 2); ctx.fill();
+
+  // Orbiting crystal shards
+  for (let cs = 0; cs < 6; cs++) {
+    const ca = (cs / 6) * Math.PI * 2 + t / 400;
+    const cx2 = Math.cos(ca) * r * 1.25;
+    const cy2 = Math.sin(ca) * r * 1.25;
+    ctx.save();
+    ctx.translate(cx2, cy2);
+    ctx.rotate(ca + t / 300);
+    ctx.fillStyle = `hsla(${(hue+cs*60)%360},85%,70%,${0.6+Math.sin(t/100+cs)*0.3})`;
+    ctx.beginPath();
+    ctx.moveTo(0, -r*0.15); ctx.lineTo(r*0.08, r*0.1); ctx.lineTo(-r*0.08, r*0.1);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+
+  ctx.restore();
+}
+
+// Boss 18: Thằng Hề Hỗn Loạn — jester motley + spinning
+function drawBossChaosJester(ctx, e, t, hitFlash, rage) {
+  const r = e.r; const x = e.x; const y = e.y;
+  const spin = t / 250;
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rage ? spin * 1.5 : spin);
+
+  // Chaotic color aura
+  const hue = (t / 8) % 360;
+  const gg = ctx.createRadialGradient(0,0,r*0.6,0,0,r*1.5);
+  gg.addColorStop(0,'rgba(0,0,0,0)');
+  gg.addColorStop(1,`hsla(${hue},80%,55%,${rage?0.4:0.2})`);
+  ctx.fillStyle=gg;
+  ctx.beginPath(); ctx.arc(0,0,r*1.5,0,Math.PI*2); ctx.fill();
+
+  // Jester body — diamond pattern
+  const quadrants = [
+    { angle:0,      color: rage ? '#f472b6' : '#ec4899' },
+    { angle:Math.PI/2, color: rage ? '#fde047' : '#eab308' },
+    { angle:Math.PI,   color: rage ? '#60a5fa' : '#3b82f6' },
+    { angle:3*Math.PI/2, color: rage ? '#4ade80' : '#22c55e' },
+  ];
+  quadrants.forEach(q => {
+    ctx.fillStyle = hitFlash ? '#fff' : q.color;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.arc(0, 0, r * 0.88, q.angle, q.angle + Math.PI / 2);
+    ctx.closePath(); ctx.fill();
+  });
+
+  // Dark outline ring
+  ctx.strokeStyle = '#1e1b4b'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(0, 0, r * 0.88, 0, Math.PI * 2); ctx.stroke();
+
+  // Jester hat points (3 bells)
+  const bells = [0, 2.09, 4.19];
+  bells.forEach((ba, bi) => {
+    const bx = Math.cos(ba - Math.PI/2) * r * 0.9;
+    const by = Math.sin(ba - Math.PI/2) * r * 0.9;
+    ctx.fillStyle = hitFlash ? '#fff' : ['#ec4899','#eab308','#3b82f6'][bi];
+    ctx.beginPath();
+    ctx.arc(bx, by, r * 0.18, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath();
+    ctx.arc(bx, by, r*0.06, 0, Math.PI*2); ctx.fill();
+  });
+
+  // Grinning face
+  ctx.save(); ctx.rotate(-spin);  // Face stays upright
+  ctx.fillStyle = '#fff';
+  // Eyes
+  [[-r*0.2,0],[r*0.2,0]].forEach(([ex,ey]) => {
+    ctx.beginPath(); ctx.arc(ex, ey, r*0.1, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#1e1b4b';
+    ctx.beginPath(); ctx.arc(ex+r*0.04, ey+r*0.02, r*0.05, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fff';
+  });
+  // Grin
+  ctx.strokeStyle = '#1e1b4b'; ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.arc(0, r*0.12, r*0.25, 0.2, Math.PI - 0.2); ctx.stroke();
+  ctx.restore();
+
+  ctx.restore();
+}
+
+// Boss 19: Bạch Tuộc Vực Thẳm — tentacle star + core eye
+function drawBossAbyssalKraken(ctx, e, t, hitFlash, rage) {
+  const r = e.r; const x = e.x; const y = e.y;
+  ctx.save(); ctx.translate(x, y);
+
+  // Deep void background
+  const dg = ctx.createRadialGradient(0,0,r*0.3,0,0,r*1.7);
+  dg.addColorStop(0,'rgba(49,46,129,0)');
+  dg.addColorStop(1,`rgba(15,10,40,${rage?0.65:0.4})`);
+  ctx.fillStyle=dg;
+  ctx.beginPath(); ctx.arc(0,0,r*1.7,0,Math.PI*2); ctx.fill();
+
+  // Tentacles (8 arms)
+  const armCount = 8;
+  for (let ai = 0; ai < armCount; ai++) {
+    const baseAngle = (ai / armCount) * Math.PI * 2 + t / 1000;
+    const wave = Math.sin(t / 300 + ai * 0.8) * 0.4;
+    const armLen = r * (rage ? 1.55 : 1.35);
+    ctx.save();
+    ctx.strokeStyle = hitFlash ? '#fff' : `rgba(${rage?'99,102,241':'67,56,202'},0.85)`;
+    ctx.lineWidth = rage ? r * 0.28 : r * 0.22;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    const cpx = Math.cos(baseAngle + wave) * armLen * 0.5;
+    const cpy = Math.sin(baseAngle + wave) * armLen * 0.5;
+    const epx = Math.cos(baseAngle + wave * 1.5) * armLen;
+    const epy = Math.sin(baseAngle + wave * 1.5) * armLen;
+    ctx.quadraticCurveTo(cpx, cpy, epx, epy);
+    ctx.stroke();
+    // Suction cups
+    for (let sc = 0; sc < 3; sc++) {
+      const scT = (sc + 1) / 4;
+      const scx = cpx * scT + epx * (1-scT) * 0.6;
+      const scy = cpy * scT + epy * (1-scT) * 0.6;
+      ctx.fillStyle = `rgba(165,180,252,0.5)`;
+      ctx.beginPath(); ctx.arc(scx*0.7, scy*0.7, r*0.045, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // Central body
+  const kg = ctx.createRadialGradient(0,0,r*0.05,0,0,r*0.75);
+  kg.addColorStop(0, rage ? '#818cf8' : '#4338ca');
+  kg.addColorStop(1, rage ? '#3730a3' : '#1e1b4b');
+  ctx.fillStyle = hitFlash ? '#fff' : kg;
+  ctx.beginPath(); ctx.arc(0, 0, r * 0.72, 0, Math.PI * 2); ctx.fill();
+
+  // Giant eye
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.ellipse(0, 0, r*0.35, r*0.28, 0, 0, Math.PI*2); ctx.fill();
+  const pupilX = Math.cos(t/800) * r * 0.12;
+  const pupilY = Math.sin(t/800) * r * 0.1;
+  ctx.fillStyle = rage ? '#dc2626' : '#1e1b4b';
+  ctx.beginPath(); ctx.ellipse(pupilX, pupilY, r*0.2, r*0.16, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = `rgba(255,255,255,${0.6+Math.sin(t/100)*0.3})`;
+  ctx.beginPath(); ctx.arc(pupilX - r*0.06, pupilY - r*0.05, r*0.06, 0, Math.PI*2); ctx.fill();
+
+  ctx.restore();
+}
+
+// Boss 20: Pharaoh Sắt Bất Tử — sarcophagus shields + scarabs
+function drawBossIronPharaoh(ctx, e, t, hitFlash, rage) {
+  const r = e.r; const x = e.x; const y = e.y;
+  const float = Math.sin(t / 500) * 3;
+  ctx.save(); ctx.translate(x, y + float);
+
+  // Golden aura
+  const ag = ctx.createRadialGradient(0,0,r*0.5,0,0,r*1.45);
+  ag.addColorStop(0,'rgba(0,0,0,0)');
+  ag.addColorStop(1,`rgba(180,83,9,${rage?0.5:0.28})`);
+  ctx.fillStyle=ag;
+  ctx.beginPath(); ctx.arc(0,0,r*1.45,0,Math.PI*2); ctx.fill();
+
+  // Main body — iron sarcophagus shape
+  const pBody = ctx.createLinearGradient(0,-r*0.9,0,r*0.9);
+  pBody.addColorStop(0, rage ? '#fbbf24' : '#b45309');
+  pBody.addColorStop(0.4, rage ? '#d97706' : '#92400e');
+  pBody.addColorStop(1, rage ? '#92400e' : '#451a03');
+  ctx.fillStyle = hitFlash ? '#fff' : pBody;
+  ctx.beginPath();
+  ctx.moveTo(0, -r*0.92);
+  ctx.lineTo(r*0.52, -r*0.6);
+  ctx.lineTo(r*0.62, r*0.5);
+  ctx.lineTo(r*0.3, r*0.92);
+  ctx.lineTo(-r*0.3, r*0.92);
+  ctx.lineTo(-r*0.62, r*0.5);
+  ctx.lineTo(-r*0.52, -r*0.6);
+  ctx.closePath(); ctx.fill();
+
+  // Face mask details
+  if (!hitFlash) {
+    // Nemes stripes
+    ctx.strokeStyle = rage ? '#fbbf24' : '#d97706';
+    ctx.lineWidth = 2;
+    for (let ni = 0; ni < 5; ni++) {
+      ctx.beginPath();
+      ctx.moveTo(-r*0.5, -r*0.6 + ni * r*0.2);
+      ctx.lineTo(r*0.5, -r*0.6 + ni * r*0.2);
+      ctx.stroke();
+    }
+    // Ankh symbol
+    ctx.fillStyle = rage ? '#fde047' : '#fbbf24';
+    ctx.font = `${r * 0.55}px serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('☥', 0, r * 0.1);
+  }
+
+  // Eyes — glowing
+  [[-r*0.2,-r*0.35],[r*0.2,-r*0.35]].forEach(([ex,ey]) => {
+    ctx.fillStyle = rage ? '#fde047' : '#fbbf24';
+    ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 12;
+    ctx.beginPath(); ctx.ellipse(ex, ey, r*0.09, r*0.055, 0, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+  });
+
+  // Rotating sarcophagus shields (3 orbiting)
+  for (let sh = 0; sh < 3; sh++) {
+    const sha = (sh / 3) * Math.PI * 2 + t / 600;
+    const shx = Math.cos(sha) * r * 1.2;
+    const shy = Math.sin(sha) * r * 1.2;
+    ctx.save();
+    ctx.translate(shx, shy);
+    ctx.rotate(sha + Math.PI/2);
+    ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#fbbf24' : '#92400e');
+    ctx.strokeStyle = rage ? '#fde047' : '#d97706';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, r*0.16, r*0.28, 0, 0, Math.PI*2);
+    ctx.fill(); ctx.stroke();
+    ctx.restore();
+  }
+
+  ctx.restore();
+}
+
+// Boss 21: Thiên Sứ Sa Ngã — burning wings + holy fire
+function drawBossCelestialSeraph(ctx, e, t, hitFlash, rage) {
+  const r = e.r; const x = e.x; const y = e.y;
+  const float = Math.sin(t / 400) * 6;
+  ctx.save(); ctx.translate(x, y + float);
+
+  // Divine aura — golden/white glow
+  const da = ctx.createRadialGradient(0,0,r*0.4,0,0,r*1.8);
+  da.addColorStop(0,'rgba(0,0,0,0)');
+  da.addColorStop(0.6,`rgba(251,191,36,${rage?0.35:0.18})`);
+  da.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=da;
+  ctx.beginPath(); ctx.arc(0,0,r*1.8,0,Math.PI*2); ctx.fill();
+
+  // Wings (4 wings — 2 pairs)
+  const wingPairs = [
+    { baseAngle: -Math.PI*0.55, len: r*1.35, width: r*0.5, color: rage ? '#fde047' : '#fef3c7' },
+    { baseAngle: -Math.PI*0.8,  len: r*1.0,  width: r*0.35, color: rage ? '#f59e0b' : '#fde68a' },
+  ];
+  [-1, 1].forEach(dir => {
+    wingPairs.forEach(wp => {
+      const wa = dir < 0 ? Math.PI + wp.baseAngle : wp.baseAngle;
+      const wWave = Math.sin(t / 400) * 0.12;
+      ctx.save();
+      ctx.fillStyle = hitFlash ? '#fff' : wp.color;
+      ctx.globalAlpha = 0.82;
+      ctx.beginPath();
+      ctx.moveTo(dir * r * 0.3, -r * 0.2);
+      ctx.quadraticCurveTo(
+        dir * Math.cos(wa + wWave) * wp.len * 0.45,
+        Math.sin(wa + wWave) * wp.len * 0.45,
+        dir * Math.cos(wa + wWave) * wp.len,
+        Math.sin(wa + wWave) * wp.len
+      );
+      ctx.quadraticCurveTo(
+        dir * Math.cos(wa + wWave + 0.35) * wp.width,
+        Math.sin(wa + wWave + 0.35) * wp.width,
+        dir * r * 0.3, r * 0.0
+      );
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+    });
+  });
+
+  // Burning feather tips
+  if (!hitFlash) {
+    for (let ft = 0; ft < 6; ft++) {
+      const fta = ((ft / 6) - 0.5) * Math.PI * 0.9;
+      [-1,1].forEach(dir => {
+        const ftx = dir * Math.cos(fta - Math.PI/2) * r * 1.2;
+        const fty = Math.sin(fta - Math.PI/2) * r * 1.2;
+        const fa2 = rage ? 0.7+Math.sin(t/60+ft)*0.25 : 0.4+Math.sin(t/80+ft)*0.2;
+        ctx.fillStyle = `rgba(239,68,68,${fa2})`;
+        ctx.beginPath(); ctx.arc(ftx, fty, r*0.07+Math.sin(t/80+ft)*3, 0, Math.PI*2); ctx.fill();
+      });
+    }
+  }
+
+  // Body — divine armor
+  const bg2 = ctx.createRadialGradient(0, -r*0.1, r*0.1, 0, -r*0.1, r*0.82);
+  bg2.addColorStop(0, rage ? '#fff' : '#fef9c3');
+  bg2.addColorStop(0.5, rage ? '#fbbf24' : '#fde68a');
+  bg2.addColorStop(1, rage ? '#d97706' : '#b45309');
+  ctx.fillStyle = hitFlash ? '#fff' : bg2;
+  ctx.beginPath(); ctx.arc(0, 0, r * 0.78, 0, Math.PI * 2); ctx.fill();
+
+  // Halo
+  ctx.strokeStyle = rage ? '#fde047' : '#fef9c3';
+  ctx.lineWidth = rage ? 5 : 3;
+  ctx.shadowColor = ctx.strokeStyle; ctx.shadowBlur = rage ? 20 : 12;
+  ctx.beginPath(); ctx.ellipse(0, -r*0.88, r*0.42, r*0.1, 0, 0, Math.PI*2); ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Face — radiant
+  ctx.fillStyle = hitFlash ? '#fff' : '#fff8dc';
+  ctx.beginPath(); ctx.ellipse(0, -r*0.08, r*0.32, r*0.38, 0, 0, Math.PI*2); ctx.fill();
+  // Eyes — divine light
+  [[-r*0.12, -r*0.12],[r*0.12, -r*0.12]].forEach(([ex,ey]) => {
+    ctx.fillStyle = rage ? '#dc2626' : '#92400e';
+    ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 8;
+    ctx.beginPath(); ctx.arc(ex, ey, r*0.07, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+  });
+
+  // Cross emblem on chest
+  if (!hitFlash) {
+    ctx.strokeStyle = rage ? '#dc2626' : '#92400e';
+    ctx.lineWidth = r * 0.07;
+    ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(0, r*0.1); ctx.lineTo(0, r*0.45); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-r*0.18, r*0.25); ctx.lineTo(r*0.18, r*0.25); ctx.stroke();
+  }
+
+  ctx.restore();
+}
 
 /* ═══════════════════════════════════════════════════════════════
    FLIPFIGHT AUDIO INTEGRATION v2 — Complete & Bug-Fixed
