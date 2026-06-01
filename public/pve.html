@@ -23,138 +23,205 @@
 </div>
 
 <!-- ═══ LOBBY SCREEN ══════════════════════════════════════════ -->
-<div id="pvelobby" class="pve-screen">
+<div id="pvelobby" class="pve-screen lobby-fullscreen">
   <button id="pveLobbyBack" onclick="window.location.href='/'">← Trang Chủ</button>
 
-  <div class="pve-lobby-inner">
+  <!-- CINEMATIC HEADER -->
+  <div class="lobby-header-cinematic">
+    <div class="lobby-title-glow">FlipFight</div>
+    <div class="lobby-subtitle">⚔️ PVE ROGUELIKE — CHẾ ĐỘ SỬ TỬ ⚔️</div>
+    <div class="lobby-tagline">Vampire Survivors · 30 Phút · Boss Tử Thần · Tiến Hóa Kỹ Năng</div>
+  </div>
 
-    <!-- HEADER -->
-    <div class="pve-header">
-      <h1>⚔️ FlipFight PVE — Roguelike 🧪</h1>
-      <p>Vampire Survivors Style · 30 Phút/Màn · Tử Thần xuất hiện phút 30 · Boss mỗi 5 phút</p>
+  <!-- MAIN LOBBY CONTENT -->
+  <div class="lobby-content-grid">
+
+    <!-- ══ LEFT: CHARACTER SHOWCASE ══ -->
+    <div class="lobby-left-col">
+      <div class="char-showcase-panel glass-panel-premium">
+        <div class="panel-header-bar">
+          <span class="panel-header-icon">⚔️</span>
+          <span class="panel-header-text">NHÂN VẬT</span>
+        </div>
+        <!-- Big Character Canvas -->
+        <div class="char-canvas-stage">
+          <div class="char-stage-bg"></div>
+          <div class="char-stage-ring"></div>
+          <canvas id="classPreviewCanvas" width="160" height="200"></canvas>
+          <div class="char-stage-shadow"></div>
+        </div>
+        <div class="char-info-block">
+          <div id="classPreviewName" class="char-name-display">Sát Thủ</div>
+          <div id="classPreviewDesc" class="char-desc-display">Cơ động vượt trội, ám sát chớp nhoáng, hiểm hóc chí mạng.</div>
+          <div id="classPassiveDesc" class="char-passive-display"></div>
+        </div>
+        <!-- Stat Bars -->
+        <div class="char-stats-compact" id="classStats">
+          <div class="stat-row-fancy">
+            <span class="sfancy-icon">❤️</span>
+            <span class="sfancy-label">HP</span>
+            <div class="sfancy-bar-track"><div class="sfancy-bar-fill hp" id="statHp" style="width:50%"></div></div>
+          </div>
+          <div class="stat-row-fancy">
+            <span class="sfancy-icon">💨</span>
+            <span class="sfancy-label">SPD</span>
+            <div class="sfancy-bar-track"><div class="sfancy-bar-fill spd" id="statSpd" style="width:70%"></div></div>
+          </div>
+          <div class="stat-row-fancy">
+            <span class="sfancy-icon">⚔️</span>
+            <span class="sfancy-label">ATK</span>
+            <div class="sfancy-bar-track"><div class="sfancy-bar-fill atk" id="statAtk" style="width:60%"></div></div>
+          </div>
+          <div class="stat-row-fancy">
+            <span class="sfancy-icon">🛡️</span>
+            <span class="sfancy-label">DEF</span>
+            <div class="sfancy-bar-track"><div class="sfancy-bar-fill def" id="statDef" style="width:30%"></div></div>
+          </div>
+        </div>
+        <!-- Class Grid -->
+        <div class="class-selector-strip" id="classGrid">
+          <button class="class-chip active" data-class="assassin" onclick="selectClass('assassin')">
+            <span class="chip-icon">🗡️</span><span class="chip-label">Sát Thủ</span>
+          </button>
+          <button class="class-chip" data-class="fighter" onclick="selectClass('fighter')">
+            <span class="chip-icon">🛡️</span><span class="chip-label">Đấu Sĩ</span>
+          </button>
+          <button class="class-chip" data-class="mage" onclick="selectClass('mage')">
+            <span class="chip-icon">🔮</span><span class="chip-label">Pháp Sư</span>
+          </button>
+          <button class="class-chip" data-class="ranger" onclick="selectClass('ranger')">
+            <span class="chip-icon">🏹</span><span class="chip-label">Cung Thủ</span>
+          </button>
+          <button class="class-chip" data-class="paladin" onclick="selectClass('paladin')">
+            <span class="chip-icon">✨</span><span class="chip-label">Hộ Vệ</span>
+          </button>
+          <button class="class-chip" data-class="necromancer" onclick="selectClass('necromancer')">
+            <span class="chip-icon">💀</span><span class="chip-label">Gọi Hồn</span>
+          </button>
+          <button class="class-chip" data-class="druid" onclick="selectClass('druid')">
+            <span class="chip-icon">🌿</span><span class="chip-label">Thần Rừng</span>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- LEFT: CLASS SELECTION -->
-    <div class="glass-panel" id="classPanel">
-      <div class="panel-title">⚔️ Chọn Lớp Nhân Vật</div>
+    <!-- ══ CENTRE: PET + STAGES ══ -->
+    <div class="lobby-centre-col">
 
-      <div class="class-preview-canvas-wrap">
-        <canvas id="classPreviewCanvas" width="110" height="110"></canvas>
-      </div>
-      <div id="classPreviewName" style="text-align:center;font-weight:700;font-size:14px;color:#a78bfa;margin-bottom:3px;">Sát Thủ</div>
-      <div id="classPreviewDesc" style="text-align:center;font-size:10px;color:#64748b;margin-bottom:6px;line-height:1.5">Cơ động vượt trội, ám sát chớp nhoáng, hiểm hóc chí mạng.</div>
-      <div id="classPassiveDesc" style="text-align:center;font-size:11px;color:#34d399;margin-bottom:12px;padding:6px;background:rgba(52,211,153,0.08);border:1px dashed rgba(52,211,153,0.3);border-radius:8px;"></div>
-
-      <div class="class-grid" id="classGrid">
-        <button class="class-btn active" data-class="assassin" onclick="selectClass('assassin')">
-          <span class="class-icon">🗡️</span>
-          <span class="class-label">Sát Thủ</span>
-        </button>
-        <button class="class-btn" data-class="fighter" onclick="selectClass('fighter')">
-          <span class="class-icon">🛡️</span>
-          <span class="class-label">Đấu Sĩ</span>
-        </button>
-        <button class="class-btn" data-class="mage" onclick="selectClass('mage')">
-          <span class="class-icon">🔮</span>
-          <span class="class-label">Pháp Sư</span>
-        </button>
-        <button class="class-btn" data-class="ranger" onclick="selectClass('ranger')">
-          <span class="class-icon">🏹</span>
-          <span class="class-label">Cung Thủ</span>
-        </button>
-        <button class="class-btn" data-class="paladin" onclick="selectClass('paladin')">
-          <span class="class-icon">✨</span>
-          <span class="class-label">Hộ Vệ</span>
-        </button>
-        <button class="class-btn" data-class="necromancer" onclick="selectClass('necromancer')">
-          <span class="class-icon">💀</span>
-          <span class="class-label">Gọi Hồn</span>
-        </button>
-        <button class="class-btn" data-class="druid" onclick="selectClass('druid')">
-          <span class="class-icon">🌿</span>
-          <span class="class-label">Thần Rừng</span>
-        </button>
-      </div>
-
-      <div class="class-stats" id="classStats">
-        <div class="stat-row">
-          <span class="stat-name">❤️ Máu</span>
-          <div class="stat-bar"><div class="stat-bar-fill hp" id="statHp" style="width:50%"></div></div>
+      <!-- PET COMPANION PANEL -->
+      <div class="glass-panel-premium pet-showcase-panel">
+        <div class="panel-header-bar">
+          <span class="panel-header-icon">🐾</span>
+          <span class="panel-header-text">THẦN THÚ ĐỒNG HÀNH</span>
         </div>
-        <div class="stat-row">
-          <span class="stat-name">💨 Tốc</span>
-          <div class="stat-bar"><div class="stat-bar-fill spd" id="statSpd" style="width:70%"></div></div>
+        <div class="pet-canvas-row" id="petCanvasRow">
+          <!-- Dynamically populated by JS with canvas pets -->
         </div>
-        <div class="stat-row">
-          <span class="stat-name">⚔️ Công</span>
-          <div class="stat-bar"><div class="stat-bar-fill atk" id="statAtk" style="width:60%"></div></div>
+        <div class="pet-info-strip" id="petInfoStrip">
+          <div style="font-size:10px;color:#64748b;text-align:center;">Kích hoạt thần thú để nhận buff trong trận</div>
         </div>
-        <div class="stat-row">
-          <span class="stat-name">🛡️ Thủ</span>
-          <div class="stat-bar"><div class="stat-bar-fill def" id="statDef" style="width:30%"></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CENTRE & RIGHT COLUMN CONTAINER -->
-    <div style="display:flex;flex-direction:column;gap:18px;">
-
-      <!-- OPEN POWERUP MODAL PANEL -->
-      <div class="glass-panel" id="powerupTriggerPanel" style="padding: 18px; text-align: center; display: flex; flex-direction: column; gap: 8px;">
-        <button class="pve-btn pve-btn-primary" onclick="openPowerupModal()" style="width: 100%; margin: 0; padding: 14px; font-size: 14px; font-weight: 800; background: linear-gradient(135deg, #a78bfa, #7c3aed); border-radius: 30px; box-shadow: 0 4px 18px rgba(124,58,237,0.35); letter-spacing: 1px; border: none; cursor: pointer; color: #fff;">
-          ⚡ NÂNG CẤP VĨNH VIỄN
-        </button>
-        <div style="font-size: 11px; color: #64748b;">
-          💡 Gia tăng chỉ số (Growth, Magnet, ATK, HP...) vĩnh viễn
-        </div>
-      </div>
-
-      <!-- PET / COMPANION SYSTEM PANEL -->
-      <div class="glass-panel" id="petPanel">
-        <div class="panel-title">🐾 Thần Thú Đồng Hành</div>
-        <div style="font-size:11px;color:#94a3b8;margin-bottom:12px;text-align:center;">Mở khóa vĩnh viễn bằng vàng và kích hoạt để hỗ trợ chỉ số trong game!</div>
-        <div id="petGrid" style="display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;margin-bottom:8px;">
+        <div id="petGrid" class="pet-grid-new">
           <!-- Dynamically populated by JS -->
         </div>
       </div>
 
-      <!-- STAGES SELECTION -->
-      <div class="glass-panel" id="stagePanel">
-        <div class="panel-title">🗺️ Bản Đồ Chiến Đấu</div>
-        <div class="stage-list">
-          <div class="stage-card active" data-stage="1" onclick="selectStage(1)">
-            <div class="stage-num">STAGE 1</div>
-            <div class="stage-name">Đồng Cỏ Angel</div>
-            <div class="stage-desc">Rất Khó · 30 Phút · Boss Cuối: Tử Thần (phút 30)</div>
+      <!-- STAGE SELECTION -->
+      <div class="glass-panel-premium stage-select-panel">
+        <div class="panel-header-bar">
+          <span class="panel-header-icon">🗺️</span>
+          <span class="panel-header-text">BẢN ĐỒ CHIẾN ĐẤU</span>
+        </div>
+        <div class="stage-list-fancy">
+          <div class="stage-card-fancy active" data-stage="1" onclick="selectStage(1)">
+            <div class="scf-num">01</div>
+            <div class="scf-info">
+              <div class="scf-name">Đồng Cỏ Angel</div>
+              <div class="scf-diff"><span class="diff-badge diff-hard">Rất Khó</span> · 30 Phút · Boss Tử Thần phút 30</div>
+            </div>
+            <div class="scf-arrow">→</div>
           </div>
-          <div class="stage-card locked" id="stageCard2" data-stage="2" onclick="selectStage(2)">
-            <div class="stage-num">STAGE 2 <span class="stage-lock-icon">🔒</span></div>
-            <div class="stage-name">Thư Viện Cổ</div>
-            <div class="stage-desc">Kinh Hoàng · 30 Phút · Boss xuất hiện sớm hơn</div>
+          <div class="stage-card-fancy locked" id="stageCard2" data-stage="2" onclick="selectStage(2)">
+            <div class="scf-num">02</div>
+            <div class="scf-info">
+              <div class="scf-name">Thư Viện Cổ <span class="lock-tag">🔒</span></div>
+              <div class="scf-diff"><span class="diff-badge diff-extreme">Kinh Hoàng</span> · Boss xuất hiện sớm hơn</div>
+            </div>
+            <div class="scf-arrow locked-arrow">🔒</div>
           </div>
-          <div class="stage-card locked" id="stageCard3" data-stage="3" onclick="selectStage(3)">
-            <div class="stage-num">STAGE 3 <span class="stage-lock-icon">🔒</span></div>
-            <div class="stage-name">Hầm Ngục Hư Vô</div>
-            <div class="stage-desc">Tuyệt Vọng · 30 Phút · Bosses từ phút 3</div>
+          <div class="stage-card-fancy locked" id="stageCard3" data-stage="3" onclick="selectStage(3)">
+            <div class="scf-num">03</div>
+            <div class="scf-info">
+              <div class="scf-name">Hầm Ngục Hư Vô <span class="lock-tag">🔒</span></div>
+              <div class="scf-diff"><span class="diff-badge diff-doom">Tuyệt Vọng</span> · Bosses từ phút 3</div>
+            </div>
+            <div class="scf-arrow locked-arrow">🔒</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- START BUTTON -->
-    <div class="start-btn-wrap">
-      <button id="pveStartBtn" onclick="startPveGame()">
-        ⚔️ BẮT ĐẦU TRẬN ĐẤU
-      </button>
-      <div style="margin-top:8px;font-size:11px;color:#64748b;">
-        💡 Mẹo: Thu thập đủ kỹ năng cùng nhánh để mở khóa <span style="color:#fbbf24;font-weight:700;">⭐ Siêu Tiến Hóa</span>!
+    <!-- ══ RIGHT: POWERUP + START ══ -->
+    <div class="lobby-right-col">
+
+      <!-- POWERUP BUTTON -->
+      <div class="glass-panel-premium powerup-trigger-card" onclick="openPowerupModal()">
+        <div class="ptc-icon">⚡</div>
+        <div class="ptc-info">
+          <div class="ptc-title">NÂNG CẤP VĨNH VIỄN</div>
+          <div class="ptc-sub">Gia tăng chỉ số vĩnh viễn với vàng</div>
+        </div>
+        <div class="ptc-arrow">→</div>
       </div>
-      <div style="margin-top:6px;font-size:11px;color:#64748b;">
-        ⌨️ Phím <kbd style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:1px 5px;font-size:10px;">P</kbd> = Mở/đóng bảng Nâng Cấp Vĩnh Viễn trong game
+
+      <!-- GAME INFO CARDS -->
+      <div class="info-cards-grid">
+        <div class="info-card">
+          <div class="info-card-icon">🌊</div>
+          <div class="info-card-text">
+            <div class="info-card-title">Roguelike</div>
+            <div class="info-card-desc">Chọn kỹ năng mỗi lv up</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-icon">👹</div>
+          <div class="info-card-text">
+            <div class="info-card-title">Boss mỗi 5 phút</div>
+            <div class="info-card-desc">Càng sau càng nguy hiểm</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-icon">⭐</div>
+          <div class="info-card-text">
+            <div class="info-card-title">Tiến Hóa</div>
+            <div class="info-card-desc">Kết hợp kỹ năng cùng nhánh</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-icon">🔮</div>
+          <div class="info-card-text">
+            <div class="info-card-title">Arcana Tarot</div>
+            <div class="info-card-desc">Bùa ma thuật cường hóa</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- START BUTTON -->
+      <div class="start-zone">
+        <button id="pveStartBtn" onclick="startPveGame()" class="start-btn-epic">
+          <span class="start-btn-shimmer"></span>
+          <span class="start-btn-content">
+            <span class="start-btn-icon">⚔️</span>
+            <span class="start-btn-text">BẮT ĐẦU TRẬN ĐẤU</span>
+          </span>
+        </button>
+        <div class="start-hints">
+          <div class="start-hint">💡 Mẹo: Thu thập kỹ năng cùng nhánh để mở <span style="color:#fbbf24;">⭐ Siêu Tiến Hóa</span></div>
+          <div class="start-hint">⌨️ Phím <kbd class="kb-key">P</kbd> = Bảng Nâng Cấp · <kbd class="kb-key">ESC</kbd> = Tạm Dừng</div>
+        </div>
       </div>
     </div>
 
-  </div><!-- end .pve-lobby-inner -->
+  </div><!-- end .lobby-content-grid -->
 </div><!-- end #pvelobby -->
 
 <!-- ═══ GAME SCREEN ════════════════════════════════════════════ -->

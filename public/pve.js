@@ -520,12 +520,15 @@ function updateEquipBonuses() {}
 // ─── CLASS SELECTION (LOBBY) ──────────────────────────────────
 function selectClass(cls) {
   selectedClass = cls;
-  document.querySelectorAll('.class-btn').forEach(b => b.classList.toggle('active', b.dataset.class === cls));
+  // Support both old .class-btn and new .class-chip selectors
+  document.querySelectorAll('.class-btn, .class-chip').forEach(b => b.classList.toggle('active', b.dataset.class === cls));
   drawClassPreview(cls);
   updateClassStats(cls);
   const def = CLASSES[cls];
-  document.getElementById('classPreviewName').textContent = def.icon + ' ' + def.name;
-  document.getElementById('classPreviewDesc').textContent = def.desc;
+  const nameEl = document.getElementById('classPreviewName');
+  const descEl = document.getElementById('classPreviewDesc');
+  if (nameEl) nameEl.textContent = def.icon + ' ' + def.name;
+  if (descEl) descEl.textContent = def.desc;
   
   // Class-exclusive skill and passive info
   const startSkillDef = SKILL_DEFS[def.startSkill];
@@ -559,7 +562,8 @@ function selectStage(stageNum) {
     return;
   }
   selectedStage = stageNum;
-  document.querySelectorAll('.stage-card').forEach(card => {
+  // Support both .stage-card and .stage-card-fancy
+  document.querySelectorAll('.stage-card, .stage-card-fancy').forEach(card => {
     const s = parseInt(card.dataset.stage);
     card.classList.toggle('active', s === stageNum);
   });
@@ -823,40 +827,318 @@ const PETS_DEFS = {
   kitty: { id: 'kitty', name: 'Kitty 🐱', emoji: '🐱', cost: 4500, desc: '+15 HP hồi/giây vĩnh viễn' }
 };
 
+// Pet lobby canvas animations
+let _petLobbyAnims = [];
+let _petLobbyFrame = 0;
+
+function stopPetLobbyAnims() {
+  _petLobbyAnims.forEach(id => cancelAnimationFrame(id));
+  _petLobbyAnims = [];
+}
+
+// ── LOBBY PET DRAW FUNCTIONS ──
+function drawLobbyPetCorgi(ctx, cx, cy, frame) {
+  const t = frame * 16;
+  ctx.save(); ctx.translate(cx, cy);
+  ctx.shadowColor = '#fbbf24'; ctx.shadowBlur = 10;
+  // Body
+  ctx.fillStyle = '#f59e0b';
+  ctx.beginPath(); ctx.ellipse(0, 0, 13, 9, 0, 0, Math.PI * 2); ctx.fill();
+  // Belly
+  ctx.fillStyle = '#fef3c7';
+  ctx.beginPath(); ctx.ellipse(0, 3, 8, 5, 0, 0, Math.PI * 2); ctx.fill();
+  // Head
+  ctx.fillStyle = '#f59e0b';
+  ctx.beginPath(); ctx.arc(11, -4, 8, 0, Math.PI * 2); ctx.fill();
+  // Snout
+  ctx.fillStyle = '#fef3c7';
+  ctx.beginPath(); ctx.ellipse(16, -2, 5, 3.5, 0.2, 0, Math.PI * 2); ctx.fill();
+  // Nose
+  ctx.fillStyle = '#1e293b';
+  ctx.beginPath(); ctx.arc(18, -2, 1.5, 0, Math.PI * 2); ctx.fill();
+  // Ears
+  ctx.fillStyle = '#d97706';
+  ctx.beginPath(); ctx.moveTo(8,-10); ctx.lineTo(6,-18); ctx.lineTo(13,-13); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(13,-9); ctx.lineTo(15,-17); ctx.lineTo(18,-11); ctx.closePath(); ctx.fill();
+  // Eyes
+  ctx.fillStyle = '#1e293b'; ctx.shadowBlur = 0;
+  ctx.beginPath(); ctx.arc(13,-6,2.2,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(13.6,-6.5,0.7,0,Math.PI*2); ctx.fill();
+  // Wagging tail
+  const wag = Math.sin(t/100)*0.6;
+  ctx.save(); ctx.translate(-12,-3); ctx.rotate(-wag-0.4);
+  ctx.fillStyle = '#f59e0b';
+  ctx.beginPath(); ctx.ellipse(0,0,4,2.5,0,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+  // Legs
+  ctx.strokeStyle = '#d97706'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+  [[-6,9],[-1,9],[4,9],[9,9]].forEach(([lx,ly],i) => {
+    ctx.save(); ctx.translate(lx,ly);
+    ctx.rotate(Math.sin(t/90+i*1.3)*0.35);
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,7); ctx.stroke();
+    ctx.restore();
+  });
+  ctx.restore();
+}
+
+function drawLobbyPetOwl(ctx, cx, cy, frame) {
+  const t = frame * 16;
+  ctx.save(); ctx.translate(cx, cy);
+  ctx.shadowColor = '#7c3aed'; ctx.shadowBlur = 12;
+  const wf = Math.sin(t/120)*0.35;
+  ctx.fillStyle = '#6d28d9';
+  ctx.save(); ctx.translate(-10,-2); ctx.rotate(-wf);
+  ctx.beginPath(); ctx.ellipse(0,0,11,5,-0.4,0,Math.PI*2); ctx.fill(); ctx.restore();
+  ctx.save(); ctx.translate(10,-2); ctx.rotate(wf);
+  ctx.beginPath(); ctx.ellipse(0,0,11,5,0.4,0,Math.PI*2); ctx.fill(); ctx.restore();
+  ctx.fillStyle = '#4c1d95';
+  ctx.beginPath(); ctx.ellipse(0,2,9,11,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#7c3aed';
+  ctx.beginPath(); ctx.ellipse(0,4,6,7,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#4c1d95';
+  ctx.beginPath(); ctx.arc(0,-9,8,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#6d28d9';
+  ctx.beginPath(); ctx.moveTo(-6,-14); ctx.lineTo(-8,-22); ctx.lineTo(-2,-16); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(6,-14); ctx.lineTo(8,-22); ctx.lineTo(2,-16); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#fbbf24'; ctx.shadowColor = '#fbbf24'; ctx.shadowBlur = 10;
+  ctx.beginPath(); ctx.arc(-3.5,-9,3.5,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(3.5,-9,3.5,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#000'; ctx.shadowBlur = 0;
+  ctx.beginPath(); ctx.arc(-3.5,-9,1.8,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(3.5,-9,1.8,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#fbbf24';
+  ctx.beginPath(); ctx.moveTo(-2,-7); ctx.lineTo(0,-4); ctx.lineTo(2,-7); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+
+function drawLobbyPetKitty(ctx, cx, cy, frame) {
+  const t = frame * 16;
+  ctx.save(); ctx.translate(cx, cy);
+  ctx.shadowColor = '#ec4899'; ctx.shadowBlur = 10;
+  const ts = Math.sin(t/150)*0.8;
+  ctx.strokeStyle = '#f9a8d4'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+  ctx.save(); ctx.translate(-12,4); ctx.rotate(ts-0.5);
+  ctx.beginPath(); ctx.moveTo(0,0); ctx.quadraticCurveTo(-10,-12,-8,-20); ctx.stroke(); ctx.restore();
+  ctx.fillStyle = '#f9a8d4';
+  ctx.beginPath(); ctx.ellipse(0,3,11,8,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#fce7f3';
+  ctx.beginPath(); ctx.ellipse(0,5,7,5,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#f9a8d4';
+  ctx.beginPath(); ctx.arc(0,-8,9,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#f472b6';
+  ctx.beginPath(); ctx.moveTo(-7,-14); ctx.lineTo(-10,-22); ctx.lineTo(-2,-16); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(7,-14); ctx.lineTo(10,-22); ctx.lineTo(2,-16); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#fce7f3';
+  ctx.beginPath(); ctx.moveTo(-6,-15); ctx.lineTo(-8,-20); ctx.lineTo(-3,-16); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(6,-15); ctx.lineTo(8,-20); ctx.lineTo(3,-16); ctx.closePath(); ctx.fill();
+  const blink = (Math.floor(t/3000)%8===0) ? 0.15 : 1.0;
+  ctx.fillStyle = '#10b981'; ctx.shadowColor = '#10b981'; ctx.shadowBlur = 6;
+  ctx.beginPath(); ctx.ellipse(-3.5,-9,3,3*blink,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(3.5,-9,3,3*blink,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#000'; ctx.shadowBlur = 0;
+  ctx.beginPath(); ctx.arc(-3.5,-9,1.5,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(3.5,-9,1.5,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0,-6); ctx.lineTo(-13,-8); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0,-5); ctx.lineTo(-13,-4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0,-6); ctx.lineTo(13,-8); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0,-5); ctx.lineTo(13,-4); ctx.stroke();
+  ctx.fillStyle = '#f472b6';
+  ctx.beginPath(); ctx.arc(0,-6,1.5,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+function drawLobbyPetWolf(ctx, cx, cy, frame) {
+  const t = frame * 16;
+  ctx.save(); ctx.translate(cx, cy);
+  ctx.shadowColor = '#60a5fa'; ctx.shadowBlur = 10;
+  ctx.fillStyle = '#93c5fd';
+  ctx.beginPath(); ctx.ellipse(0,2,13,9,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#eff6ff';
+  ctx.beginPath(); ctx.ellipse(0,5,8,5,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#93c5fd';
+  ctx.beginPath(); ctx.arc(11,-3,8,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#bfdbfe';
+  ctx.beginPath(); ctx.moveTo(7,-9); ctx.lineTo(5,-17); ctx.lineTo(12,-12); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(12,-8); ctx.lineTo(14,-16); ctx.lineTo(18,-10); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#1e40af'; ctx.shadowColor = '#60a5fa'; ctx.shadowBlur = 8;
+  ctx.beginPath(); ctx.arc(13,-4,2.5,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.shadowBlur = 0;
+  ctx.beginPath(); ctx.arc(14,-4.5,0.8,0,Math.PI*2); ctx.fill();
+  const wag = Math.sin(t/120)*0.7;
+  ctx.save(); ctx.translate(-13,-2); ctx.rotate(-wag-0.3);
+  ctx.strokeStyle = '#93c5fd'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(0,0); ctx.quadraticCurveTo(-8,-8,-6,-14); ctx.stroke();
+  ctx.restore();
+  ctx.restore();
+}
+
+function drawLobbyPetImp(ctx, cx, cy, frame) {
+  const t = frame * 16;
+  const bobY = Math.sin(t/80)*3;
+  ctx.save(); ctx.translate(cx, cy - 5 + bobY);
+  ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 12;
+  ctx.fillStyle = '#dc2626';
+  ctx.beginPath(); ctx.ellipse(0,2,9,7,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(0,-5,8,0,Math.PI*2); ctx.fill();
+  // Horns
+  ctx.fillStyle = '#7f1d1d';
+  ctx.beginPath(); ctx.moveTo(-5,-11); ctx.lineTo(-7,-20); ctx.lineTo(-1,-14); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(5,-11); ctx.lineTo(7,-20); ctx.lineTo(1,-14); ctx.closePath(); ctx.fill();
+  // Eyes
+  ctx.fillStyle = '#fbbf24'; ctx.shadowColor = '#fbbf24'; ctx.shadowBlur = 8;
+  ctx.beginPath(); ctx.arc(-3,-5,2.5,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(3,-5,2.5,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#000'; ctx.shadowBlur = 0;
+  ctx.beginPath(); ctx.arc(-3,-5,1.2,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(3,-5,1.2,0,Math.PI*2); ctx.fill();
+  // Tail
+  ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+  const ts = Math.sin(t/100)*0.8;
+  ctx.save(); ctx.translate(-9,7); ctx.rotate(ts);
+  ctx.beginPath(); ctx.moveTo(0,0); ctx.quadraticCurveTo(-8,8,-6,14); ctx.stroke();
+  ctx.restore();
+  ctx.restore();
+}
+
+function drawLobbyPetGolem(ctx, cx, cy, frame) {
+  const t = frame * 16;
+  const bobY = Math.sin(t/120)*2;
+  ctx.save(); ctx.translate(cx, cy + bobY);
+  ctx.shadowColor = '#34d399'; ctx.shadowBlur = 12;
+  // Body (stone)
+  ctx.fillStyle = '#374151';
+  ctx.beginPath(); ctx.roundRect(-10,-5,20,18,3); ctx.fill();
+  ctx.fillStyle = '#4b5563';
+  ctx.beginPath(); ctx.roundRect(-8,-3,16,14,2); ctx.fill();
+  // Head
+  ctx.fillStyle = '#374151';
+  ctx.beginPath(); ctx.roundRect(-8,-17,16,14,3); ctx.fill();
+  // Eyes (glowing)
+  ctx.fillStyle = '#34d399'; ctx.shadowColor = '#34d399'; ctx.shadowBlur = 10;
+  ctx.beginPath(); ctx.arc(-3,-12,3,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(3,-12,3,0,Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0;
+  // Arms
+  ctx.fillStyle = '#374151';
+  ctx.beginPath(); ctx.roundRect(-18,0,8,10,2); ctx.fill();
+  ctx.beginPath(); ctx.roundRect(10,0,8,10,2); ctx.fill();
+  ctx.restore();
+}
+
 function renderPetPanel() {
   const grid = document.getElementById('petGrid');
   if (!grid || !savedData) return;
   grid.innerHTML = '';
-  
+
+  // Also populate pet canvas preview row if it exists
+  const canvasRow = document.getElementById('petCanvasRow');
+  if (canvasRow) {
+    canvasRow.innerHTML = '';
+    stopPetLobbyAnims();
+    _petLobbyFrame = 0;
+
+    Object.entries(PETS_DEFS).forEach(([id, def]) => {
+      const isUnlocked = (savedData.unlockedPets || []).includes(id);
+      const isActive = savedData.activePet === id;
+
+      const item = document.createElement('div');
+      item.className = 'pet-canvas-item';
+      item.title = def.name + ' — ' + def.desc;
+      item.onclick = () => isUnlocked ? equipPet(id) : buyPet(id);
+
+      const cv = document.createElement('canvas');
+      cv.width = 64; cv.height = 64;
+      cv.style.borderRadius = '50%';
+      cv.style.border = isActive ? '2px solid #fbbf24' : (isUnlocked ? '2px solid rgba(52,211,153,0.4)' : '2px solid rgba(255,255,255,0.08)');
+      cv.style.background = isActive ? 'rgba(251,191,36,0.08)' : 'rgba(255,255,255,0.03)';
+      cv.style.opacity = isUnlocked ? '1' : '0.45';
+      cv.style.filter = isActive ? 'drop-shadow(0 0 8px rgba(251,191,36,0.6))' : '';
+
+      const nameEl = document.createElement('div');
+      nameEl.className = 'pet-canvas-name';
+      nameEl.textContent = def.name;
+      nameEl.style.color = isActive ? '#fbbf24' : (isUnlocked ? '#94a3b8' : '#374151');
+
+      item.appendChild(cv);
+      item.appendChild(nameEl);
+      canvasRow.appendChild(item);
+
+      // Animate each pet canvas
+      const ctx2 = cv.getContext('2d');
+      let frame = 0;
+      const petId = id;
+
+      function animatePet(animFrame) {
+        frame++;
+        ctx2.clearRect(0, 0, 64, 64);
+
+        // Draw pet using existing drawPet functions based on type
+        const petAnimMap = {
+          corgi: drawLobbyPetCorgi,
+          owl: drawLobbyPetOwl,
+          kitty: drawLobbyPetKitty,
+          wolf_pup: drawLobbyPetWolf,
+          imp: drawLobbyPetImp,
+          golem: drawLobbyPetGolem,
+        };
+
+        const drawFn = petAnimMap[petId];
+        if (drawFn) {
+          drawFn(ctx2, 32, 38, frame);
+        } else {
+          // Fallback: emoji
+          ctx2.font = '28px serif';
+          ctx2.textAlign = 'center';
+          ctx2.textBaseline = 'middle';
+          const bobY = Math.sin(frame * 0.06) * 2;
+          ctx2.fillText(def.emoji, 32, 32 + bobY);
+        }
+
+        const lobby = document.getElementById('pvelobby');
+        if (lobby && !lobby.classList.contains('hidden')) {
+          const rafId = requestAnimationFrame(animatePet);
+          _petLobbyAnims.push(rafId);
+        }
+      }
+      const rafId = requestAnimationFrame(animatePet);
+      _petLobbyAnims.push(rafId);
+    });
+  }
+
+  // Render the grid cards below
   Object.entries(PETS_DEFS).forEach(([id, def]) => {
     const isUnlocked = (savedData.unlockedPets || []).includes(id);
     const isActive = savedData.activePet === id;
-    
+
     const card = document.createElement('div');
-    card.style.cssText = `background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;transition:all 0.2s;`;
+    card.style.cssText = `background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;transition:all 0.2s;cursor:pointer;`;
     if (isActive) {
       card.style.borderColor = '#fbbf24';
       card.style.boxShadow = '0 0 10px rgba(251,191,36,0.15)';
+      card.style.background = 'rgba(251,191,36,0.05)';
     }
-    
+
     let btnHtml = '';
     if (isActive) {
-      btnHtml = `<button style="background:rgba(251,191,36,0.18);border:1px solid #fbbf24;color:#fbbf24;font-size:10px;font-weight:800;border-radius:6px;padding:3px 8px;cursor:default;border:none;">⚡ KÍCH HOẠT</button>`;
+      btnHtml = `<div style="background:rgba(251,191,36,0.18);border:1px solid #fbbf24;color:#fbbf24;font-size:9px;font-weight:800;border-radius:6px;padding:2px 6px;">⚡ ĐANG DÙNG</div>`;
     } else if (isUnlocked) {
-      btnHtml = `<button onclick="equipPet('${id}')" style="background:#1e293b;border:1px solid #475569;color:#e2e8f0;font-size:10px;font-weight:700;border-radius:6px;padding:3px 8px;cursor:pointer;">Đồng hành</button>`;
+      btnHtml = `<button onclick="equipPet('${id}')" style="background:#1e293b;border:1px solid #475569;color:#e2e8f0;font-size:9px;font-weight:700;border-radius:6px;padding:2px 6px;cursor:pointer;">Chọn</button>`;
     } else {
-      btnHtml = `<button onclick="buyPet('${id}')" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);border:none;color:#fff;font-size:10px;font-weight:700;border-radius:6px;padding:4px 8px;cursor:pointer;box-shadow:0 2px 6px rgba(124,58,237,0.25);">🪙${def.cost}</button>`;
+      btnHtml = `<button onclick="buyPet('${id}')" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);border:none;color:#fff;font-size:9px;font-weight:700;border-radius:6px;padding:3px 6px;cursor:pointer;">🪙${def.cost}</button>`;
     }
-    
+
     card.innerHTML = `
-      <div style="font-size:28px;margin-bottom:2px;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.3));">${def.emoji}</div>
-      <div style="font-weight:700;font-size:12px;color:#fff;">${def.name}</div>
-      <div style="font-size:9px;color:#64748b;line-height:1.3;height:24px;display:flex;align-items:center;justify-content:center;">${def.desc}</div>
-      <div style="margin-top:2px;width:100%;">${btnHtml}</div>
+      <div style="font-size:22px;${isUnlocked?'':'filter:grayscale(0.8) opacity(0.5);'}">${def.emoji}</div>
+      <div style="font-weight:700;font-size:10px;color:${isActive?'#fbbf24':'#e2e8f0'};">${def.name}</div>
+      <div style="font-size:8px;color:#475569;line-height:1.3;height:20px;overflow:hidden;">${def.desc}</div>
+      <div style="margin-top:1px;">${btnHtml}</div>
     `;
     grid.appendChild(card);
   });
 }
+
 
 function buyPet(id) {
   const def = PETS_DEFS[id];
@@ -1033,50 +1315,105 @@ function renderCodex(tab) {
   if (countEl) countEl.textContent = `${found} / ${total} đã khám phá`;
 }
 
-function drawClassPreview(cls) {
+// Lobby preview animation state
+let _lobbyPreviewAnim = null;
+let _lobbyPreviewFrame = 0;
 
+function drawClassPreview(cls) {
   const canvas = document.getElementById('classPreviewCanvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   const def = CLASSES[cls];
   const W = canvas.width, H = canvas.height;
-  const cx = W / 2, cy = H / 2;
-  const r = 35;
-  ctx.clearRect(0, 0, W, H);
 
-  // Aura glow background
-  const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 2);
-  grad.addColorStop(0, def.color + '55');
-  grad.addColorStop(1, 'transparent');
-  ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+  // Cancel any existing animation
+  if (_lobbyPreviewAnim) { cancelAnimationFrame(_lobbyPreviewAnim); _lobbyPreviewAnim = null; }
 
-  const sp = {
-    id: 'preview',
-    isPlayer: true,
-    lvl: 5,
-    brnch: cls,
-    radius: r,
-    angle: -Math.PI / 2,
-    a: -Math.PI / 2,
-    vx: 0, vy: 0,
-    shld: false,
-    rage: false,
-    stn: false,
-    slw: false,
-    dash: false,
-    stealth: false,
-    hp: def.hp,
-    mhp: def.hp,
-    n: def.name,
-  };
-  const cp = {
-    x: cx,
-    y: cy + 10,
-    lastHit: 0,
-    attackAnim: null,
-  };
+  // Determine radius scale based on canvas size (160x200 or 110x110)
+  const isLarge = W >= 150;
+  const r = isLarge ? 44 : 35;
+  const cx = W / 2;
+  const cy = isLarge ? H * 0.55 : H / 2;
 
-  drawCharacter(sp, cp, ctx);
+  function renderFrame() {
+    _lobbyPreviewFrame++;
+    ctx.clearRect(0, 0, W, H);
+
+    // Animated aura glow
+    const pulse = 0.85 + 0.15 * Math.sin(_lobbyPreviewFrame * 0.04);
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 2.5 * pulse);
+    grad.addColorStop(0, def.color + '44');
+    grad.addColorStop(0.5, def.color + '18');
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    // Orbiting particles
+    if (isLarge) {
+      const t = _lobbyPreviewFrame * 0.025;
+      for (let i = 0; i < 5; i++) {
+        const angle = t + (i / 5) * Math.PI * 2;
+        const dist = r * 1.7 + Math.sin(t * 2 + i) * 6;
+        const px = cx + Math.cos(angle) * dist;
+        const py = cy + Math.sin(angle) * dist * 0.5; // elliptical orbit
+        const size = 2.5 + 1.5 * Math.sin(t * 3 + i);
+        ctx.beginPath();
+        ctx.arc(px, py, size, 0, Math.PI * 2);
+        ctx.fillStyle = def.color + 'bb';
+        ctx.fill();
+      }
+    }
+
+    // Idle bob animation
+    const bobY = isLarge ? Math.sin(_lobbyPreviewFrame * 0.035) * 4 : 0;
+
+    const sp = {
+      id: 'preview',
+      isPlayer: true,
+      lvl: 5,
+      brnch: cls,
+      radius: r,
+      angle: -Math.PI / 2,
+      a: -Math.PI / 2,
+      vx: 0, vy: 0,
+      shld: false,
+      rage: false,
+      stn: false,
+      slw: false,
+      dash: false,
+      stealth: false,
+      hp: def.hp,
+      mhp: def.hp,
+      n: def.name,
+    };
+    const cp = {
+      x: cx,
+      y: cy + bobY,
+      lastHit: 0,
+      attackAnim: null,
+    };
+
+    drawCharacter(sp, cp, ctx);
+
+    // Ground shadow
+    if (isLarge) {
+      const shadowAlpha = 0.3 + 0.1 * Math.sin(_lobbyPreviewFrame * 0.035);
+      const shadowGrad = ctx.createRadialGradient(cx, cy + r * 1.0, 0, cx, cy + r * 1.0, r * 1.2);
+      shadowGrad.addColorStop(0, `rgba(0,0,0,${shadowAlpha})`);
+      shadowGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = shadowGrad;
+      ctx.ellipse(cx, cy + r * 0.98 - bobY * 0.3, r * 1.1, r * 0.25, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Only animate if lobby is visible
+    const lobby = document.getElementById('pvelobby');
+    if (lobby && !lobby.classList.contains('hidden')) {
+      _lobbyPreviewAnim = requestAnimationFrame(renderFrame);
+    }
+  }
+
+  renderFrame();
 }
 
 function drawLobbyWeapon(ctx, cls, cx, cy, r, color) {
@@ -2348,10 +2685,24 @@ class PveGame {
     }
     dt = Math.min(dt, 0.1);
     this.lastTime = timestamp;
-    if (!this.paused) {
-      this.update(dt);
+    try {
+      if (!this.paused) {
+        this.update(dt);
+      }
+      this.draw();
+    } catch (err) {
+      console.error('[FlipFight] Runtime error in game loop:', err);
+      // Reset canvas transform to prevent cascade corruption
+      try {
+        const canvas = document.getElementById('pveCanvas');
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.globalAlpha = 1;
+          ctx.shadowBlur = 0;
+        }
+      } catch(e2) {}
     }
-    this.draw();
     this.raf = requestAnimationFrame(t => this.loop(t));
   }
 
