@@ -14480,3 +14480,380 @@ function drawOmegaRing(ctx, r, t) {
   ctx.stroke();
   ctx.restore();
 }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   FLIPFIGHT AUDIO INTEGRATION — Hooks into game events
+═══════════════════════════════════════════════════════════════ */
+
+// ── AUDIO WIDGET CONTROLLER ────────────────────────────────────
+let _audioPanelOpen = false;
+
+function audioWidgetToggle() {
+  _audioPanelOpen = !_audioPanelOpen;
+  const panel = document.getElementById('audioPanel');
+  const btn = document.getElementById('audioToggleBtn');
+  if (panel) {
+    if (_audioPanelOpen) {
+      panel.classList.add('open');
+      panel.style.display = 'flex';
+    } else {
+      panel.classList.remove('open');
+      panel.style.display = 'none';
+    }
+  }
+  if (btn) btn.classList.toggle('active', _audioPanelOpen);
+  if (typeof FlipAudio !== 'undefined') {
+    FlipAudio.init();
+    FlipAudio.playSfx('click');
+  }
+}
+
+function audioToggleMusic(el) {
+  if (typeof FlipAudio === 'undefined') return;
+  FlipAudio.init();
+  const on = FlipAudio.toggleMusic();
+  const btn = document.getElementById('audioToggleBtn');
+  if (btn) btn.textContent = on ? '🎵' : '🔇';
+  _audioUpdateNowPlaying();
+}
+
+function audioToggleSfx(el) {
+  if (typeof FlipAudio === 'undefined') return;
+  FlipAudio.init();
+  FlipAudio.toggleSfx();
+}
+
+function audioSetMusicVol(val) {
+  if (typeof FlipAudio === 'undefined') return;
+  FlipAudio.setMusicVolume(parseInt(val) / 100);
+  const display = document.getElementById('musicVolVal');
+  if (display) display.textContent = val + '%';
+}
+
+function audioSetSfxVol(val) {
+  if (typeof FlipAudio === 'undefined') return;
+  FlipAudio.setSfxVolume(parseInt(val) / 100);
+  const display = document.getElementById('sfxVolVal');
+  if (display) display.textContent = val + '%';
+}
+
+// Update now playing label
+const THEME_NAMES = {
+  lobby:   '🏛 Angel Arena Anthem',
+  battle:  '⚔️ Eternal Siege',
+  boss:    '💀 Wrath of the Reaper',
+  victory: '🏆 Angels Ascend',
+  gameover:'😔 Fallen Hero',
+  none:    '— Dừng —',
+};
+
+function _audioUpdateNowPlaying() {
+  if (typeof FlipAudio === 'undefined') return;
+  const state = FlipAudio.getState();
+  const nameEl = document.getElementById('audioNowPlaying');
+  const dotEl = document.getElementById('audioPlayingDot');
+  if (nameEl) nameEl.textContent = THEME_NAMES[state.currentTheme] || '—';
+  if (dotEl) {
+    if (state.musicEnabled && state.currentTheme && state.currentTheme !== 'none') {
+      dotEl.classList.remove('paused');
+    } else {
+      dotEl.classList.add('paused');
+    }
+  }
+  // Sync UI state
+  const mToggle = document.getElementById('musicToggle');
+  const sToggle = document.getElementById('sfxToggle');
+  const mSlider = document.getElementById('musicVolSlider');
+  const sSlider = document.getElementById('sfxVolSlider');
+  const mVal = document.getElementById('musicVolVal');
+  const sVal = document.getElementById('sfxVolVal');
+  if (mToggle) mToggle.checked = state.musicEnabled;
+  if (sToggle) sToggle.checked = state.sfxEnabled;
+  if (mSlider) mSlider.value = Math.round(state.musicVolume * 100);
+  if (sSlider) sSlider.value = Math.round(state.sfxVolume * 100);
+  if (mVal) mVal.textContent = Math.round(state.musicVolume * 100) + '%';
+  if (sVal) sVal.textContent = Math.round(state.sfxVolume * 100) + '%';
+}
+
+// ── LOBBY AUDIO START ──────────────────────────────────────────
+// Call when lobby loads
+function _audioStartLobby() {
+  if (typeof FlipAudio === 'undefined') return;
+  FlipAudio.init();
+  FlipAudio.playTheme('lobby');
+  _audioUpdateNowPlaying();
+}
+
+// ── GAME AUDIO HOOKS — Patch PveGame methods ───────────────────
+// We patch after class definition to add audio calls
+
+const _origStartPveGame = startPveGame;
+window.startPveGame = function() {
+  _origStartPveGame();
+  if (typeof FlipAudio !== 'undefined') {
+    FlipAudio.init();
+    FlipAudio.playSfx('gameStart');
+    // Delay battle music slightly to let game start SFX play
+    setTimeout(() => {
+      FlipAudio.playTheme('battle');
+      _audioUpdateNowPlaying();
+    }, 1000);
+  }
+};
+
+const _origQuitToLobby = quitToLobby;
+window.quitToLobby = function() {
+  _origQuitToLobby();
+  if (typeof FlipAudio !== 'undefined') {
+    FlipAudio.playTheme('lobby');
+    _audioUpdateNowPlaying();
+  }
+};
+
+const _origPausePve = pausePve;
+window.pausePve = function() {
+  _origPausePve();
+  if (typeof FlipAudio !== 'undefined') FlipAudio.playSfx('pauseToggle');
+};
+
+const _origResumePve = resumePve;
+window.resumePve = function() {
+  _origResumePve();
+  if (typeof FlipAudio !== 'undefined') FlipAudio.playSfx('pauseToggle');
+};
+
+// Patch PveGame class methods to add audio (done via prototype after class definition)
+(function patchPveGameAudio() {
+  if (typeof PveGame === 'undefined') return;
+  const proto = PveGame.prototype;
+
+  // ── dealDamage → hit SFX ───────────────────────────────
+  const _origDealDamage = proto.dealDamage;
+  proto.dealDamage = function(enemy, rawDmg) {
+    const result = _origDealDamage.call(this, enemy, rawDmg);
+    if (typeof FlipAudio !== 'undefined' && result > 0) {
+      // Only play occasionally to avoid sound spam (1 in 5 hits)
+      if (Math.random() < 0.2) {
+        const isCrit = result > rawDmg * 1.5;
+        FlipAudio.playSfx(isCrit ? 'critHit' : 'hit');
+      }
+    }
+    return result;
+  };
+
+  // ── takeDamage → playerHurt SFX ────────────────────────
+  const _origTakeDamage = proto.takeDamage;
+  proto.takeDamage = function(amt, sourceType) {
+    const pHpBefore = this.player ? this.player.hp : 0;
+    _origTakeDamage.call(this, amt, sourceType);
+    if (typeof FlipAudio !== 'undefined' && this.player && this.player.hp < pHpBefore) {
+      FlipAudio.playSfx('playerHurt');
+      // Low HP warning
+      if (this.player.hp / this.player.maxHp < 0.25) {
+        FlipAudio.playSfx('lowHp');
+      }
+    }
+  };
+
+  // ── killEnemy → enemyDie / bossDie SFX ─────────────────
+  const _origKillEnemy = proto.killEnemy;
+  proto.killEnemy = function(enemy) {
+    const wasBoss = enemy && enemy.isBoss;
+    _origKillEnemy.call(this, enemy);
+    if (typeof FlipAudio !== 'undefined') {
+      if (wasBoss) {
+        FlipAudio.playSfx('bossDie');
+        // Return to battle music after boss dies
+        setTimeout(() => {
+          FlipAudio.playTheme('battle');
+          _audioUpdateNowPlaying();
+        }, 2000);
+      } else if (Math.random() < 0.08) {
+        // 8% chance to play kill SFX (avoid spam)
+        FlipAudio.playSfx('enemyDie');
+      }
+    }
+  };
+
+  // ── onLevelUp → levelUp SFX ────────────────────────────
+  const _origOnLevelUp = proto.onLevelUp;
+  proto.onLevelUp = function() {
+    _origOnLevelUp.call(this);
+    if (typeof FlipAudio !== 'undefined') {
+      FlipAudio.playSfx('levelUp');
+    }
+  };
+
+  // ── gameOver → gameover theme ──────────────────────────
+  const _origGameOver = proto.gameOver;
+  proto.gameOver = function() {
+    _origGameOver.call(this);
+    if (typeof FlipAudio !== 'undefined') {
+      FlipAudio.playTheme('gameover');
+      _audioUpdateNowPlaying();
+    }
+  };
+
+  // ── victory → victory theme ────────────────────────────
+  const _origVictory = proto.victory;
+  proto.victory = function() {
+    _origVictory.call(this);
+    if (typeof FlipAudio !== 'undefined') {
+      FlipAudio.playTheme('victory');
+      _audioUpdateNowPlaying();
+    }
+  };
+
+  // ── spawnBoss → bossSpawn SFX + boss theme ─────────────
+  const _origSpawnBoss = proto.spawnBoss;
+  if (_origSpawnBoss) {
+    proto.spawnBoss = function(...args) {
+      _origSpawnBoss.call(this, ...args);
+      if (typeof FlipAudio !== 'undefined') {
+        FlipAudio.playSfx('bossSpawn');
+        setTimeout(() => {
+          if (typeof FlipAudio !== 'undefined') {
+            FlipAudio.playTheme('boss');
+            _audioUpdateNowPlaying();
+          }
+        }, 500);
+      }
+    };
+  }
+
+  // ── fireSkill → skill SFX based on type ────────────────
+  const _origFireSkill = proto.fireSkill;
+  proto.fireSkill = function(id, level, def) {
+    _origFireSkill.call(this, id, level, def);
+    if (typeof FlipAudio === 'undefined') return;
+    // Map skill IDs to SFX
+    if (id.includes('arrow') || id.includes('shot') || id.includes('ranger')) {
+      FlipAudio.playSfx('shoot');
+    } else if (id.includes('slash') || id.includes('blade') || id.includes('assassin')) {
+      FlipAudio.playSfx('slash');
+    } else if (id.includes('magic') || id.includes('missile') || id.includes('mage')) {
+      FlipAudio.playSfx('magic');
+    } else if (id.includes('thunder') || id.includes('lightning')) {
+      FlipAudio.playSfx('lightning');
+    } else if (id.includes('frost') || id.includes('ice') || id.includes('blizzard')) {
+      FlipAudio.playSfx('freeze');
+    } else if (id.includes('summon') || id.includes('skeleton') || id.includes('necro')) {
+      FlipAudio.playSfx('summon');
+    } else if (id.includes('wolf') || id.includes('spirit')) {
+      FlipAudio.playSfx('wolfHowl');
+    } else if (id.includes('shadow') || id.includes('clone')) {
+      FlipAudio.playSfx('shadowClone');
+    } else if (id.includes('arrow_rain') || id.includes('rain')) {
+      FlipAudio.playSfx('arrowRain');
+    } else if (id.includes('explosion') || id.includes('bomb') || id.includes('fire')) {
+      FlipAudio.playSfx('explosion');
+    } else if (id.includes('ground') || id.includes('slam') || id.includes('quake')) {
+      FlipAudio.playSfx('groundSlam');
+    } else if (id.includes('heal') || id.includes('holy') || id.includes('paladin')) {
+      FlipAudio.playSfx('heal');
+    } else {
+      FlipAudio.playSfx('skillCast');
+    }
+  };
+
+  // ── showSkillLevelUp → skillUnlock SFX ─────────────────
+  const _origShowSkillLevelUp = proto.showSkillLevelUp;
+  proto.showSkillLevelUp = function(id, level) {
+    _origShowSkillLevelUp.call(this, id, level);
+    if (typeof FlipAudio !== 'undefined') {
+      if (level >= 8) {
+        FlipAudio.playSfx('legendaryUnlock');
+      } else {
+        FlipAudio.playSfx('skillUnlock');
+      }
+    }
+  };
+
+})();
+
+// ── GOLD & XP PICKUP AUDIO (via particle collection) ─────────
+// Throttle to avoid spam
+let _lastGoldSfxTime = 0, _lastXpSfxTime = 0;
+
+const _origCollectParticles = typeof PveGame !== 'undefined' ? PveGame.prototype.updateParticles : null;
+if (_origCollectParticles) {
+  // We'll detect collection via gainXp and addGold instead
+  const proto = PveGame.prototype;
+  const _origGainXp = proto.gainXp;
+  proto.gainXp = function(amount) {
+    _origGainXp.call(this, amount);
+    if (typeof FlipAudio !== 'undefined') {
+      const now = Date.now();
+      if (now - _lastXpSfxTime > 300) {
+        FlipAudio.playSfx('xpPickup');
+        _lastXpSfxTime = now;
+      }
+    }
+  };
+}
+
+// Hook gold gain
+if (typeof PveGame !== 'undefined') {
+  const proto = PveGame.prototype;
+  if (proto.addGold || proto.gainGold) {
+    const methodName = proto.addGold ? 'addGold' : 'gainGold';
+    const _origAddGold = proto[methodName];
+    proto[methodName] = function(...args) {
+      _origAddGold.call(this, ...args);
+      if (typeof FlipAudio !== 'undefined') {
+        const now = Date.now();
+        if (now - _lastGoldSfxTime > 400) {
+          FlipAudio.playSfx('goldPickup');
+          _lastGoldSfxTime = now;
+        }
+      }
+    };
+  }
+}
+
+// ── BUTTON HOVER SFX — lobby buttons ─────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Add hover sounds to class-chip buttons
+  const addHoverSfx = (selector) => {
+    document.querySelectorAll(selector).forEach(btn => {
+      btn.addEventListener('mouseenter', () => {
+        if (typeof FlipAudio !== 'undefined') FlipAudio.playSfx('hover');
+      });
+      btn.addEventListener('click', () => {
+        if (typeof FlipAudio !== 'undefined') FlipAudio.playSfx('click');
+      });
+    });
+  };
+  addHoverSfx('.class-chip');
+  addHoverSfx('.stage-card-fancy');
+  addHoverSfx('.start-btn-epic');
+  addHoverSfx('.pve-btn');
+
+  // Start lobby music on load (audio context needs user interaction first)
+  const startLobbyOnInteract = () => {
+    _audioStartLobby();
+    document.removeEventListener('click', startLobbyOnInteract);
+    document.removeEventListener('keydown', startLobbyOnInteract);
+  };
+  document.addEventListener('click', startLobbyOnInteract, { once: true });
+  document.addEventListener('keydown', startLobbyOnInteract, { once: true });
+
+  // Init UI state from saved settings
+  setTimeout(_audioUpdateNowPlaying, 500);
+});
+
+// Close audio panel when clicking outside
+document.addEventListener('click', (e) => {
+  if (_audioPanelOpen) {
+    const widget = document.getElementById('audioWidget');
+    if (widget && !widget.contains(e.target)) {
+      _audioPanelOpen = false;
+      const panel = document.getElementById('audioPanel');
+      const btn = document.getElementById('audioToggleBtn');
+      if (panel) { panel.classList.remove('open'); panel.style.display = 'none'; }
+      if (btn) btn.classList.remove('active');
+    }
+  }
+});
+

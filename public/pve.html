@@ -526,6 +526,68 @@
   </div>
 </div>
 
+<!-- ═══ AUDIO WIDGET — Nổi trong game & lobby ═══════════════ -->
+<div id="audioWidget">
+  <div id="audioPanel">
+    <div class="audio-panel-title">🎵 Âm Thanh</div>
+
+    <!-- MUSIC ROW -->
+    <div class="audio-row">
+      <div class="audio-row-top">
+        <div class="audio-label">
+          <span class="audio-label-icon">🎵</span> Nhạc Nền
+        </div>
+        <label class="audio-toggle">
+          <input type="checkbox" id="musicToggle" checked onchange="audioToggleMusic(this)">
+          <div class="audio-toggle-track"></div>
+        </label>
+      </div>
+      <div class="audio-slider-wrap">
+        <span class="audio-vol-icon">🔈</span>
+        <input class="audio-slider" type="range" id="musicVolSlider" min="0" max="100" value="45"
+               oninput="audioSetMusicVol(this.value)">
+        <span class="audio-vol-val" id="musicVolVal">45%</span>
+        <span class="audio-vol-icon">🔊</span>
+      </div>
+    </div>
+
+    <div class="audio-divider"></div>
+
+    <!-- SFX ROW -->
+    <div class="audio-row">
+      <div class="audio-row-top">
+        <div class="audio-label">
+          <span class="audio-label-icon">🔊</span> Hiệu Ứng
+        </div>
+        <label class="audio-toggle">
+          <input type="checkbox" id="sfxToggle" checked onchange="audioToggleSfx(this)">
+          <div class="audio-toggle-track"></div>
+        </label>
+      </div>
+      <div class="audio-slider-wrap">
+        <span class="audio-vol-icon">🔈</span>
+        <input class="audio-slider" type="range" id="sfxVolSlider" min="0" max="100" value="60"
+               oninput="audioSetSfxVol(this.value)">
+        <span class="audio-vol-val" id="sfxVolVal">60%</span>
+        <span class="audio-vol-icon">🔊</span>
+      </div>
+    </div>
+
+    <div class="audio-divider"></div>
+
+    <!-- NOW PLAYING -->
+    <div class="audio-now-playing">
+      <div class="audio-now-playing-dot" id="audioPlayingDot"></div>
+      <span id="audioNowPlaying">Angel Arena Anthem</span>
+    </div>
+  </div>
+
+  <button id="audioToggleBtn" onclick="audioWidgetToggle()" title="Âm thanh">
+    🎵
+  </button>
+</div>
+
+<script src="audio.js"></script>
 <script src="pve.js"></script>
 </body>
 </html>
