@@ -62,6 +62,55 @@ const BOSS_SCHEDULE = {
 // ─── MAX ENEMIES CAP ─────────────────────────────────────────
 const MAX_ENEMIES_ON_SCREEN = 700; // hard cap — FlipFight supports up to 700 enemies simultaneously
 
+// ─── STAT HARD CAPS (Giới hạn cứng chỉ số) ────────────────────
+// Đây là ngưỡng tối đa nhân vật có thể đạt trong một ván đấu
+const STAT_CAPS = {
+  cdMult:        0.10,   // Hồi chiêu: min 10% gốc còn lại (-90% CDR cap)
+  projAddCount:  10,     // Số lượng đạn bổ sung: tối đa +10
+  dmgMult:       10.0,   // Sát thương: tối đa x10 (+900%)
+  aoeMult:       10.0,   // Phạm vi AoE: tối đa x10 (+900%)
+  projSpeedMult: 6.0,    // Tốc độ đạn: tối đa x6 (+500%)
+  durationMult:  6.0,    // Thời gian kỹ năng: tối đa x6 (+500%)
+  spdMult:       10.0,   // Tốc độ di chuyển: tối đa x10 (+900%)
+  critChance:    0.90,   // Chí mạng: tối đa 90%
+  critDmgMult:   5.0,    // Nhân chí mạng: tối đa 5x (+400%)
+  xpGainMult:    10.0,   // Kinh nghiệm: tối đa x10 (+900%)
+  armor:         900,    // Giáp: tối đa 900 (mỗi điểm -1 dmg, tối thiểu 1 dmg)
+  lifesteal:     0.40,   // Hút máu: tối đa 40%
+  hpRegen:       200,    // Hồi máu: tối đa 200 HP/giây
+  magnetRadius:  600,    // Tầm hút ngọc: tối đa 600px
+  goldBonus:     5.0,    // Nhân vàng: tối đa 5x
+  thornsDmg:     0.80,   // Phản đòn: tối đa 80% dmg nhận vào
+  reviveCount:   3,      // Hồi sinh: tối đa 3 lần/ván
+  projectilePierce: 8,  // Xuyên thấu: tối đa 8 lần
+};
+
+// ─── I-FRAMES DURATION ───────────────────────────────────────
+// Sau mỗi lần nhận damage, player bất tử 600ms
+// Ngăn chặn bị "bốc hơi" khi bầy đàn áp sát cùng lúc
+const I_FRAME_DURATION_MS = 600;
+// Boss đặc biệt (Red Death) xuyên qua I-frames thông thường
+const BOSS_PIERCE_IFRAMES = ['boss_death_reaper'];
+
+// ─── Áp dụng Hard Caps vào player stats ─────────────────────
+function applyStatCaps(p) {
+  if (!p) return;
+  p.cdMult        = Math.max(STAT_CAPS.cdMult,        p.cdMult        || 1.0);
+  p.projAddCount  = Math.min(STAT_CAPS.projAddCount,   p.projAddCount  || 0);
+  p.dmgMult       = Math.min(STAT_CAPS.dmgMult,        p.dmgMult       || 1.0);
+  p.aoeMult       = Math.min(STAT_CAPS.aoeMult,        p.aoeMult       || 1.0);
+  p.projSpeedMult = Math.min(STAT_CAPS.projSpeedMult,  p.projSpeedMult || 1.0);
+  p.spdMult       = Math.min(STAT_CAPS.spdMult,        p.spdMult       || 1.0);
+  p.critChance    = Math.min(STAT_CAPS.critChance,     p.critChance    || 0);
+  p.xpGainMult    = Math.min(STAT_CAPS.xpGainMult,     p.xpGainMult    || 1.0);
+  p.lifesteal     = Math.min(STAT_CAPS.lifesteal,      p.lifesteal     || 0);
+  p.hpRegen       = Math.min(STAT_CAPS.hpRegen,        p.hpRegen       || 0);
+  p.goldBonus     = Math.min(STAT_CAPS.goldBonus,      p.goldBonus     || 1.0);
+  if (p.thornsDmg !== undefined) p.thornsDmg = Math.min(STAT_CAPS.thornsDmg, p.thornsDmg);
+  p.defMult       = Math.min(STAT_CAPS.armor / 100,  p.defMult       || 1.0);
+  p.reviveCount   = Math.min(STAT_CAPS.reviveCount,  p.reviveCount   || 0);
+}
+
 function getWaveScaling(sec) {
   const min = sec / 60;
   // C1: Difficulty scaling per minute — RẤT KHÓ ngay từ đầu!
@@ -1989,11 +2038,33 @@ class PveGame {
       eggMaxHpBonus: 0,
       eggCritBonus: 0,
       spawnRateMult: 1.0,
+      // ── I-FRAMES SYSTEM ──────────────────────────────────────
+      // Sau mỗi lần nhận hit, player bất tử I_FRAME_DURATION_MS ms
+      iFrameUntil: 0,
+      // ── STAT CAPS EXTRAS ────────────────────────────────────
+      critDmgMult: 1.5,        // Chí mạng nhân 1.5x mặc định, tối đa 5x
+      thornsDmg: cls === 'fighter' ? 0.15 : 0, // Fighter: 15% phản đòn mặc định
+      reviveCount: revive ? 1 : 0,   // Số lần hồi sinh còn lại
+            // ── SOUL AEGIS (Hidden item vs Red Death) ────────────────
+      hasSoulAegis: false,     // Trang bị ẩn chống One-Hit-Kill của Red Death
+      soulAegisUsed: false,    // Đã dùng chưa (1 lần/ván)
+      eggCdBonus: 0.0,
+      eggSpdMultBonus: 0.0,
+      eggDefBonus: 0.0,
+      lvlUpDmgMult: 1.0,
+      lvlUpCdMult: 1.0,
+      lvlUpSpdMult: 1.0,
+      lvlUpAoeMult: 1.0,
+      lvlUpLifesteal: 0.0,
+      lvlUpMaxHpMult: 1.0,
+      thorns: 0.0,
+      demonicDefMult: 1.0,
     };
   }
 
 
-  recalculatePassiveStats() {
+
+    recalculatePassiveStats() {
     const p = this.player;
     if (!p) return;
     const eq = this.save.equipped;
@@ -2009,7 +2080,7 @@ class PveGame {
     const classCrit = this.clsKey === 'assassin' ? 15 : 0;
     
     // Level multipliers from passives
-    let spinachLvl = 0, emptyTomeLvl = 0, candelabradorLvl = 0, wingsLvl = 0, heartLvl = 0, cloverLvl = 0;
+    let spinachLvl = 0, emptyTomeLvl = 0, candelabradorLvl = 0, wingsLvl = 0, heartLvl = 0, cloverLvl = 0, armorPlateLvl = 0, crownLvl = 0;
     this.passiveItems.forEach(item => {
       if (item.id === 'spinach') spinachLvl = item.level;
       if (item.id === 'empty_tome') emptyTomeLvl = item.level;
@@ -2017,6 +2088,8 @@ class PveGame {
       if (item.id === 'wings') wingsLvl = item.level;
       if (item.id === 'hollow_heart') heartLvl = item.level;
       if (item.id === 'clover') cloverLvl = item.level;
+      if (item.id === 'armor_plate') armorPlateLvl = item.level;
+      if (item.id === 'crown') crownLvl = item.level;
     });
 
     const pu = (this.save && this.save.powerups) ? this.save.powerups : {};
@@ -2025,24 +2098,44 @@ class PveGame {
     const puRecovery  = (pu.recovery  || 0) * POWERUP_DEFS.recovery.perLevel;
     const puLuck      = (pu.luck      || 0) * POWERUP_DEFS.luck.perLevel;
     const puVitality  = (pu.vitality  || 0) * POWERUP_DEFS.vitality.perLevel;
+    const puAmount    = (pu.amount    || 0) * POWERUP_DEFS.amount.perLevel;
+    const puGrowth    = (pu.growth    || 0) * POWERUP_DEFS.growth.perLevel;
+    const puGreed     = (pu.greed     || 0) * POWERUP_DEFS.greed.perLevel;
+
+    // Metagame mastery bonuses
+    const mastery = (this.save && this.save.mastery) ? this.save.mastery : {};
+    let mArmor = 0;
+    let mGold = 0;
+    Object.keys(mastery).forEach(nodeId => {
+      if (mastery[nodeId]) {
+        const def = MASTERY_DEFS[nodeId];
+        if (def && def.stat) {
+          const s = def.stat;
+          if (s.armorBonusPct) mArmor += s.armorBonusPct;
+          if (s.goldBonusPct) mGold += s.goldBonusPct;
+        }
+      }
+    });
     
-    // Update player attributes with powerups, passives, and persistent upgrades (demonic/egg)
-    p.dmgMult = (1.0 + spinachLvl * 0.10 + puMight) * (p.demonicDmgMult || 1.0) + (p.eggDmgBonus || 0.0);
-    p.cdMult  = 1.0 - emptyTomeLvl * 0.06;
-    p.aoeMult = 1.0 + candelabradorLvl * 0.10;
-    p.spdMult = 1.0 + wingsLvl * 0.08;
+    // Update player attributes with powerups, passives, and persistent upgrades (demonic/egg/lvlUp)
+    p.dmgMult = (1.0 + spinachLvl * 0.10 + puMight) * (p.demonicDmgMult || 1.0) * (p.lvlUpDmgMult || 1.0) + (p.eggDmgBonus || 0.0);
+    if (this.hermitBuffActive) p.dmgMult *= 1.40;
+
+    p.cdMult  = (1.0 - emptyTomeLvl * 0.06 - (p.eggCdBonus || 0.0)) * (p.lvlUpCdMult || 1.0);
+    p.aoeMult = (1.0 + candelabradorLvl * 0.10) * (p.lvlUpAoeMult || 1.0);
+    p.spdMult = (1.0 + wingsLvl * 0.08 + (p.eggSpdMultBonus || 0.0)) * (p.lvlUpSpdMult || 1.0);
     p.speed   = baseSpeed * (1 + puSwiftness) + (p.eggSpeedBonus || 0);
     
     const prevMax = p.maxHp;
     const calculatedMaxHp = Math.round(baseHp * (1 + puVitality) * (1 + heartLvl * 0.15));
-    p.maxHp = Math.round(calculatedMaxHp * (1 - (p.demonicMaxHpLossPct || 0.0)) + (p.eggMaxHpBonus || 0));
+    p.maxHp = Math.round(calculatedMaxHp * (1 - (p.demonicMaxHpLossPct || 0.0)) * (p.lvlUpMaxHpMult || 1.0) + (p.eggMaxHpBonus || 0));
     if (p.maxHp > prevMax) p.hp += (p.maxHp - prevMax);
     if (p.hp > p.maxHp) p.hp = p.maxHp;
     
     p.critChance = (allBonusCrit + classCrit) / 100 + cloverLvl * 0.06 + puLuck + (p.demonicCritChance || 0.0) + (p.eggCritBonus || 0.0);
     
     const baseLifesteal = ((eq.weapon ? eq.weapon.bonus.lifesteal || 0 : 0) + (eq.armor ? eq.armor.bonus.lifesteal || 0 : 0) + (eq.accessory ? eq.accessory.bonus.lifesteal || 0 : 0)) / 100 + (this.clsKey === 'necromancer' ? 0.20 : 0);
-    p.lifesteal = baseLifesteal + (p.demonicLifesteal || 0.0);
+    p.lifesteal = baseLifesteal + (p.demonicLifesteal || 0.0) + (p.lvlUpLifesteal || 0.0);
 
     if (p.hasDemonicVoidRegenBan) {
       p.hpRegen = 0;
@@ -2051,13 +2144,38 @@ class PveGame {
       p.hpRegen = baseRegen + (p.eggRegenBonus || 0);
     }
     
+    // Attractorb & magnetRadius
     let magnetLvl = 0;
     const magnetItem = this.passiveItems.find(i => i.id === 'attractorb');
     if (magnetItem) magnetLvl = magnetItem.level;
-    this.magnetRadius = 120 + magnetLvl * 60 + (this.player.magnetBonusPx || 0);
+    this.magnetRadius = Math.min(STAT_CAPS.magnetRadius, 120 + magnetLvl * 60 + (this.player.magnetBonusPx || 0));
 
-    const crownItem = this.passiveItems.find(i => i.id === 'crown');
-    this._crownXpBonus = crownItem ? crownItem.level * 0.20 : 0;
+    // Crown & _crownXpBonus
+    this._crownXpBonus = crownLvl * 0.20;
+
+    // Recalculate other stats
+    p.projAddCount = (this.clsKey === 'ranger' ? 1 : 0) + puAmount;
+    p.projSpeedMult = this.clsKey === 'ranger' ? 1.15 : 1.0;
+
+    let baseGrowth = 1.0 + puGrowth;
+    if (p.hasMilestone20Buff) baseGrowth *= 2.0;
+    if (p.hasMilestone40Buff) baseGrowth *= 2.0;
+    p.xpGainMult = baseGrowth;
+
+    const allBonusGold = (eq.weapon ? eq.weapon.bonus.goldBonus || 0 : 0) + (eq.armor ? eq.armor.bonus.goldBonus || 0 : 0) + (eq.accessory ? eq.accessory.bonus.goldBonus || 0 : 0);
+    p.goldBonus = 1.0 + allBonusGold / 100 + mGold + puGreed;
+
+    const allBonusDef = (eq.weapon ? eq.weapon.bonus.def || 0 : 0) + (eq.armor ? eq.armor.bonus.def || 0 : 0) + (eq.accessory ? eq.accessory.bonus.def || 0 : 0);
+    const classPassiveDef = (this.clsKey === 'fighter' ? 15 : 0);
+    let baseDef = this.cls.def * (1 + (allBonusDef + classPassiveDef) / 100 + mArmor);
+    baseDef += armorPlateLvl * 0.20;
+    p.defMult = (baseDef + (p.eggDefBonus || 0.0)) * (p.demonicDefMult || 1.0);
+
+    const baseThorns = (eq.armor && eq.armor.bonus.thorns) ? eq.armor.bonus.thorns / 100 : 0;
+    p.thornsDmg = baseThorns + (p.thorns || 0.0);
+
+    // Apply stat caps
+    applyStatCaps(p);
   }
 
 
@@ -2240,7 +2358,7 @@ class PveGame {
   // ──────────────────────────────────────────────
   // UPDATE
   // ──────────────────────────────────────────────
-  update(dt) {
+    update(dt) {
     this.updatePlayer(dt);
     this.updateSkills(dt);
     this.updateEnemies(dt);
@@ -2261,6 +2379,7 @@ class PveGame {
     this.updateMerchantRescue(dt);
     this.updateShrinesAndAltars(dt);
     this.updateTarotEffects(dt);
+    applyStatCaps(this.player);
   }
 
   updateBgSpores(dt) {
@@ -2303,18 +2422,16 @@ class PveGame {
           }
         }
       }
-      if (!enemyNear) {
+            if (!enemyNear) {
         if (!this.hermitBuffActive) {
           this.hermitBuffActive = true;
-          p.dmgMult *= 1.40;
-          p.defMult += 0.20;
+          this.recalculatePassiveStats();
           this.addFloat(p.x, p.y - 45, '🛖 Cường Hóa Hermit!', '#34d399');
         }
       } else {
         if (this.hermitBuffActive) {
           this.hermitBuffActive = false;
-          p.dmgMult /= 1.40;
-          p.defMult -= 0.20;
+          this.recalculatePassiveStats();
         }
       }
     }
@@ -2392,8 +2509,13 @@ class PveGame {
     if (this.currentWeather === 'blizzard') weatherSpdMult *= 0.7; // 30% slow
     if (this.activeShrineBuffs && this.activeShrineBuffs.speed > 0) weatherSpdMult *= 1.4; // Shrines speed buff (+40%)
     const spd = p.speed * p.spdMult * (Date.now() < p.rallyUntil ? 1.5 : 1) * weatherSpdMult * dt;
+    const prevX = p.x, prevY = p.y;
     p.x = Math.max(p.r, Math.min(WORLD_W - p.r, p.x + dx * spd));
     p.y = Math.max(p.r, Math.min(WORLD_H - p.r, p.y + dy * spd));
+    // ── Track actual velocity for boss intercept AI ────────────
+    // (_vx, _vy) là vận tốc pixel/giây để boss dự đoán vị trí tương lai
+    p._vx = (p.x - prevX) / dt;
+    p._vy = (p.y - prevY) / dt;
 
     // Spawn running dust smoke footsteps particles
     if (len > 0) {
@@ -2927,8 +3049,25 @@ class PveGame {
     }
   }
 
-  fireBriarPatch(dmg, lv) {
+    fireBriarPatch(dmg, lv) {
     const p = this.player;
+    
+    // LIMIT ACTIVE BRIAR PATCHES (Cap max 8 density)
+    const activeBriars = this.hazards.filter(h => h.type === 'briar');
+    const maxBriars = 8;
+    if (activeBriars.length >= maxBriars) {
+      const toRemove = activeBriars.length - maxBriars + 1;
+      let removedCount = 0;
+      for (let i = 0; i < this.hazards.length; i++) {
+        if (this.hazards[i].type === 'briar') {
+          this.hazards.splice(i, 1);
+          i--;
+          removedCount++;
+          if (removedCount >= toRemove) break;
+        }
+      }
+    }
+
     const r = Math.min(200, (80 + lv * 15) * p.aoeMult);
     this.hazards.push({ type:'briar', x: p.x, y: p.y, r,
       dmg: dmg * 0.2, life: Math.min(6, 3 + lv * 0.5), color:'#86efac', slow: 0.4 + lv * 0.1, tickCd: 0.5 });
@@ -3028,9 +3167,9 @@ class PveGame {
     this.spawnFrameAnimation('holy_judgment', p.x, p.y, r * 1.1);
   }
 
-  fireSummonSkeleton(dmg, lv) {
+    fireSummonSkeleton(dmg, lv) {
     const p = this.player;
-    const maxSkeletons = 6 + (this.clsKey === 'necromancer' ? 2 : 0);
+    const maxSkeletons = 6;
     const skeletons = this.summons.filter(s => s.type === 'skeleton');
     const count = 2 + (p.summonAddCount || 0);
 
@@ -3500,8 +3639,8 @@ class PveGame {
       this.spawnBossChest(enemy.x, enemy.y);
       this.bossActive = false;
 
-      // Tử Thần bị giết → VICTORY!
-      if (enemy.type === 'boss_death_reaper') {
+            // Tử Thần bị giết → VICTORY!
+      if (enemy.type === 'boss_death_reaper' && !enemy._isDeathClone) {
         this.spawnParticles(enemy.x, enemy.y, '#fbbf24', 80, 10);
         this.spawnParticles(enemy.x, enemy.y, '#a78bfa', 60, 8);
         this.screenShake(40, 3.0);
@@ -3668,16 +3807,40 @@ class PveGame {
     });
   }
 
-  takeDamage(amt) {
+  takeDamage(amt, sourceType = null) {
     const p = this.player;
     const now = Date.now();
     // Invuln checks
     if (p.invincible) return;
     if (p.invulnUntil && now < p.invulnUntil) return;
     if (p.invincibleUntil && now < p.invincibleUntil) return;
-    // Hit iframe - prevent damage spam (280ms between hits)
-    if (p._hitIframe && now < p._hitIframe) return;
-    p._hitIframe = now + 280;
+    
+    // ── I-FRAMES SYSTEM ──────────────────────────────────────
+    // Kiểm tra xem nguồn damage có thể bypass I-frames không
+    const bypassIFrames = sourceType && BOSS_PIERCE_IFRAMES.includes(sourceType);
+    if (!bypassIFrames && p.iFrameUntil && now < p.iFrameUntil) return;
+    // Áp dụng I-frames (600ms sau khi nhận hit)
+    if (!bypassIFrames) {
+      p.iFrameUntil = now + I_FRAME_DURATION_MS;
+    }
+    
+    // ── RED DEATH ONE-HIT-KILL ────────────────────────────────
+    if (sourceType === 'boss_death_reaper') {
+      // Soul Aegis block (hidden item)
+      if (p.hasSoulAegis && !p.soulAegisUsed) {
+        p.soulAegisUsed = true;
+        p.invincibleUntil = now + 3000;
+        p.hp = Math.max(1, Math.round(p.maxHp * 0.01)); // còn lại 1% HP
+        this.addFloat(p.x, p.y - 70, '✨ LINH HỒN BẢO VỆ BẠN!', '#fbbf24', true);
+        this.addFloat(p.x, p.y - 95, '💫 Soul Aegis kích hoạt!', '#a855f7', true);
+        this.spawnParticles(p.x, p.y, '#fbbf24', 40, 8);
+        this.screenShake(20, 1.0);
+        return;
+      }
+      // One-Hit-Kill không thể tránh
+      this.gameOver();
+      return;
+    }
     
     // Tarot The Fool complete dodge check
     if (this.activeArcanas.has('arcana_the_fool') && Math.random() < 0.20) {
@@ -3707,9 +3870,17 @@ class PveGame {
       this.spawnParticle(p.x, p.y, '#94a3b8', 10, 0.4);
     }
     if (amt <= 0) return;
+    
+    // ── ARMOR FLAT REDUCTION ────────────────────────────────
+    // 1 điểm giáp = -1 dmg, tối thiểu 1 dmg
+    if (p.flatArmor && p.flatArmor > 0) {
+      amt = Math.max(1, amt - p.flatArmor);
+    }
+    
     p.hp -= amt;
     this.addFloat(p.x, p.y - 30, `-${Math.round(amt)}`, '#f87171');
     this.spawnParticles(p.x, p.y, '#ef4444', 8, 2);
+    cp && (cp.lastHit = now); // update lastHit for hit flash
 
     // Arcana Grace check
     if (this.activeArcanas.has('arcana_grace') && p.hp / p.maxHp < 0.3 && p.hp > 0) {
@@ -3724,17 +3895,25 @@ class PveGame {
 
     if (p.hp <= 0) {
       p.hp = 0;
-      if (p.revive && !p.reviveUsed) {
-        p.reviveUsed = true;
+      // Kiểm tra revive (nhiều lần hồi sinh)
+      const canRevive = p.reviveCount > 0 || (p.revive && !p.reviveUsed);
+      if (canRevive) {
+        if (p.reviveCount > 0) {
+          p.reviveCount--;
+        } else {
+          p.reviveUsed = true;
+        }
         p.hp = p.maxHp * 0.5;
         p.invincible = true; p.invincibleUntil = Date.now() + 2000;
-        this.addFloat(p.x, p.y - 60, '🔥 REVIVE!', '#f97316', true);
+        p.iFrameUntil = Date.now() + 2000;
+        this.addFloat(p.x, p.y - 60, `🔥 REVIVE! (${p.reviveCount} còn lại)`, '#f97316', true);
         this.spawnParticles(p.x, p.y, '#f97316', 30, 8);
       } else {
         this.gameOver();
       }
     }
   }
+
 
   // ──────────────────────────────────────────────
   // PROJECTILES
@@ -3991,7 +4170,45 @@ class PveGame {
       phase: 1,
       _phasesTriggered: new Set(),
     });
+    // Trả về enemy vừa spawn (cần thiết cho Soul Harvest, Dragon Dive v.v.)
+    return this.enemies[this.enemies.length - 1];
   }
+
+  // ── Red Death: Spawn shadow decoy clones ────────────────────
+  // Clones là quái giả — trông giống Red Death nhưng không gây OHK
+  // Chỉ 1 cái thật có e._isRealReaper = true
+  _spawnDeathClones(reaper, count) {
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 120 + Math.random() * 100;
+      const clone = {
+        type: 'boss_death_reaper',
+        x: reaper.x + Math.cos(angle) * dist,
+        y: reaper.y + Math.sin(angle) * dist,
+        r: reaper.r * 0.85,
+        hp: reaper.maxHp * 0.1, maxHp: reaper.maxHp * 0.1,
+        dmg: reaper.dmg * 0.3, // clone gây dmg thường (không OHK)
+        speed: reaper.speed * 0.9,
+        color: '#1a1a2e',
+        isBoss: true, isElite: false,
+        ranged: false, stealth: 0, summons: false, fireBreath: false,
+        enrageThreshold: 0, phases: null,
+        stunUntil: 0, slow: 0, slowUntil: 0,
+        poisonDmg: 0, poisonUntil: 0,
+        lastAttack: 0, lastRangedAttack: 0, lastSummon: 0,
+        phase: 1, _phasesTriggered: new Set(),
+        gold: 0, xp: 0,
+        name: '💀 Bóng Ma Tử Thần',
+        emoji: '👻',
+        _isDeathClone: true, // marker: đây là clone giả
+        armor: 0,
+        opacity: 0.7, // trong suốt hơn để phân biệt nếu nhìn kỹ
+      };
+      this.enemies.push(clone);
+    }
+  }
+
+
 
   updateEnemies(dt) {
     const now = Date.now();
@@ -4063,12 +4280,70 @@ class PveGame {
 
       if (!e.ranged || dist > e.range) {
         const weatherSlow = this.currentWeather === 'blizzard' ? 0.70 : 1.0;
-        const spd = e.speed * speedMult * slowFactor * nightSpdMult * weatherSlow * dt;
-        if (dist > 0) {
-          e.x += (dx / dist) * spd;
-          e.y += (dy / dist) * spd;
+        
+        let moveTargetX = targetX;
+        let moveTargetY = targetY;
+        
+        // ── BOSS INTERCEPT MOVEMENT (Chặn đường player) ─────────
+        // Boss không đi thẳng tới vị trí hiện tại mà DỰ ĐOÁN vị trí player
+        if (e.isBoss && !targetIsMerchant) {
+          const predTime = 0.4; // dự đoán 0.4s tương lai
+          const pvx = p._vx || 0;
+          const pvy = p._vy || 0;
+          moveTargetX = p.x + pvx * predTime;
+          moveTargetY = p.y + pvy * predTime;
+          // Giữ trong world bounds
+          moveTargetX = Math.max(e.r, Math.min(WORLD_W - e.r, moveTargetX));
+          moveTargetY = Math.max(e.r, Math.min(WORLD_H - e.r, moveTargetY));
+        }
+        
+        // ── BOSS DASH ATTACK (Lao nhanh tới player) ─────────────
+        if (e.isBoss) {
+          e._dashTimer = (e._dashTimer || 0) + dt;
+          const dashCooldown = e.type === 'boss_death_reaper' ? 5 : e.type === 'boss_reaper_form1' ? 6 : 9;
+          
+          if (!e._dashWarning && !e.isDashing && e._dashTimer > dashCooldown && dist < 600 && dist > 80) {
+            // Hiện warning indicator
+            e._dashWarning = true;
+            e._dashWarningUntil = now + 400; // 0.4s cảnh báo
+            e._dashDir = { x: (moveTargetX - e.x) / dist, y: (moveTargetY - e.y) / dist };
+          }
+          
+          if (e._dashWarning && now > e._dashWarningUntil) {
+            // Bắt đầu dash
+            e._dashWarning = false;
+            e.isDashing = true;
+            e._dashDuration = 0.45;
+            e._dashVx = e._dashDir.x * e.speed * 3.5;
+            e._dashVy = e._dashDir.y * e.speed * 3.5;
+            e._dashTimer = 0;
+          }
+          
+          if (e.isDashing) {
+            e._dashDuration -= dt;
+            e.x += e._dashVx * dt;
+            e.y += e._dashVy * dt;
+            if (e._dashDuration <= 0) e.isDashing = false;
+          } else if (!e._dashWarning) {
+            // Di chuyển bình thường với intercept
+            const idx = moveTargetX - e.x, idy = moveTargetY - e.y;
+            const iDist = Math.sqrt(idx * idx + idy * idy);
+            if (iDist > 0) {
+              const spd = e.speed * speedMult * slowFactor * nightSpdMult * weatherSlow * dt;
+              e.x += (idx / iDist) * spd;
+              e.y += (idy / iDist) * spd;
+            }
+          }
+        } else {
+          // Quái thường: di chuyển thẳng
+          const spd = e.speed * speedMult * slowFactor * nightSpdMult * weatherSlow * dt;
+          if (dist > 0) {
+            e.x += (dx / dist) * spd;
+            e.y += (dy / dist) * spd;
+          }
         }
       }
+
 
       // Collision with 2.5D static obstacles (Enemies)
       if (this.staticObstacles) {
@@ -4270,6 +4545,213 @@ class PveGame {
 
       // Slime King Jr: splitter — when dies splits into 2 slimes (handled in killEnemy)
 
+      // ══════════════════════════════════════════════════════════
+      // ── KỸ NĂNG BOSS ĐẶC THÙ ─────────────────────────────────
+      // ══════════════════════════════════════════════════════════
+      if (e.isBoss) {
+        // ── BOSS: SLIME KING — Jelly Slam ──────────────────────
+        // Nhảy lên đập xuống AoE 200px, slow + spawn slime con
+        if (e.type === 'boss_slime_king') {
+          e._jellyTimer = (e._jellyTimer || 0) + dt;
+          const jCd = e.phase >= 3 ? 5 : e.phase >= 2 ? 7 : 10;
+          if (e._jellyTimer > jCd && dist < 350) {
+            e._jellyTimer = 0;
+            e.attackAnim = { t: now, duration: 800 };
+            // AoE slam
+            this.aoeExplosion(e.x, e.y, 220, e.dmg * 1.8, '#4ade80');
+            this.screenShake(16, 0.6);
+            this.addFloat(e.x, e.y - 60, '💚 JELLY SLAM!', '#4ade80', true);
+            // Slow player nếu trong tầm
+            if (dist < 220) {
+              p.slowUntil = now + 2200;
+              p.slow = 0.45;
+              this.addFloat(p.x, p.y - 30, '🐌 Dính Nhầy!', '#4ade80');
+            }
+            // Spawn 4 slime con
+            for (let s = 0; s < 4; s++) {
+              const sAngle = (s / 4) * Math.PI * 2;
+              this.spawnEnemy('slime', e.x + Math.cos(sAngle) * 80, e.y + Math.sin(sAngle) * 80);
+            }
+          }
+        }
+
+        // ── BOSS: DARK LORD — Shadow Barrage ───────────────────
+        // 8 orb bóng tối quay xung quanh, đẩy ra ngoài mỗi vài giây
+        if (e.type === 'boss_dark_lord') {
+          e._barrageTimer = (e._barrageTimer || 0) + dt;
+          const bCd = e.phase >= 3 ? 5 : e.phase >= 2 ? 7 : 10;
+          if (e._barrageTimer > bCd) {
+            e._barrageTimer = 0;
+            e.attackAnim = { t: now, duration: 600 };
+            this.addFloat(e.x, e.y - 60, '🌑 SHADOW BARRAGE!', '#818cf8', true);
+            for (let b = 0; b < 8; b++) {
+              const bAngle = (b / 8) * Math.PI * 2;
+              this.projectiles.push({
+                x: e.x, y: e.y,
+                vx: Math.cos(bAngle) * 220, vy: Math.sin(bAngle) * 220,
+                angle: bAngle,
+                dmg: e.dmg * 0.7, radius: 11, color: '#818cf8',
+                trail: true, trailColor: '#4c1d95',
+                isEnemyProjectile: true, pierce: true, maxPierces: 5, pierced: 0,
+                maxDist: 800, traveled: 0, life: 99
+              });
+            }
+            this.screenShake(10, 0.3);
+          }
+        }
+
+        // ── BOSS: DRAGON QUEEN — Dragon Dive ───────────────────
+        // Biến mất 1s, đập xuống đúng vị trí player (unblockable trừ I-frames)
+        if (e.type === 'boss_dragon_queen') {
+          e._diveTimer = (e._diveTimer || 0) + dt;
+          const dCd = e.phase >= 3 ? 7 : e.phase >= 2 ? 10 : 14;
+          if (!e._isDiving && e._diveTimer > dCd && dist < 500) {
+            e._diveTimer = 0;
+            e._isDiving = true;
+            e._diveTargetX = p.x;
+            e._diveTargetY = p.y;
+            e._diveDuration = 1.0;
+            e._diveLanded = false;
+            e.opacity = 0.15; // "bay lên" - mờ đi
+            this.addFloat(e.x, e.y - 60, '🐉 DRAGON DIVE!', '#f97316', true);
+            this.screenShake(12, 0.4);
+          }
+          if (e._isDiving) {
+            e._diveDuration -= dt;
+            if (e._diveDuration <= 0 && !e._diveLanded) {
+              e._diveLanded = true;
+              e.opacity = 1;
+              e.x = e._diveTargetX;
+              e.y = e._diveTargetY;
+              // AoE cực mạnh khi hạ cánh
+              this.aoeExplosion(e.x, e.y, 180, e.dmg * 3.0, '#f97316');
+              this.screenShake(25, 1.0);
+              this.spawnParticles(e.x, e.y, '#f97316', 30, 6);
+              this.addFloat(e.x, e.y - 50, '💥 CRIT ×3!', '#ef4444', true);
+              e._isDiving = false;
+            }
+          }
+        }
+
+        // ── BOSS: VOID TITAN — Singularity (kéo player) ────────
+        // Tạo vùng hút kéo player vào center titan
+        if (e.type === 'boss_void_titan') {
+          e._singTimer = (e._singTimer || 0) + dt;
+          const sCd = e.phase >= 3 ? 8 : e.phase >= 2 ? 11 : 16;
+          if (!e._singActive && e._singTimer > sCd) {
+            e._singTimer = 0;
+            e._singActive = true;
+            e._singDuration = 3.0; // kéo 3 giây
+            this.addFloat(e.x, e.y - 70, '🌌 SINGULARITY!', '#7c3aed', true);
+            this.screenShake(15, 0.5);
+          }
+          if (e._singActive) {
+            e._singDuration -= dt;
+            // Kéo player về phía boss
+            const sdx = e.x - p.x, sdy = e.y - p.y;
+            const sdist = Math.hypot(sdx, sdy);
+            if (sdist > e.r + p.r + 10 && sdist < 500) {
+              const pullStr = 180 * dt; // px/s
+              p.x += (sdx / sdist) * pullStr;
+              p.y += (sdy / sdist) * pullStr;
+            }
+            if (e._singDuration <= 0) e._singActive = false;
+          }
+        }
+
+        // ── BOSS: DEATH HERALD — Soul Harvest ──────────────────
+        // Triệu hồi 6 phantom stealth tốc độ cao
+        if (e.type === 'boss_death_herald') {
+          e._harvestTimer = (e._harvestTimer || 0) + dt;
+          const hCd = e.phase >= 3 ? 8 : e.phase >= 2 ? 12 : 18;
+          if (e._harvestTimer > hCd) {
+            e._harvestTimer = 0;
+            e.attackAnim = { t: now, duration: 600 };
+            this.addFloat(e.x, e.y - 60, '👻 SOUL HARVEST!', '#94a3b8', true);
+            for (let ph = 0; ph < 6; ph++) {
+              const pAngle = (ph / 6) * Math.PI * 2;
+              const phantom = this.spawnEnemy('phantom',
+                e.x + Math.cos(pAngle) * 120,
+                e.y + Math.sin(pAngle) * 120
+              );
+              if (phantom) {
+                phantom.speed *= 1.8; // phantom nhanh hơn thường
+                phantom.stealth = 0.85; // tàng hình cao hơn
+              }
+            }
+            this.screenShake(8, 0.3);
+          }
+        }
+
+        // ── BOSS: REAPER FORM 1 — Death Scythe Swing ───────────
+        // Warning ring 360° → AoE → stun 1s
+        if (e.type === 'boss_reaper_form1') {
+          e._scytheTimer = (e._scytheTimer || 0) + dt;
+          const rCd = e.phase >= 3 ? 6 : e.phase >= 2 ? 9 : 12;
+          if (!e._scytheWarning && e._scytheTimer > rCd) {
+            e._scytheTimer = 0;
+            e._scytheWarning = true;
+            e._scytheWarnUntil = now + 1200; // 1.2s warning ring
+            // Spawn warning ring particle
+            this.particles.push({ type: 'ring', x: e.x, y: e.y, r: 0, maxR: 280, color: '#dc2626', life: 1.2, maxLife: 1.2 });
+            this.addFloat(e.x, e.y - 65, '⚠️ DEATH SCYTHE!', '#dc2626', true);
+          }
+          if (e._scytheWarning && now > e._scytheWarnUntil) {
+            e._scytheWarning = false;
+            e.attackAnim = { t: now, duration: 600 };
+            this.aoeExplosion(e.x, e.y, 280, e.dmg * 2.0, '#dc2626');
+            // Stun player nếu trong tầm
+            if (dist < 280) {
+              p.stunUntil = (p.stunUntil || 0);
+              p.stunUntil = now + 1200;
+              this.addFloat(p.x, p.y - 40, '⭐ BỊ CHOÁNG!', '#fbbf24');
+            }
+            this.screenShake(20, 0.8);
+          }
+        }
+
+        // ── BOSS: DEATH REAPER (Red Death) — Đặc biệt ─────────
+        if (e.type === 'boss_death_reaper') {
+          // Speed luôn nhanh hơn player tối đa
+          const playerMaxSpeed = p.speed * Math.min(p.spdMult, STAT_CAPS.spdMult);
+          e.speed = Math.max(e.speed, playerMaxSpeed * 2.1);
+
+          // Phase 2 (HP 70-45%): Shadow Clones
+          const hpPct = e.hp / e.maxHp;
+          if (hpPct < 0.70 && !e._clonesSpawned2) {
+            e._clonesSpawned2 = true;
+            this._spawnDeathClones(e, 3);
+            this.addFloat(e.x, e.y - 80, '💀 SHADOW CLONES!', '#7c3aed', true);
+          }
+
+          // Phase 3 (HP 45-20%): Invincibility cycles (2s immune / 2s vuln)
+          if (hpPct < 0.45) {
+            if (!e._invulnCycleStart) e._invulnCycleStart = now;
+            const cycleMs = (now - e._invulnCycleStart) % 4000;
+            e._isInvulnPhase3 = cycleMs < 2000;
+            // Áp dụng invuln
+            if (e._isInvulnPhase3) {
+              e._tempInvuln = true;
+            } else {
+              e._tempInvuln = false;
+            }
+          }
+
+          // Phase 4 (HP < 20%): Full rage
+          if (hpPct < 0.20 && !e._phase4Triggered) {
+            e._phase4Triggered = true;
+            e.speed *= 1.5;
+            this._spawnDeathClones(e, 2);
+            this.screenShake(30, 2.0);
+            this.addFloat(e.x, e.y - 90, '💀 FINAL RAGE!', '#ef4444', true);
+          }
+
+          // Death Presence: Darkening effect
+          const deathDist = dist;
+          this._deathPresenceIntensity = Math.max(0, Math.min(0.6, (400 - deathDist) / 400 * 0.6));
+        }
+      }
+
 
       if (targetIsMerchant) {
         if (dist < this.merchant.r + e.r + 5 && now - e.lastAttack > 800) {
@@ -4286,7 +4768,8 @@ class PveGame {
           e.lastAttack = now;
           e.attackAnim = { t: now, duration: 200 };
           const finalMeleeDmg = e.dmg * nightDmgMult * (1 - p.defMult * 0.3);
-          this.takeDamage(finalMeleeDmg);
+          // Truyền loại kẻ thù để kiểm tra Red Death OHK và I-frames bypass
+          this.takeDamage(finalMeleeDmg, e.type);
           
           // Spider: áp độc lên người chơi
           if (e._poison) {
@@ -4309,13 +4792,18 @@ class PveGame {
           // Spawn blood particles văng trục Z
           this.spawnParticles(p.x, p.y, '#ef4444', 8, 3.2);
           
-          // Fighter melee reflection passive
-          if (this.clsKey === 'fighter') {
-            this.dealDamage(e, finalMeleeDmg * 0.15);
-            this.addFloat(e.x, e.y - 15, `🛡️ Phản Đòn ${Math.round(finalMeleeDmg * 0.15)}`, '#facc15');
+          // Fighter melee reflection passive + thornsDmg
+          const reflectPct = (this.clsKey === 'fighter' ? 0.15 : 0) + (p.thornsDmg || 0);
+          if (reflectPct > 0) {
+            const reflectDmg = finalMeleeDmg * Math.min(STAT_CAPS.thornsDmg, reflectPct);
+            this.dealDamage(e, reflectDmg);
+            if (reflectDmg > 5) {
+              this.addFloat(e.x, e.y - 15, `🛡️ Phản Đòn ${Math.round(reflectDmg)}`, '#facc15');
+            }
           }
         }
       }
+
 
       // Check boss phase
       if (e.isBoss) this.updateBossPhase(e);
@@ -4982,14 +5470,41 @@ class PveGame {
         if (bdef) {
           const angle = Math.random() * Math.PI * 2;
           const dist = 680;
-          this.spawnEnemy(entry.b, p.x + Math.cos(angle) * dist, p.y + Math.sin(angle) * dist, 1, false);
           const isDeathReaper = entry.b === 'boss_death_reaper';
+          
           if (isDeathReaper) {
+            // ── RED DEATH SPAWN SEQUENCE ────────────────────────
             this._deathReaperSpawned = true;
-            this.addFloat(p.x, p.y - 140, '💀💀 TỬ THẦN XUẤT HIỆN! GIẾT NÓ ĐỂ THẮNG! 💀💀', '#dc2626', true);
-            this.screenShake(30, 2.0);
-            showToast('☠️ TỬ THẦN — GIẾT NÓ ĐỂ CHIẾN THẮNG!', '#dc2626');
+            this._deathPresenceIntensity = 0;
+            
+            // Cảnh báo trước 3 giây
+            this.addFloat(p.x, p.y - 140, '⚰️ TỬ THẦN ĐÃ ĐẾN...', '#dc2626', true);
+            this.screenShake(15, 1.0);
+            
+            // Spawn sau 3s với HP scale theo level
+            setTimeout(() => {
+              if (!this || this._gameOver) return;
+              const spawnAngle = Math.random() * Math.PI * 2;
+              const reaper = this.spawnEnemy(
+                'boss_death_reaper',
+                p.x + Math.cos(spawnAngle) * 680,
+                p.y + Math.sin(spawnAngle) * 680,
+                1, false
+              );
+              // HP scale: 655,350 × player level (đúng theo yêu cầu)
+              if (reaper) {
+                const reaperHp = Math.round(655350 * p.level);
+                reaper.hp = reaperHp;
+                reaper.maxHp = reaperHp;
+                reaper._isRealReaper = true;
+                reaper._invulnCycleStart = null;
+              }
+              this.addFloat(p.x, p.y - 140, '💀💀 TỬ THẦN XUẤT HIỆN! GIẾT NÓ ĐỂ THẮNG! 💀💀', '#dc2626', true);
+              this.screenShake(30, 2.0);
+              showToast('☠️ TỬ THẦN — GIẾT NÓ ĐỂ CHIẾN THẮNG!', '#dc2626');
+            }, 3000);
           } else {
+            this.spawnEnemy(entry.b, p.x + Math.cos(angle) * dist, p.y + Math.sin(angle) * dist, 1, false);
             const bossMinute = Math.floor(entry.t / 60);
             this.addFloat(p.x, p.y - 120, `💀 ${bdef.name} XUẤT HIỆN! [Phút ${bossMinute}]`, '#ef4444', true);
             this.screenShake(18, 0.6);
@@ -4998,6 +5513,21 @@ class PveGame {
         }
       }
     }
+
+    // ── SOUL AEGIS UNLOCK (Hidden Item) ─────────────────────
+    // Nếu player sống sót đến phút 27 với ≤10% HP → unlock soul aegis
+    if (elapsed >= 1620 && !this._soulAegisChecked) {
+      this._soulAegisChecked = true;
+      if (p.hp / p.maxHp <= 0.10 && !p.hasSoulAegis) {
+        p.hasSoulAegis = true;
+        this.addFloat(p.x, p.y - 100, '✨ LINH HỒN BÌNH AN ĐƯỢC TRAO!', '#fbbf24', true);
+        this.addFloat(p.x, p.y - 125, '🛡️ Soul Aegis: chặn 1 lần OHK của Tử Thần', '#a855f7', true);
+        this.spawnParticles(p.x, p.y, '#fbbf24', 25, 5);
+        showToast('✨ Soul Aegis unlock! Sẽ bảo vệ bạn 1 lần khỏi Tử Thần!', '#fbbf24');
+      }
+    }
+
+
 
     // Boss dead → clear flag, auto vacuum, Arcana ở boss phút 10+
     if (this.bossActive && !this.enemies.some(e => e.isBoss)) {
@@ -5219,13 +5749,13 @@ class PveGame {
     }
 
     // Fill the rest with random stat boosts if we have less than 3 choices
-    const statBoosts = [
-      { icon:'❤️', name:'+25% Máu Tối Đa', desc:'Tăng máu tối đa và hồi đầy máu.', apply: () => { this.player.maxHp = Math.round(this.player.maxHp * 1.25); this.player.hp = this.player.maxHp; } },
-      { icon:'💨', name:'+15% Tốc Độ', desc:'Di chuyển nhanh hơn 15%.', apply: () => { this.player.spdMult *= 1.15; } },
-      { icon:'⚔️', name:'+20% Sát Thương', desc:'Tất cả kỹ năng gây thêm 20% sát thương.', apply: () => { this.player.dmgMult *= 1.20; } },
-      { icon:'⏱️', name:'-15% Hồi Chiêu', desc:'Tất cả kỹ năng hồi chiêu nhanh hơn 15%.', apply: () => { this.player.cdMult *= 0.85; } },
-      { icon:'💥', name:'+20% Diện Tích AoE', desc:'Vùng tác động kỹ năng lớn hơn 20%.', apply: () => { this.player.aoeMult *= 1.20; } },
-      { icon:'🩸', name:'+8% Hút Máu', desc:'Mỗi đòn đánh hồi máu tương ứng 8% sát thương gây ra.', apply: () => { this.player.lifesteal += 0.08; } },
+        const statBoosts = [
+      { icon:'❤️', name:'+25% Máu Tối Đa', desc:'Tăng máu tối đa và hồi đầy máu.', apply: () => { this.player.lvlUpMaxHpMult = (this.player.lvlUpMaxHpMult || 1.0) * 1.25; this.recalculatePassiveStats(); this.player.hp = this.player.maxHp; } },
+      { icon:'💨', name:'+15% Tốc Độ', desc:'Di chuyển nhanh hơn 15%.', apply: () => { this.player.lvlUpSpdMult = (this.player.lvlUpSpdMult || 1.0) * 1.15; this.recalculatePassiveStats(); } },
+      { icon:'⚔️', name:'+20% Sát Thương', desc:'Tất cả kỹ năng gây thêm 20% sát thương.', apply: () => { this.player.lvlUpDmgMult = (this.player.lvlUpDmgMult || 1.0) * 1.20; this.recalculatePassiveStats(); } },
+      { icon:'⏱️', name:'-15% Hồi Chiêu', desc:'Tất cả kỹ năng hồi chiêu nhanh hơn 15%.', apply: () => { this.player.lvlUpCdMult = (this.player.lvlUpCdMult || 1.0) * 0.85; this.recalculatePassiveStats(); } },
+      { icon:'💥', name:'+20% Diện Tích AoE', desc:'Vùng tác động kỹ năng lớn hơn 20%.', apply: () => { this.player.lvlUpAoeMult = (this.player.lvlUpAoeMult || 1.0) * 1.20; this.recalculatePassiveStats(); } },
+      { icon:'🩸', name:'+8% Hút Máu', desc:'Mỗi đòn đánh hồi máu tương ứng 8% sát thương gây ra.', apply: () => { this.player.lvlUpLifesteal = (this.player.lvlUpLifesteal || 0.0) + 0.08; this.recalculatePassiveStats(); } },
     ];
 
     while (selected.length < 3) {
@@ -5748,20 +6278,25 @@ class PveGame {
       const stats = ['atkMult', 'defMult', 'spdMult', 'critChance', 'cdMult'];
       const chosen = stats[Math.floor(Math.random() * stats.length)];
       let statLabel = '';
-      if (chosen === 'cdMult') {
-        p.cdMult = Math.max(0.4, p.cdMult - 0.03);
+            if (chosen === 'cdMult') {
+        p.eggCdBonus = (p.eggCdBonus || 0.0) + 0.03;
+        this.recalculatePassiveStats();
         statLabel = '-3% Hồi Chiêu ⏱️';
       } else if (chosen === 'critChance') {
-        p.critChance += 0.03;
+        p.eggCritBonus = (p.eggCritBonus || 0.0) + 0.03;
+        this.recalculatePassiveStats();
         statLabel = '+3% Chí Mạng ⚡';
       } else if (chosen === 'atkMult') {
-        p.atkMult += 0.03;
+        p.eggDmgBonus = (p.eggDmgBonus || 0.0) + 0.03;
+        this.recalculatePassiveStats();
         statLabel = '+3% Tấn Công ⚔️';
       } else if (chosen === 'defMult') {
-        p.defMult += 0.03;
+        p.eggDefBonus = (p.eggDefBonus || 0.0) + 0.03;
+        this.recalculatePassiveStats();
         statLabel = '+3% Phòng Thủ 🛡️';
       } else {
-        p.spdMult += 0.03;
+        p.eggSpdMultBonus = (p.eggSpdMultBonus || 0.0) + 0.03;
+        this.recalculatePassiveStats();
         statLabel = '+3% Tốc Độ 💨';
       }
       this.spawnParticles(p.x, p.y, '#fbbf24', 30, 4.5);
@@ -6019,8 +6554,33 @@ class PveGame {
     this.drawNightOverlay(ctx);
     this.drawWeatherEffects(ctx);
 
+    // ── DEATH PRESENCE EFFECT (Red Death gần) ─────────────────
+    // Màn hình tối dần + ánh đỏ tím khi Tử Thần tiếp cận
+    if (this._deathPresenceIntensity && this._deathPresenceIntensity > 0) {
+      const dp = this._deathPresenceIntensity;
+      // Dark vignette đỏ tím từ góc màn hình
+      const dpGrad = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W, H));
+      dpGrad.addColorStop(0, `rgba(0, 0, 0, ${dp * 0.3})`);
+      dpGrad.addColorStop(0.6, `rgba(50, 0, 20, ${dp * 0.4})`);
+      dpGrad.addColorStop(1, `rgba(100, 0, 0, ${dp * 0.7})`);
+      ctx.fillStyle = dpGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Tia đỏ tím nhấp nháy ở góc màn hình
+      if (Math.random() < dp * 0.3) {
+        ctx.fillStyle = `rgba(120, 0, 40, ${Math.random() * dp * 0.15})`;
+        ctx.fillRect(0, 0, W, H);
+      }
+    }
+    // Giảm Death Presence dần nếu reaper không còn
+    if (!this.enemies.some(e => e.type === 'boss_death_reaper')) {
+      this._deathPresenceIntensity = Math.max(0, (this._deathPresenceIntensity || 0) - 0.01);
+    }
+
     this.drawMinimap();
   }
+
+
 
   drawMinimap() {
     const canvas = document.getElementById('pveMinimap');
@@ -6461,99 +7021,153 @@ class PveGame {
   }
 
   drawSingleEnemy(ctx, e) {
-    let lvl = 1;
-    let branch = null;
-    let isBoss = e.isBoss;
-    
-    if (e.type === 'slime') {
-      lvl = 1;
-    } else if (e.type === 'goblin') {
-      lvl = 4;
-      branch = 'ranger';
-    } else if (e.type === 'knight') {
-      lvl = 5;
-      branch = 'fighter';
-    } else if (e.type === 'dark_mage') {
-      lvl = 6;
-      branch = 'mage';
-    } else if (e.type === 'shadow') {
-      lvl = 8;
-      branch = 'assassin';
-    } else if (e.type === 'berserker') {
-      lvl = 6;
-      branch = 'fighter';
-    } else if (e.type === 'necromancer') {
-      lvl = 8;
-      branch = 'necromancer';
-    } else if (e.type === 'dragon') {
-      lvl = 7;
-      branch = 'druid';
-    } else if (e.type === 'boss_slime_king') {
-      lvl = 6;
-    } else if (e.type === 'boss_dark_lord') {
-      lvl = 8;
-      branch = 'necromancer';
-    } else if (e.type === 'boss_dragon_queen') {
-      lvl = 9;
-      branch = 'druid';
-    } else if (e.type === 'boss_void_titan') {
-      lvl = 10;
-      branch = 'necromancer';
-    } else if (e.type === 'boss_death_herald') {
-      lvl = 9;
-      branch = 'necromancer';
-    } else if (e.type === 'boss_reaper_form1') {
-      lvl = 9;
-      branch = 'necromancer';
-    } else if (e.type === 'boss_death_reaper') {
-      lvl = 10;
-      branch = 'necromancer';
-    }
-
+    const t = Date.now();
     const rage = e.enrageThreshold > 0 && e.hp / e.maxHp < e.enrageThreshold;
+    const hitFlash = (t - (e.lastHitTime || 0)) < 175;
+    const stunned = t < (e.stunUntil || 0);
+    const slowed = t < (e.slowUntil || 0);
+    const isDiving = e._isDiving; // dragon queen dive (invisible)
 
-    const sp = {
-      id: e.type + '_' + e.x,
-      isPlayer: false,
-      isBoss,
-      isElite: !!e.isElite,
-      lvl,
-      brnch: branch,
-      radius: e.r,
-      angle: Math.atan2(this.player.y - e.y, this.player.x - e.x),
-      a: Math.atan2(this.player.y - e.y, this.player.x - e.x),
-      vx: Math.cos(Math.atan2(this.player.y - e.y, this.player.x - e.x)),
-      vy: Math.sin(Math.atan2(this.player.y - e.y, this.player.x - e.x)),
-      shld: false,
-      rage,
-      stn: Date.now() < e.stunUntil,
-      slw: Date.now() < e.slowUntil,
-      dash: false,
-      stealth: e.stealth > 0 && Date.now() % 1000 < 500,
-      hp: e.hp,
-      mhp: e.maxHp,
-      n: e.isBoss ? `👹 ${ENEMY_TYPES[e.type].name}` : e.isElite ? `⭐ ${ENEMY_TYPES[e.type].name} (Elite)` : ENEMY_TYPES[e.type].name,
-    };
+    // Opacity cho clone và boss divining
+    const opacity = e.opacity !== undefined ? e.opacity : 1;
 
-    const cp = {
-      x: e.x,
-      y: e.y,
-      lastHit: e.lastHitTime || 0,
-      attackAnim: e.attackAnim || null,
-      chatText: null,
-      chatTTL: 0,
-    };
+    ctx.save();
+    if (opacity < 1) ctx.globalAlpha = opacity;
+    if (e.stealth > 0 && t % 1000 < 500) ctx.globalAlpha = (ctx.globalAlpha || 1) * 0.45;
 
-    // Draw 2.5D Elite neon ring below body
-    if (e.isElite) {
+    // Ground shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.beginPath();
+    ctx.ellipse(e.x, e.y + e.r * 0.75, e.r * 0.85, e.r * 0.38, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    // Dash warning indicator (red pulsing arc in front of boss)
+    if (e._dashWarning) {
       ctx.save();
       ctx.translate(e.x, e.y);
-      drawEliteNeonRing(ctx, e.r, Date.now());
+      const warnAlpha = 0.5 + Math.sin(t / 60) * 0.5;
+      ctx.strokeStyle = `rgba(239,68,68,${warnAlpha})`;
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.arc(0, 0, e.r * 1.8, -0.6, 0.6);
+      ctx.stroke();
       ctx.restore();
     }
 
-    drawCharacter(sp, cp, ctx);
+    // Elite neon ring
+    if (e.isElite) {
+      ctx.save(); ctx.translate(e.x, e.y);
+      drawEliteNeonRing(ctx, e.r, t);
+      ctx.restore();
+    }
+
+    // Dispatch to specialized draw function
+    if (!isDiving) {
+      switch(e.type) {
+        case 'slime':         drawEnemySlime(ctx, e, t, hitFlash, rage); break;
+        case 'bat':           drawEnemyBat(ctx, e, t, hitFlash, rage); break;
+        case 'goblin':        drawEnemyGoblin(ctx, e, t, hitFlash, rage); break;
+        case 'spider':        drawEnemySpider(ctx, e, t, hitFlash, rage); break;
+        case 'wolf':          drawEnemyWolf(ctx, e, t, hitFlash, rage); break;
+        case 'slime_king_jr': drawEnemySlime(ctx, e, t, hitFlash, rage); break;
+        case 'knight':        drawEnemyKnight(ctx, e, t, hitFlash, rage); break;
+        case 'orc':           drawEnemyOrc(ctx, e, t, hitFlash, rage); break;
+        case 'dark_mage':     drawEnemyDarkMage(ctx, e, t, hitFlash, rage); break;
+        case 'skeleton':      drawEnemySkeleton(ctx, e, t, hitFlash, rage); break;
+        case 'shadow':        drawEnemyShadow(ctx, e, t, hitFlash, rage); break;
+        case 'vampire':       drawEnemyVampire(ctx, e, t, hitFlash, rage); break;
+        case 'golem':         drawEnemyGolem(ctx, e, t, hitFlash, rage); break;
+        case 'berserker':     drawEnemyBerserker(ctx, e, t, hitFlash, rage); break;
+        case 'phantom':       drawEnemyPhantom(ctx, e, t, hitFlash, rage); break;
+        case 'dragon':        drawEnemyDragon(ctx, e, t, hitFlash, rage); break;
+        case 'necromancer':   drawEnemyNecromancer(ctx, e, t, hitFlash, rage); break;
+        case 'banshee':       drawEnemyBanshee(ctx, e, t, hitFlash, rage); break;
+        case 'executioner':   drawEnemyExecutioner(ctx, e, t, hitFlash, rage); break;
+        case 'ice_witch':     drawEnemyIceWitch(ctx, e, t, hitFlash, rage); break;
+        case 'void_crawler':  drawEnemyVoidCrawler(ctx, e, t, hitFlash, rage); break;
+        case 'titan_minion':  drawEnemyVoidCrawler(ctx, e, t, hitFlash, rage); break;
+        case 'death_knight':  drawEnemyKnight(ctx, e, t, hitFlash, rage); break;
+        case 'hellhound':     drawEnemyWolf(ctx, e, t, hitFlash, rage); break;
+        case 'boss_slime_king':    drawBossSlimeKing(ctx, e, t, hitFlash, rage); break;
+        case 'boss_dark_lord':     drawBossDarkLord(ctx, e, t, hitFlash, rage); break;
+        case 'boss_dragon_queen':  drawBossDragonQueen(ctx, e, t, hitFlash, rage); break;
+        case 'boss_void_titan':    drawBossVoidTitan(ctx, e, t, hitFlash, rage); break;
+        case 'boss_death_herald':  drawBossDeathHerald(ctx, e, t, hitFlash, rage); break;
+        case 'boss_reaper_form1':  drawBossReaperForm1(ctx, e, t, hitFlash, rage); break;
+        case 'boss_death_reaper':  drawBossDeathReaper(ctx, e, t, hitFlash, rage); break;
+        default:
+          // Fallback: vẽ hình tròn màu của enemy type
+          ctx.fillStyle = hitFlash ? '#fff' : (e.color || '#ef4444');
+          ctx.beginPath(); ctx.arc(e.x, e.y, e.r, 0, Math.PI*2); ctx.fill();
+          break;
+      }
+    }
+
+    // Stun stars overlay
+    if (stunned) {
+      const sCount = 3;
+      for (let si = 0; si < sCount; si++) {
+        const sAngle = (si / sCount) * Math.PI * 2 + t / 200;
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.arc(e.x + Math.cos(sAngle) * (e.r + 8), e.y + Math.sin(sAngle) * (e.r + 8) - 5, 4, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+    // Slow rings
+    if (slowed) {
+      ctx.strokeStyle = 'rgba(125,211,252,0.5)';
+      ctx.lineWidth = 2;
+      for (let ri = 0; ri < 2; ri++) {
+        const rr = e.r * (1.3 + ri * 0.3) + Math.sin(t / 200 + ri) * 3;
+        ctx.beginPath(); ctx.arc(e.x, e.y, rr, 0, Math.PI*2); ctx.stroke();
+      }
+    }
+    // Rage flames
+    if (rage) {
+      ctx.save();
+      ctx.globalAlpha = 0.6;
+      for (let fi = 0; fi < 5; fi++) {
+        const fa = (fi / 5) * Math.PI * 2 + t / 300;
+        const fr = e.r + 8 + Math.sin(t / 100 + fi) * 5;
+        ctx.fillStyle = fi % 2 === 0 ? '#ef4444' : '#f97316';
+        ctx.beginPath();
+        ctx.ellipse(e.x + Math.cos(fa) * fr, e.y + Math.sin(fa) * fr, 4, 8, fa, 0, Math.PI*2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    // Boss invuln phase3 indicator (blinking white outline)
+    if (e._isInvulnPhase3) {
+      ctx.strokeStyle = `rgba(255,255,255,${0.5 + Math.sin(t/80)*0.5})`;
+      ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.arc(e.x, e.y, e.r + 4, 0, Math.PI*2); ctx.stroke();
+    }
+
+    // HP bar (only show if damaged)
+    if (e.hp < e.maxHp) {
+      const barW = e.isBoss ? e.r * 2.5 : e.r * 1.6;
+      const barH = e.isBoss ? 7 : 4;
+      const barX = e.x - barW / 2;
+      const barY = e.y - e.r - (e.isBoss ? 18 : 12);
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillRect(barX, barY, barW, barH);
+      const hpColor = e.hp / e.maxHp > 0.5 ? '#22c55e' : e.hp / e.maxHp > 0.25 ? '#eab308' : '#ef4444';
+      ctx.fillStyle = hpColor;
+      ctx.fillRect(barX, barY, barW * (e.hp / e.maxHp), barH);
+      // Boss name label
+      if (e.isBoss) {
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 11px Outfit, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(e.name || e.type, e.x, barY - 4);
+      }
+    }
+
+    ctx.restore();
   }
+
 
   drawHpBar(ctx, x, y, w, h, pct, color) {
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
@@ -9215,7 +9829,7 @@ class PveGame {
     
     if (mods.spdMult !== undefined)   p.spdMult   = (p.spdMult   || 1.0) * mods.spdMult;
     if (mods.dmgMult !== undefined)   p.dmgMult   = (p.dmgMult   || 1.0) * mods.dmgMult;
-    if (mods.defMult !== undefined)   p.defMult   = (p.defMult   || 1.0) * mods.defMult;
+    if (mods.defMult !== undefined)   p.demonicDefMult   = (p.demonicDefMult   || 1.0) * mods.defMult;
     if (mods.atkMult !== undefined)   p.atkMult   = (p.atkMult   || 1.0) * mods.atkMult;
     if (mods.aoeMult !== undefined)   p.aoeMult   = (p.aoeMult   || 1.0) * mods.aoeMult;
     if (mods.cdMult  !== undefined)   p.cdMult    = (p.cdMult    || 1.0) * mods.cdMult;
@@ -10837,3 +11451,2171 @@ function updatePauseStatsPanel() {
   });
 }
 window.updatePauseStatsPanel = updatePauseStatsPanel;
+
+// ════════════════════════════════════════════════════════════════
+// ── HÀM VẼ QUÁI ĐỘC LẬP (STANDALONE ENEMY DRAW FUNCTIONS) ──────
+// Mỗi hàm vẽ hoàn toàn khác biệt, có hình dạng và animation riêng
+// Không tái sử dụng drawCharacter() — thiết kế riêng cho kẻ thù
+// ════════════════════════════════════════════════════════════════
+
+// ── HELPER: Vẽ mắt đơn giản ────────────────────────────────────
+function drawEyePair(ctx, cx, cy, rx, ry, pupilColor, eyeColor) {
+  ctx.fillStyle = eyeColor || '#fff';
+  ctx.beginPath(); ctx.ellipse(cx - rx, cy, 3.5, 4, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx + rx, cy, 3.5, 4, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = pupilColor || '#000';
+  ctx.beginPath(); ctx.ellipse(cx - rx, cy, 1.8, 2, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx + rx, cy, 1.8, 2, 0, 0, Math.PI*2); ctx.fill();
+}
+
+// ── HELPER: Flash overlay khi bị hit ───────────────────────────
+function applyHitFlash(ctx, hitFlash) {
+  if (hitFlash) {
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.globalCompositeOperation = 'source-atop';
+    ctx.fillRect(-200, -200, 400, 400);
+    ctx.globalCompositeOperation = 'source-over';
+  }
+}
+
+// ──────────────────────────────────────────────────────────────
+// SLIME — Blob nhầy xanh lá, bounce animation
+// ──────────────────────────────────────────────────────────────
+function drawEnemySlime(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const bob = Math.sin(t / 180) * 0.12;
+  const squashX = 1 + bob * 0.5;
+  const squashY = 1 - bob * 0.4;
+  const isKing = e.type === 'slime_king_jr';
+  const baseCol = rage ? '#22c55e' : (isKing ? '#16a34a' : '#4ade80');
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(squashX, squashY);
+
+  // Body
+  const g = ctx.createRadialGradient(-r*0.3, -r*0.35, r*0.05, 0, 0, r);
+  g.addColorStop(0, hitFlash ? '#fff' : '#bbf7d0');
+  g.addColorStop(0.5, hitFlash ? '#fff' : baseCol);
+  g.addColorStop(1, '#14532d');
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, r, r * 0.78, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = rage ? '#ef4444' : '#15803d';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Highlight blob
+  ctx.fillStyle = 'rgba(255,255,255,0.25)';
+  ctx.beginPath(); ctx.ellipse(-r*0.3, -r*0.3, r*0.3, r*0.2, -0.5, 0, Math.PI*2); ctx.fill();
+
+  // Eyes
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.ellipse(-r*0.28, -r*0.1, 4, 5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.28, -r*0.1, 4, 5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#1a2e05';
+  ctx.beginPath(); ctx.ellipse(-r*0.28, -r*0.08, 2.2, 2.8, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.28, -r*0.08, 2.2, 2.8, 0, 0, Math.PI*2); ctx.fill();
+
+  // Smile
+  ctx.strokeStyle = '#166534'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(0, r*0.15, r*0.22, 0.1, Math.PI-0.1); ctx.stroke();
+
+  // Crown for Slime King Jr
+  if (isKing) {
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath();
+    ctx.moveTo(-r*0.5, -r*0.8);
+    ctx.lineTo(-r*0.5, -r*1.05);
+    ctx.lineTo(-r*0.22, -r*0.88);
+    ctx.lineTo(0, -r*1.12);
+    ctx.lineTo(r*0.22, -r*0.88);
+    ctx.lineTo(r*0.5, -r*1.05);
+    ctx.lineTo(r*0.5, -r*0.8);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#d97706'; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// BAT — Dơi nhỏ tím, cánh vỗ liên tục
+// ──────────────────────────────────────────────────────────────
+function drawEnemyBat(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const wingFlap = Math.sin(t / 80) * 0.6;
+
+  ctx.save();
+  ctx.translate(x, y);
+
+  // Left wing
+  ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#7c3aed' : '#4c1d95');
+  ctx.beginPath();
+  ctx.moveTo(-r*0.15, 0);
+  ctx.bezierCurveTo(-r*1.4, -r * 0.1 + wingFlap * r * 0.8, -r*1.6, r*0.5, -r*0.9, r*0.3);
+  ctx.closePath();
+  ctx.fill();
+  // Right wing
+  ctx.beginPath();
+  ctx.moveTo(r*0.15, 0);
+  ctx.bezierCurveTo(r*1.4, -r * 0.1 + wingFlap * r * 0.8, r*1.6, r*0.5, r*0.9, r*0.3);
+  ctx.closePath();
+  ctx.fill();
+  // Wing membrane lines
+  ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 1;
+  for (let wi = 0; wi < 3; wi++) {
+    const wx = (wi - 1) * r * 0.35;
+    ctx.beginPath(); ctx.moveTo(wx, 0); ctx.lineTo(wx - r*0.5 + wi*r*0.1, r*0.28); ctx.stroke();
+  }
+
+  // Body
+  ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#6d28d9' : '#312e81');
+  ctx.beginPath(); ctx.ellipse(0, 0, r*0.52, r*0.7, 0, 0, Math.PI*2); ctx.fill();
+
+  // Ears
+  ctx.fillStyle = '#4c1d95';
+  ctx.beginPath(); ctx.moveTo(-r*0.28, -r*0.55); ctx.lineTo(-r*0.42, -r*0.95); ctx.lineTo(-r*0.1, -r*0.6); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(r*0.28, -r*0.55); ctx.lineTo(r*0.42, -r*0.95); ctx.lineTo(r*0.1, -r*0.6); ctx.closePath(); ctx.fill();
+
+  // Eyes (red, glowing)
+  ctx.fillStyle = '#ef4444';
+  ctx.beginPath(); ctx.ellipse(-r*0.2, -r*0.08, 3, 2.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.2, -r*0.08, 3, 2.5, 0, 0, Math.PI*2); ctx.fill();
+
+  // Fangs
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.moveTo(-r*0.1, r*0.28); ctx.lineTo(-r*0.16, r*0.44); ctx.lineTo(-r*0.02, r*0.28); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(r*0.1, r*0.28); ctx.lineTo(r*0.16, r*0.44); ctx.lineTo(r*0.02, r*0.28); ctx.closePath(); ctx.fill();
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// GOBLIN — Nhỏ xanh lá, tai nhọn, tay cầm dao
+// ──────────────────────────────────────────────────────────────
+function drawEnemyGoblin(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const walk = Math.sin(t / 130) * 0.15;
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(walk);
+
+  // Body
+  ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#84cc16' : '#65a30d');
+  ctx.beginPath(); ctx.ellipse(0, r*0.05, r*0.55, r*0.65, 0, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#3f6212'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Head
+  ctx.fillStyle = hitFlash ? '#fff' : '#84cc16';
+  ctx.beginPath(); ctx.arc(0, -r*0.65, r*0.48, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#3f6212'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  // Pointy ears
+  ctx.fillStyle = '#84cc16';
+  ctx.beginPath(); ctx.moveTo(-r*0.45, -r*0.72); ctx.lineTo(-r*0.75, -r*1.1); ctx.lineTo(-r*0.2, -r*0.88); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(r*0.45, -r*0.72); ctx.lineTo(r*0.75, -r*1.1); ctx.lineTo(r*0.2, -r*0.88); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#3f6212'; ctx.lineWidth = 1; ctx.stroke();
+
+  // Eyes (angry)
+  ctx.fillStyle = '#fef08a';
+  ctx.beginPath(); ctx.ellipse(-r*0.2, -r*0.68, 4.5, 4, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.2, -r*0.68, 4.5, 4, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#dc2626';
+  ctx.beginPath(); ctx.ellipse(-r*0.2, -r*0.67, 2.2, 2.4, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.2, -r*0.67, 2.2, 2.4, 0, 0, Math.PI*2); ctx.fill();
+  // Angry brows
+  ctx.strokeStyle = '#1a2e05'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(-r*0.35, -r*0.82); ctx.lineTo(-r*0.1, -r*0.76); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(r*0.35, -r*0.82); ctx.lineTo(r*0.1, -r*0.76); ctx.stroke();
+
+  // Dagger (right hand)
+  ctx.save();
+  ctx.translate(r*0.55, -r*0.2);
+  ctx.rotate(-0.6 + walk);
+  ctx.fillStyle = '#94a3b8';
+  ctx.fillRect(-2, -r*0.55, 4, r*0.55);
+  ctx.fillStyle = '#78350f';
+  ctx.fillRect(-3, 0, 6, r*0.22);
+  ctx.restore();
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// SPIDER — 8 chân nhện, thân oval đen bóng
+// ──────────────────────────────────────────────────────────────
+function drawEnemySpider(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const legWave = Math.sin(t / 100);
+
+  ctx.save();
+  ctx.translate(x, y);
+
+  // 8 chân (4 mỗi bên)
+  const legAngles = [-0.45, -0.75, -1.05, -1.35];
+  for (let side = -1; side <= 1; side += 2) {
+    for (let li = 0; li < 4; li++) {
+      const ang = legAngles[li] * side;
+      const legBob = Math.sin(t/90 + li * 0.8) * 0.12;
+      ctx.strokeStyle = hitFlash ? '#fff' : '#1e293b';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(side * r * 0.42, 0);
+      // Elbow
+      const ex1 = side * r * (1.0 + li * 0.1);
+      const ey1 = (li - 1.5) * r * 0.35 + legBob * r * 0.4;
+      // Foot
+      const ex2 = side * r * (1.3 + li * 0.1);
+      const ey2 = (li - 1) * r * 0.45 + legBob * r * 0.5;
+      ctx.lineTo(ex1, ey1);
+      ctx.lineTo(ex2, ey2);
+      ctx.stroke();
+    }
+  }
+
+  // Abdomen (back)
+  ctx.fillStyle = hitFlash ? '#fff' : '#1e1b4b';
+  ctx.beginPath(); ctx.ellipse(0, r*0.18, r*0.58, r*0.52, 0, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  // Hourglass marking
+  ctx.fillStyle = rage ? '#ef4444' : '#dc2626';
+  ctx.beginPath(); ctx.ellipse(0, r*0.15, r*0.15, r*0.1, 0, 0, Math.PI*2); ctx.fill();
+
+  // Cephalothorax (head+thorax)
+  ctx.fillStyle = hitFlash ? '#fff' : '#0f172a';
+  ctx.beginPath(); ctx.ellipse(0, -r*0.12, r*0.45, r*0.4, 0, 0, Math.PI*2); ctx.fill();
+
+  // 8 mắt (2x4 grid)
+  ctx.fillStyle = '#f9a8d4';
+  for (let mi = 0; mi < 4; mi++) {
+    const mx = (mi - 1.5) * r * 0.2;
+    ctx.beginPath(); ctx.ellipse(mx, -r*0.2, 2.5, 2, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(mx, -r*0.05, 1.8, 1.5, 0, 0, Math.PI*2); ctx.fill();
+  }
+
+  // Chelicerae (fangs)
+  ctx.strokeStyle = '#64748b'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(-r*0.12, r*0.08); ctx.lineTo(-r*0.2, r*0.25); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(r*0.12, r*0.08); ctx.lineTo(r*0.2, r*0.25); ctx.stroke();
+  ctx.fillStyle = '#475569';
+  ctx.beginPath(); ctx.arc(-r*0.2, r*0.25, 3, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(r*0.2, r*0.25, 3, 0, Math.PI*2); ctx.fill();
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// WOLF — Quadruped sói, đầu nhọn, răng nanh
+// ──────────────────────────────────────────────────────────────
+function drawEnemyWolf(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const isHellhound = e.type === 'hellhound';
+  const bodyCol = isHellhound ? '#7f1d1d' : (rage ? '#92400e' : '#78716c');
+  const darkCol = isHellhound ? '#450a0a' : '#44403c';
+  const run = Math.sin(t / 110);
+
+  ctx.save();
+  ctx.translate(x, y);
+
+  // Body
+  ctx.fillStyle = hitFlash ? '#fff' : bodyCol;
+  ctx.beginPath(); ctx.ellipse(0, 0, r*0.88, r*0.55, 0, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = darkCol; ctx.lineWidth = 1.5; ctx.stroke();
+
+  // 4 legs
+  const legPairs = [[-r*0.5, r*0.45], [r*0.5, r*0.45], [-r*0.3, r*0.45], [r*0.3, r*0.45]];
+  legPairs.forEach(([lx, ly], li) => {
+    const lbob = Math.sin(t/100 + li * 1.2) * 0.15 * r;
+    ctx.strokeStyle = hitFlash ? '#fff' : darkCol;
+    ctx.lineWidth = r * 0.15;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(lx, ly * 0.4);
+    ctx.lineTo(lx, ly + lbob);
+    ctx.stroke();
+  });
+
+  // Head
+  ctx.fillStyle = hitFlash ? '#fff' : bodyCol;
+  ctx.beginPath(); ctx.ellipse(-r*0.62, -r*0.18, r*0.38, r*0.3, -0.3, 0, Math.PI*2); ctx.fill();
+
+  // Snout
+  ctx.fillStyle = hitFlash ? '#fff' : darkCol;
+  ctx.beginPath(); ctx.ellipse(-r*0.92, -r*0.22, r*0.2, r*0.15, -0.3, 0, Math.PI*2); ctx.fill();
+
+  // Ears
+  ctx.fillStyle = bodyCol;
+  ctx.beginPath(); ctx.moveTo(-r*0.55, -r*0.42); ctx.lineTo(-r*0.72, -r*0.68); ctx.lineTo(-r*0.38, -r*0.46); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-r*0.4, -r*0.4); ctx.lineTo(-r*0.52, -r*0.64); ctx.lineTo(-r*0.25, -r*0.42); ctx.closePath(); ctx.fill();
+
+  // Eye
+  ctx.fillStyle = isHellhound ? '#ef4444' : '#fbbf24';
+  ctx.beginPath(); ctx.ellipse(-r*0.68, -r*0.22, 3.5, 3, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#000';
+  ctx.beginPath(); ctx.ellipse(-r*0.68, -r*0.22, 1.5, 2, 0, 0, Math.PI*2); ctx.fill();
+
+  // Fangs
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.moveTo(-r*0.84, -r*0.14); ctx.lineTo(-r*0.88, -r*0.05); ctx.lineTo(-r*0.79, -r*0.14); ctx.closePath(); ctx.fill();
+
+  // Tail
+  ctx.strokeStyle = hitFlash ? '#fff' : bodyCol;
+  ctx.lineWidth = r * 0.14;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(r*0.82, -r*0.05);
+  ctx.quadraticCurveTo(r*1.15, -r*0.35 + run*r*0.15, r*0.92, -r*0.55 + run*r*0.1);
+  ctx.stroke();
+
+  // Hellhound fire effect
+  if (isHellhound) {
+    ctx.globalAlpha = 0.5;
+    for (let fi = 0; fi < 4; fi++) {
+      const fa = t/200 + fi * 1.57;
+      ctx.fillStyle = ['#ef4444','#f97316','#fbbf24'][fi % 3];
+      ctx.beginPath();
+      ctx.ellipse(-r*0.62 + Math.cos(fa)*r*0.5, -r*0.18 + Math.sin(fa)*r*0.3 - r*0.3, 4, 8, fa, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// KNIGHT — Hiệp sĩ giáp thép, khiên tròn + kiếm
+// ──────────────────────────────────────────────────────────────
+function drawEnemyKnight(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const isDK = e.type === 'death_knight';
+  const armorCol = hitFlash ? '#fff' : (isDK ? '#1e1b4b' : (rage ? '#475569' : '#94a3b8'));
+  const darkArmorCol = isDK ? '#0f0f1a' : '#475569';
+  const walk = Math.sin(t / 150) * 0.06;
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(walk);
+
+  // Torso armor
+  ctx.fillStyle = armorCol;
+  ctx.beginPath(); ctx.roundRect(-r*0.45, -r*0.15, r*0.9, r*0.75, 5); ctx.fill();
+  ctx.strokeStyle = darkArmorCol; ctx.lineWidth = 2; ctx.stroke();
+  // Pauldrons (shoulder plates)
+  ctx.fillStyle = armorCol;
+  ctx.beginPath(); ctx.ellipse(-r*0.52, -r*0.1, r*0.2, r*0.15, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.52, -r*0.1, r*0.2, r*0.15, 0, 0, Math.PI*2); ctx.fill();
+
+  // Legs
+  for (let side = -1; side <= 1; side += 2) {
+    ctx.fillStyle = armorCol;
+    ctx.beginPath(); ctx.roundRect(side*r*0.08, r*0.55, r*0.32, r*0.42, 3); ctx.fill();
+    ctx.strokeStyle = darkArmorCol; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+
+  // Helmet
+  ctx.fillStyle = armorCol;
+  ctx.beginPath(); ctx.arc(0, -r*0.5, r*0.38, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = darkArmorCol; ctx.lineWidth = 2; ctx.stroke();
+  // Visor slit
+  ctx.fillStyle = isDK ? '#a855f7' : '#ef4444';
+  ctx.fillRect(-r*0.22, -r*0.55, r*0.44, r*0.08);
+
+  // Shield (left side)
+  ctx.fillStyle = isDK ? '#312e81' : '#1d4ed8';
+  ctx.beginPath(); ctx.arc(-r*0.82, -r*0.05, r*0.32, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.fillStyle = '#fbbf24';
+  ctx.beginPath(); ctx.moveTo(-r*0.82, -r*0.2); ctx.lineTo(-r*0.73, r*0.1); ctx.lineTo(-r*0.82, r*0.15); ctx.lineTo(-r*0.91, r*0.1); ctx.closePath(); ctx.fill();
+
+  // Sword (right side)
+  ctx.save();
+  ctx.translate(r*0.7, -r*0.3);
+  ctx.rotate(0.3 + walk * 2);
+  ctx.fillStyle = '#cbd5e1';
+  ctx.fillRect(-2.5, -r*0.7, 5, r*0.7);
+  ctx.fillStyle = '#fbbf24'; ctx.fillRect(-6, 0, 12, 5);
+  ctx.fillStyle = '#78350f'; ctx.fillRect(-3, 4, 6, r*0.25);
+  ctx.restore();
+
+  // Death Knight glow
+  if (isDK) {
+    ctx.strokeStyle = `rgba(168,85,247,${0.4 + Math.sin(t/200)*0.3})`;
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(0, -r*0.2, r*1.15, 0, Math.PI*2); ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// ORC — Thân to xanh lá, bắp thịt lồi, nanh dưới
+// ──────────────────────────────────────────────────────────────
+function drawEnemyOrc(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const walk = Math.sin(t / 145) * 0.08;
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(walk);
+
+  // Huge body
+  ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#65a30d' : '#4d7c0f');
+  ctx.beginPath(); ctx.ellipse(0, 0, r*0.78, r*0.88, 0, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#1a2e05'; ctx.lineWidth = 2.5; ctx.stroke();
+
+  // Muscle bumps
+  ctx.fillStyle = 'rgba(0,0,0,0.15)';
+  ctx.beginPath(); ctx.ellipse(-r*0.28, -r*0.12, r*0.22, r*0.15, -0.3, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.28, -r*0.12, r*0.22, r*0.15, 0.3, 0, Math.PI*2); ctx.fill();
+
+  // Arms
+  ctx.fillStyle = hitFlash ? '#fff' : '#4d7c0f';
+  ctx.beginPath(); ctx.ellipse(-r*0.9, r*0.05, r*0.25, r*0.4, -0.3, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.9, r*0.05, r*0.25, r*0.4, 0.3, 0, Math.PI*2); ctx.fill();
+
+  // Axe (right hand)
+  ctx.save();
+  ctx.translate(r*1.1, -r*0.1);
+  ctx.rotate(0.5);
+  ctx.fillStyle = '#475569';
+  ctx.fillRect(-3, -r*0.45, 6, r*0.45);
+  ctx.beginPath();
+  ctx.moveTo(-r*0.25, -r*0.48);
+  ctx.lineTo(r*0.05, -r*0.28);
+  ctx.lineTo(-r*0.05, -r*0.12);
+  ctx.lineTo(-r*0.35, -r*0.32);
+  ctx.closePath();
+  ctx.fillStyle = '#94a3b8'; ctx.fill();
+  ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.restore();
+
+  // Head
+  ctx.fillStyle = hitFlash ? '#fff' : '#65a30d';
+  ctx.beginPath(); ctx.ellipse(0, -r*0.72, r*0.5, r*0.46, 0, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#1a2e05'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  // Eyes
+  ctx.fillStyle = '#fef08a';
+  ctx.beginPath(); ctx.ellipse(-r*0.2, -r*0.75, 4, 4.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.2, -r*0.75, 4, 4.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#0a0a0a';
+  ctx.beginPath(); ctx.ellipse(-r*0.2, -r*0.74, 2, 2.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.2, -r*0.74, 2, 2.5, 0, 0, Math.PI*2); ctx.fill();
+
+  // Tusks (nanh dưới)
+  ctx.fillStyle = '#fef9c3';
+  ctx.beginPath(); ctx.moveTo(-r*0.18, -r*0.42); ctx.lineTo(-r*0.24, -r*0.26); ctx.lineTo(-r*0.1, -r*0.42); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(r*0.18, -r*0.42); ctx.lineTo(r*0.24, -r*0.26); ctx.lineTo(r*0.1, -r*0.42); ctx.closePath(); ctx.fill();
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// DARK MAGE — Áo choàng tím đen, orb ma thuật
+// ──────────────────────────────────────────────────────────────
+function drawEnemyDarkMage(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const hover = Math.sin(t / 250) * r * 0.08;
+  const orbPulse = 0.8 + Math.sin(t / 180) * 0.2;
+
+  ctx.save();
+  ctx.translate(x, y - hover);
+
+  // Robe (large cloak)
+  ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#4c1d95' : '#1e1b4b');
+  ctx.beginPath();
+  ctx.moveTo(0, -r*0.95);
+  ctx.bezierCurveTo(-r*0.85, -r*0.3, -r*0.95, r*0.5, -r*0.7, r*0.95);
+  ctx.lineTo(r*0.7, r*0.95);
+  ctx.bezierCurveTo(r*0.95, r*0.5, r*0.85, -r*0.3, 0, -r*0.95);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#7c3aed'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Robe trim
+  ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(-r*0.1, -r*0.9);
+  ctx.lineTo(-r*0.05, r*0.92);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(r*0.1, -r*0.9);
+  ctx.lineTo(r*0.05, r*0.92);
+  ctx.stroke();
+
+  // Head
+  ctx.fillStyle = hitFlash ? '#fff' : '#2e1065';
+  ctx.beginPath(); ctx.arc(0, -r*0.72, r*0.35, 0, Math.PI*2); ctx.fill();
+
+  // Pointed hat
+  ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#7c3aed' : '#3b0764');
+  ctx.beginPath();
+  ctx.moveTo(-r*0.4, -r*0.88);
+  ctx.lineTo(0, -r*1.6);
+  ctx.lineTo(r*0.4, -r*0.88);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 1.5; ctx.stroke();
+  // Hat brim
+  ctx.fillStyle = '#3b0764';
+  ctx.beginPath(); ctx.ellipse(0, -r*0.88, r*0.45, r*0.1, 0, 0, Math.PI*2); ctx.fill();
+
+  // Eyes (glowing white/purple)
+  const eyeGlow = `rgba(${rage?'239,68,68':'168,85,247'},${orbPulse})`;
+  ctx.fillStyle = eyeGlow;
+  ctx.beginPath(); ctx.ellipse(-r*0.15, -r*0.74, 3.5, 4, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.15, -r*0.74, 3.5, 4, 0, 0, Math.PI*2); ctx.fill();
+
+  // Magic orb (right hand)
+  ctx.save();
+  ctx.translate(r*0.62, -r*0.2 + Math.sin(t/150)*r*0.1);
+  // Orb glow
+  const orbG = ctx.createRadialGradient(0, 0, 0, 0, 0, r*0.28);
+  orbG.addColorStop(0, '#fff');
+  orbG.addColorStop(0.4, rage ? '#ef4444' : '#a855f7');
+  orbG.addColorStop(1, 'transparent');
+  ctx.fillStyle = orbG;
+  ctx.globalAlpha = orbPulse;
+  ctx.beginPath(); ctx.arc(0, 0, r*0.28, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 1;
+  // Staff
+  ctx.strokeStyle = '#78350f'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(0, r*0.25); ctx.lineTo(0, -r*0.65); ctx.stroke();
+  ctx.restore();
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// SKELETON — Xương người trắng ngà, kiếm gãy
+// ──────────────────────────────────────────────────────────────
+function drawEnemySkeletonBone(ctx, x1, y1, x2, y2, w) {
+  ctx.lineWidth = w; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+}
+
+function drawEnemySkeleton(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const walk = Math.sin(t / 140) * 0.1;
+  const boneCol = hitFlash ? '#fff' : (rage ? '#fef08a' : '#e2e8f0');
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(walk);
+  ctx.strokeStyle = boneCol;
+
+  // Legs
+  drawEnemySkeletonBone(ctx, -r*0.2, r*0.4, -r*0.25, r*0.8 + Math.sin(t/130)*r*0.1, r*0.1);
+  drawEnemySkeletonBone(ctx, r*0.2, r*0.4, r*0.25, r*0.8 - Math.sin(t/130)*r*0.1, r*0.1);
+
+  // Spine
+  drawEnemySkeletonBone(ctx, 0, -r*0.2, 0, r*0.4, r*0.09);
+
+  // Ribcage
+  for (let ri = 0; ri < 4; ri++) {
+    const ry = -r*0.05 + ri * r*0.12;
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(-r*0.06, ry, r*0.28, -0.3, Math.PI+0.3); ctx.stroke();
+    ctx.beginPath(); ctx.arc(r*0.06, ry, r*0.28, -Math.PI-0.3, 0.3); ctx.stroke();
+  }
+
+  // Arms
+  drawEnemySkeletonBone(ctx, -r*0.1, -r*0.05, -r*0.55, r*0.25 + Math.sin(t/140)*r*0.1, r*0.09);
+  drawEnemySkeletonBone(ctx, r*0.1, -r*0.05, r*0.6, r*0.05 - Math.sin(t/140)*r*0.1, r*0.09);
+
+  // Skull
+  ctx.fillStyle = boneCol;
+  ctx.beginPath(); ctx.arc(0, -r*0.55, r*0.36, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = rage ? '#ef4444' : '#94a3b8'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  // Jaw
+  ctx.fillStyle = boneCol;
+  ctx.beginPath(); ctx.arc(0, -r*0.28, r*0.2, 0, Math.PI); ctx.fill();
+  ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1; ctx.stroke();
+
+  // Eye sockets (empty/dark)
+  ctx.fillStyle = rage ? '#ef444488' : '#0f172a';
+  ctx.beginPath(); ctx.ellipse(-r*0.16, -r*0.58, 5, 6, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.16, -r*0.58, 5, 6, 0, 0, Math.PI*2); ctx.fill();
+
+  // Broken sword (left hand)
+  ctx.save();
+  ctx.translate(-r*0.6, r*0.18);
+  ctx.rotate(0.4 + walk);
+  ctx.fillStyle = '#475569';
+  ctx.fillRect(-2, -r*0.32, 4, r*0.28);
+  ctx.fillStyle = '#64748b';
+  ctx.beginPath(); ctx.moveTo(0, -r*0.32); ctx.lineTo(-r*0.14, -r*0.52); ctx.lineTo(r*0.14, -r*0.52); ctx.closePath(); ctx.fill();
+  ctx.restore();
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// SHADOW — Hình nhân bóng tối, viền tím
+// ──────────────────────────────────────────────────────────────
+function drawEnemyShadow(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const drift = Math.sin(t / 200) * r * 0.06;
+  const flicker = 0.65 + Math.sin(t / 80) * 0.25;
+
+  ctx.save();
+  ctx.translate(x, y + drift);
+  ctx.globalAlpha = flicker;
+
+  // Dark body with gradient
+  const g = ctx.createRadialGradient(-r*0.2, -r*0.3, r*0.05, 0, 0, r*1.1);
+  g.addColorStop(0, hitFlash ? '#fff' : (rage ? '#4c1d95' : '#2e1065'));
+  g.addColorStop(0.6, hitFlash ? '#ddd' : '#1e1b4b');
+  g.addColorStop(1, 'transparent');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(0, 0, r*0.82, r, 0, 0, Math.PI*2); ctx.fill();
+
+  // Purple outline glow
+  ctx.strokeStyle = rage ? '#a21caf' : '#7c3aed';
+  ctx.lineWidth = 3;
+  ctx.globalAlpha = 0.8;
+  ctx.beginPath(); ctx.ellipse(0, 0, r*0.82, r, 0, 0, Math.PI*2); ctx.stroke();
+  ctx.globalAlpha = flicker;
+
+  // Ethereal wisps at bottom
+  for (let wi = 0; wi < 3; wi++) {
+    const wa = (wi / 3) * Math.PI + t / 300;
+    ctx.fillStyle = 'rgba(124,58,237,0.4)';
+    ctx.beginPath();
+    ctx.ellipse(Math.cos(wa) * r * 0.3, r * 0.65 + Math.sin(t/150+wi)*r*0.15, r*0.12, r*0.22, wa, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  // Eyes (white glowing slits)
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = hitFlash ? '#f0f' : (rage ? '#ef4444' : '#e879f9');
+  ctx.beginPath(); ctx.ellipse(-r*0.2, -r*0.15, 4.5, 2.5, 0.2, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.2, -r*0.15, 4.5, 2.5, -0.2, 0, Math.PI*2); ctx.fill();
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// VAMPIRE — Choàng đen đỏ, nanh, cánh bat
+// ──────────────────────────────────────────────────────────────
+function drawEnemyVampire(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const hover = Math.sin(t / 200) * r * 0.05;
+  const wingFlap = Math.sin(t / 180) * 0.4;
+
+  ctx.save();
+  ctx.translate(x, y + hover);
+
+  // Cape wings (small bat wings)
+  ctx.fillStyle = hitFlash ? '#fff' : '#1c0a09';
+  for (let side = -1; side <= 1; side += 2) {
+    ctx.beginPath();
+    ctx.moveTo(side * r * 0.2, -r*0.3);
+    ctx.bezierCurveTo(side * r * 1.2, -r*0.1 + wingFlap*r*0.5, side * r * 1.4, r*0.4, side * r * 0.9, r*0.5);
+    ctx.lineTo(side * r * 0.3, r*0.1);
+    ctx.closePath(); ctx.fill();
+    // Wing membrane
+    ctx.strokeStyle = '#450a0a'; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(side*r*0.2, -r*0.3);
+    ctx.lineTo(side*r*0.9, r*0.45);
+    ctx.stroke();
+  }
+
+  // Body (cloak)
+  ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#7f1d1d' : '#1c0a09');
+  ctx.beginPath();
+  ctx.moveTo(-r*0.42, -r*0.4);
+  ctx.lineTo(r*0.42, -r*0.4);
+  ctx.lineTo(r*0.6, r*0.9);
+  ctx.lineTo(-r*0.6, r*0.9);
+  ctx.closePath(); ctx.fill();
+  // Red inner cloak
+  ctx.fillStyle = hitFlash ? '#fff' : '#991b1b';
+  ctx.beginPath();
+  ctx.moveTo(-r*0.2, -r*0.4);
+  ctx.lineTo(r*0.2, -r*0.4);
+  ctx.lineTo(r*0.3, r*0.9);
+  ctx.lineTo(-r*0.3, r*0.9);
+  ctx.closePath(); ctx.fill();
+
+  // Head
+  ctx.fillStyle = hitFlash ? '#fff' : '#fce7f3';
+  ctx.beginPath(); ctx.arc(0, -r*0.62, r*0.35, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#be185d'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  // Hair
+  ctx.fillStyle = '#1a1a1a';
+  ctx.beginPath();
+  ctx.arc(0, -r*0.78, r*0.32, Math.PI, 0);
+  ctx.lineTo(r*0.35, -r*0.62);
+  ctx.closePath(); ctx.fill();
+  // Side peaks
+  ctx.beginPath(); ctx.moveTo(-r*0.32, -r*0.72); ctx.lineTo(-r*0.45, -r*0.98); ctx.lineTo(-r*0.15, -r*0.76); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(r*0.32, -r*0.72); ctx.lineTo(r*0.45, -r*0.98); ctx.lineTo(r*0.15, -r*0.76); ctx.closePath(); ctx.fill();
+
+  // Eyes (red glowing)
+  const eyeG = 0.7 + Math.sin(t/120)*0.3;
+  ctx.fillStyle = `rgba(220,38,38,${eyeG})`;
+  ctx.beginPath(); ctx.ellipse(-r*0.15, -r*0.64, 4, 3.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.15, -r*0.64, 4, 3.5, 0, 0, Math.PI*2); ctx.fill();
+
+  // Fangs
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.moveTo(-r*0.1, -r*0.46); ctx.lineTo(-r*0.14, -r*0.34); ctx.lineTo(-r*0.04, -r*0.46); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(r*0.1, -r*0.46); ctx.lineTo(r*0.14, -r*0.34); ctx.lineTo(r*0.04, -r*0.46); ctx.closePath(); ctx.fill();
+
+  // Blood drip
+  if (rage) {
+    ctx.fillStyle = '#dc2626';
+    ctx.beginPath(); ctx.arc(-r*0.14, -r*0.32, 2.5, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-r*0.14, -r*0.3); ctx.lineTo(-r*0.16, -r*0.22); ctx.lineTo(-r*0.12, -r*0.22); ctx.closePath(); ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// GOLEM — Khối đất đá to, nứt nẻ phát sáng cam
+// ──────────────────────────────────────────────────────────────
+function drawEnemyGolem(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const walk = Math.sin(t / 250) * 0.04;
+  const crackGlow = `rgba(251,146,60,${0.6 + Math.sin(t/150)*0.4})`;
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(walk);
+
+  // Body (huge rock-like)
+  ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#92400e' : '#57534e');
+  ctx.beginPath();
+  ctx.moveTo(-r*0.75, r*0.9);
+  ctx.lineTo(-r*0.88, -r*0.2);
+  ctx.lineTo(-r*0.55, -r*0.85);
+  ctx.lineTo(r*0.55, -r*0.85);
+  ctx.lineTo(r*0.88, -r*0.2);
+  ctx.lineTo(r*0.75, r*0.9);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#292524'; ctx.lineWidth = 3; ctx.stroke();
+
+  // Stone texture lines
+  ctx.strokeStyle = '#292524'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(-r*0.4, -r*0.5); ctx.lineTo(-r*0.6, r*0.3); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(r*0.3, -r*0.6); ctx.lineTo(r*0.5, r*0.4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-r*0.2, r*0.1); ctx.lineTo(r*0.35, r*0.2); ctx.stroke();
+
+  // Glowing cracks (lava-like)
+  ctx.strokeStyle = crackGlow;
+  ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(-r*0.3, -r*0.3); ctx.lineTo(-r*0.1, r*0.2); ctx.lineTo(-r*0.4, r*0.55); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(r*0.2, -r*0.55); ctx.lineTo(r*0.4, r*0.1); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-r*0.5, r*0.3); ctx.lineTo(r*0.3, r*0.6); ctx.stroke();
+
+  // Huge fist arms
+  ctx.fillStyle = hitFlash ? '#fff' : '#78716c';
+  ctx.beginPath(); ctx.ellipse(-r*1.05, r*0.05, r*0.38, r*0.42, -0.2, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*1.05, r*0.05, r*0.38, r*0.42, 0.2, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#292524'; ctx.lineWidth = 2; ctx.stroke();
+  // Fist details
+  for (let fi = 0; fi < 3; fi++) {
+    ctx.strokeStyle = '#44403c'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(-r*1.18 + fi*r*0.12, r*0.15); ctx.lineTo(-r*1.18 + fi*r*0.12, r*0.28); ctx.stroke();
+  }
+
+  // Head (boulder-like)
+  ctx.fillStyle = hitFlash ? '#fff' : '#78716c';
+  ctx.beginPath(); ctx.ellipse(0, -r*0.72, r*0.42, r*0.38, 0, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#292524'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Glowing eyes (magma)
+  ctx.fillStyle = crackGlow;
+  ctx.beginPath(); ctx.ellipse(-r*0.18, -r*0.76, 5.5, 4.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.18, -r*0.76, 5.5, 4.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.ellipse(-r*0.18, -r*0.77, 2.5, 2, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.18, -r*0.77, 2.5, 2, 0, 0, Math.PI*2); ctx.fill();
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// BERSERKER — Chiến binh cơ bắp to, axe hai tay
+// ──────────────────────────────────────────────────────────────
+function drawEnemyBerserker(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const walk = Math.sin(t / 120) * 0.1;
+  const rageSwing = rage ? Math.sin(t / 80) * 0.3 : 0;
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(walk);
+
+  // Muscular body
+  ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#dc2626' : '#b91c1c');
+  ctx.beginPath(); ctx.ellipse(0, 0, r*0.72, r*0.88, 0, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#7f1d1d'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Chest muscles
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.beginPath(); ctx.ellipse(-r*0.24, -r*0.1, r*0.22, r*0.18, -0.2, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.24, -r*0.1, r*0.22, r*0.18, 0.2, 0, Math.PI*2); ctx.fill();
+
+  // Huge arms
+  ctx.fillStyle = hitFlash ? '#fff' : '#b91c1c';
+  ctx.beginPath(); ctx.ellipse(-r*0.9, -r*0.1, r*0.28, r*0.48, -0.35 + rageSwing, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.9, -r*0.1, r*0.28, r*0.48, 0.35 - rageSwing, 0, Math.PI*2); ctx.fill();
+
+  // TWO-HANDED AXE (behind the berserker, spanning both sides)
+  ctx.save();
+  ctx.translate(0, -r*0.2);
+  ctx.rotate(rageSwing * 0.5);
+  ctx.strokeStyle = '#475569'; ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.moveTo(-r*1.2, 0); ctx.lineTo(r*1.2, 0); ctx.stroke();
+  // Left axe head
+  ctx.fillStyle = '#64748b';
+  ctx.beginPath();
+  ctx.moveTo(-r*1.0, 0);
+  ctx.lineTo(-r*1.4, -r*0.35);
+  ctx.lineTo(-r*1.5, r*0.08);
+  ctx.lineTo(-r*1.2, r*0.22);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1.5; ctx.stroke();
+  // Right axe head
+  ctx.beginPath();
+  ctx.moveTo(r*1.0, 0);
+  ctx.lineTo(r*1.4, -r*0.35);
+  ctx.lineTo(r*1.5, r*0.08);
+  ctx.lineTo(r*1.2, r*0.22);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.restore();
+
+  // Head
+  ctx.fillStyle = hitFlash ? '#fff' : '#ef4444';
+  ctx.beginPath(); ctx.arc(0, -r*0.68, r*0.42, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#7f1d1d'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Wild red hair
+  ctx.fillStyle = '#dc2626';
+  for (let hi = 0; hi < 5; hi++) {
+    const ha = -Math.PI*0.9 + hi * Math.PI*0.22;
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(ha)*r*0.38, -r*0.68 + Math.sin(ha)*r*0.38);
+    ctx.lineTo(Math.cos(ha)*r*0.62, -r*0.68 + Math.sin(ha)*r*0.62 - r*0.12);
+    ctx.lineWidth = 4; ctx.strokeStyle = '#dc2626'; ctx.stroke();
+  }
+
+  // Eyes (fury)
+  ctx.fillStyle = '#fbbf24';
+  ctx.beginPath(); ctx.ellipse(-r*0.18, -r*0.72, 5, 4.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.18, -r*0.72, 5, 4.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#000';
+  ctx.beginPath(); ctx.ellipse(-r*0.18, -r*0.7, 2.5, 3, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.18, -r*0.7, 2.5, 3, 0, 0, Math.PI*2); ctx.fill();
+  // Rage veins
+  if (rage) {
+    ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(-r*0.38, -r*0.82); ctx.lineTo(-r*0.2, -r*0.78); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(r*0.38, -r*0.82); ctx.lineTo(r*0.2, -r*0.78); ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// PHANTOM — Hồn ma trong suốt, đuôi khói
+// ──────────────────────────────────────────────────────────────
+function drawEnemyPhantom(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const drift = Math.sin(t / 220) * r * 0.08;
+  const glow = 0.5 + Math.sin(t / 150) * 0.35;
+  const tailWave = Math.sin(t / 170);
+
+  ctx.save();
+  ctx.translate(x, y + drift);
+
+  // Ghost tail (wispy smoke)
+  for (let ti = 0; ti < 4; ti++) {
+    const tw = (ti / 4) * Math.PI;
+    const tr = r * (0.45 - ti * 0.08);
+    const ty = r * (0.4 + ti * 0.38) + tailWave * r * 0.12 * (ti+1);
+    ctx.globalAlpha = (0.5 - ti * 0.1) * glow;
+    ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#a21caf' : '#a5b4fc');
+    ctx.beginPath(); ctx.ellipse(tailWave * r * 0.08 * ti, ty, tr, tr * 0.55, 0, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // Main body
+  const bodyG = ctx.createRadialGradient(-r*0.2, -r*0.25, r*0.05, 0, 0, r*0.85);
+  bodyG.addColorStop(0, hitFlash ? '#fff' : (rage ? '#c084fc' : '#e0e7ff'));
+  bodyG.addColorStop(0.5, hitFlash ? '#ccf' : (rage ? '#7c3aed' : '#6366f1'));
+  bodyG.addColorStop(1, 'rgba(99,102,241,0)');
+  ctx.fillStyle = bodyG;
+  ctx.globalAlpha = 0.78 * glow;
+  ctx.beginPath(); ctx.ellipse(0, -r*0.1, r*0.72, r*0.88, 0, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // Glow outline
+  ctx.strokeStyle = rage ? '#a855f7' : '#818cf8';
+  ctx.lineWidth = 2;
+  ctx.globalAlpha = glow;
+  ctx.beginPath(); ctx.ellipse(0, -r*0.1, r*0.72, r*0.88, 0, 0, Math.PI*2); ctx.stroke();
+  ctx.globalAlpha = 1;
+
+  // Eyes (neon cyan/blue)
+  ctx.fillStyle = rage ? '#f0abfc' : '#22d3ee';
+  ctx.beginPath(); ctx.ellipse(-r*0.22, -r*0.25, 5, 6.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.22, -r*0.25, 5, 6.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.ellipse(-r*0.22, -r*0.26, 2.5, 3, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.22, -r*0.26, 2.5, 3, 0, 0, Math.PI*2); ctx.fill();
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// DRAGON — Rồng nhỏ đỏ cam, cánh vỗ, mắt vàng
+// ──────────────────────────────────────────────────────────────
+function drawEnemyDragon(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const wingFlap = Math.sin(t / 140);
+  const walk = Math.sin(t / 160) * 0.05;
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(walk);
+
+  // Wings
+  const wingCol = hitFlash ? '#fff' : (rage ? '#dc2626' : '#c2410c');
+  for (let side = -1; side <= 1; side += 2) {
+    ctx.fillStyle = wingCol;
+    ctx.beginPath();
+    ctx.moveTo(side*r*0.28, -r*0.3);
+    ctx.bezierCurveTo(side*r*1.2, -r*0.5 + wingFlap*r*0.4, side*r*1.55, r*0.1, side*r*0.9, r*0.2);
+    ctx.lineTo(side*r*0.3, r*0.0);
+    ctx.closePath(); ctx.fill();
+    // Wing ribs
+    ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 1.5;
+    for (let wr = 0; wr < 3; wr++) {
+      const wrProgress = (wr + 1) / 4;
+      ctx.beginPath();
+      ctx.moveTo(side*r*0.28, -r*0.15 + r*0.15*wrProgress);
+      ctx.lineTo(side*r*(0.9 + wr*0.15), r*0.0 + r*0.06*wr + wingFlap*r*0.1*wrProgress);
+      ctx.stroke();
+    }
+  }
+
+  // Body
+  ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#ef4444' : '#ea580c');
+  ctx.beginPath(); ctx.ellipse(0, r*0.05, r*0.65, r*0.52, 0, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#7c2d12'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Belly scales (lighter)
+  ctx.fillStyle = 'rgba(254,215,170,0.4)';
+  ctx.beginPath(); ctx.ellipse(0, r*0.12, r*0.38, r*0.32, 0, 0, Math.PI*2); ctx.fill();
+
+  // Head
+  ctx.fillStyle = hitFlash ? '#fff' : '#ea580c';
+  ctx.beginPath(); ctx.ellipse(-r*0.6, -r*0.22, r*0.42, r*0.32, -0.25, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#7c2d12'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  // Snout
+  ctx.fillStyle = hitFlash ? '#fff' : '#c2410c';
+  ctx.beginPath(); ctx.ellipse(-r*0.9, -r*0.26, r*0.22, r*0.16, -0.2, 0, Math.PI*2); ctx.fill();
+
+  // Horn
+  ctx.fillStyle = '#fbbf24';
+  ctx.beginPath(); ctx.moveTo(-r*0.52, -r*0.45); ctx.lineTo(-r*0.45, -r*0.72); ctx.lineTo(-r*0.38, -r*0.46); ctx.closePath(); ctx.fill();
+
+  // Eye
+  ctx.fillStyle = '#fbbf24';
+  ctx.beginPath(); ctx.ellipse(-r*0.68, -r*0.26, 4.5, 4, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#1c1917';
+  ctx.beginPath(); ctx.ellipse(-r*0.68, -r*0.24, 2, 3, 0, 0, Math.PI*2); ctx.fill();
+
+  // Tail
+  ctx.strokeStyle = hitFlash ? '#fff' : '#ea580c';
+  ctx.lineWidth = r*0.18; ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(r*0.6, r*0.02);
+  ctx.quadraticCurveTo(r*1.1, r*0.3, r*0.95, -r*0.25);
+  ctx.stroke();
+
+  // Fire breath (if rage)
+  if (rage) {
+    ctx.globalAlpha = 0.7;
+    for (let fi = 0; fi < 5; fi++) {
+      const fa = -0.2 + fi * 0.12;
+      const fl = r * (0.4 + fi * 0.2);
+      const fc = ['#fbbf24','#f97316','#ef4444'][fi % 3];
+      ctx.fillStyle = fc;
+      ctx.beginPath();
+      ctx.arc(-r*0.9 + Math.cos(fa)*fl - r*0.6, -r*0.26 + Math.sin(fa)*fl*0.3, r*0.06*(5-fi), 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// NECROMANCER — Phù thủy xương, skull staff
+// ──────────────────────────────────────────────────────────────
+function drawEnemyNecromancer(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const hover = Math.sin(t / 240) * r * 0.06;
+  const orbPulse = 0.7 + Math.sin(t / 160) * 0.3;
+  const staffOrbCol = rage ? '#ef4444' : '#64748b';
+
+  ctx.save();
+  ctx.translate(x, y + hover);
+
+  // Robe (dark tattered)
+  ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#1e1b4b' : '#0f172a');
+  ctx.beginPath();
+  ctx.moveTo(0, -r*0.9);
+  ctx.bezierCurveTo(-r*0.9, -r*0.3, -r*1.0, r*0.4, -r*0.8, r*0.95);
+  ctx.lineTo(r*0.8, r*0.95);
+  ctx.bezierCurveTo(r*1.0, r*0.4, r*0.9, -r*0.3, 0, -r*0.9);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#334155'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Tattered robe edges
+  ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2;
+  for (let ti = 0; ti < 5; ti++) {
+    const tx = -r*0.7 + ti * r*0.35;
+    ctx.beginPath(); ctx.moveTo(tx, r*0.9); ctx.lineTo(tx + r*0.1, r*1.05); ctx.lineTo(tx + r*0.2, r*0.9); ctx.stroke();
+  }
+
+  // Skull face
+  ctx.fillStyle = hitFlash ? '#fff' : '#d4d4d4';
+  ctx.beginPath(); ctx.arc(0, -r*0.65, r*0.34, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 1; ctx.stroke();
+  // Eye sockets
+  ctx.fillStyle = rage ? '#ef444488' : '#0f172a';
+  ctx.beginPath(); ctx.ellipse(-r*0.14, -r*0.68, 5, 6.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.14, -r*0.68, 5, 6.5, 0, 0, Math.PI*2); ctx.fill();
+  // Nasal cavity
+  ctx.fillStyle = '#0f172a';
+  ctx.beginPath(); ctx.ellipse(0, -r*0.56, 3, 3.5, 0, 0, Math.PI*2); ctx.fill();
+  // Teeth
+  ctx.fillStyle = '#d4d4d4';
+  for (let ti = 0; ti < 5; ti++) {
+    ctx.fillRect(-r*0.22 + ti * r*0.11, -r*0.47, r*0.08, r*0.08);
+  }
+
+  // Hood (skull cap)
+  ctx.fillStyle = hitFlash ? '#fff' : '#1e293b';
+  ctx.beginPath();
+  ctx.arc(0, -r*0.72, r*0.35, Math.PI, 0);
+  ctx.closePath(); ctx.fill();
+
+  // Skull staff (right side)
+  ctx.save();
+  ctx.translate(r*0.62, -r*0.15 + Math.sin(t/180)*r*0.1);
+  ctx.strokeStyle = '#64748b'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(0, r*0.8); ctx.lineTo(0, -r*0.55); ctx.stroke();
+  // Skull atop staff
+  ctx.fillStyle = '#e2e8f0';
+  ctx.beginPath(); ctx.arc(0, -r*0.65, r*0.2, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = staffOrbCol;
+  ctx.globalAlpha = orbPulse;
+  ctx.beginPath(); ctx.ellipse(-r*0.1, -r*0.67, 3.5, 4, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.1, -r*0.67, 3.5, 4, 0, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 1;
+  // Orb glow around skull
+  const sog = ctx.createRadialGradient(0, -r*0.65, 0, 0, -r*0.65, r*0.38);
+  sog.addColorStop(0, `${staffOrbCol}88`);
+  sog.addColorStop(1, 'transparent');
+  ctx.fillStyle = sog;
+  ctx.beginPath(); ctx.arc(0, -r*0.65, r*0.38, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// BANSHEE — Yêu nữ trắng bạch, tóc bay, miệng mở
+// ──────────────────────────────────────────────────────────────
+function drawEnemyBanshee(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const hover = Math.sin(t / 190) * r * 0.1;
+  const screamPulse = e._screamTimer > 4.5 ? Math.sin(t/40)*0.3 : 0;
+  const hairWave = Math.sin(t / 120);
+
+  ctx.save();
+  ctx.translate(x, y + hover);
+
+  // Ethereal body
+  const bG = ctx.createRadialGradient(0, 0, 0, 0, 0, r*1.1);
+  bG.addColorStop(0, hitFlash ? '#fff' : (rage ? '#fce7f3' : '#f0fdf4'));
+  bG.addColorStop(0.5, hitFlash ? '#eee' : '#e0f2fe');
+  bG.addColorStop(1, 'rgba(240,253,244,0)');
+  ctx.fillStyle = bG;
+  ctx.globalAlpha = 0.82;
+  ctx.beginPath(); ctx.ellipse(0, r*0.1, r*0.65, r*0.9, 0, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // Hair tendrils (flying)
+  ctx.strokeStyle = hitFlash ? '#fff' : (rage ? '#be185d' : '#e0f2fe');
+  ctx.lineWidth = 3; ctx.lineCap = 'round';
+  for (let hi = 0; hi < 6; hi++) {
+    const hAngle = -Math.PI * 0.8 + hi * Math.PI * 0.32;
+    const hLen = r * (0.6 + hi * 0.05);
+    const hBend = hairWave * r * 0.18 * (hi % 2 === 0 ? 1 : -1);
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(hAngle)*r*0.28, -r*0.62 + Math.sin(hAngle)*r*0.28);
+    ctx.quadraticCurveTo(
+      Math.cos(hAngle)*hLen + hBend,
+      -r*0.62 + Math.sin(hAngle)*hLen + hBend * 0.5,
+      Math.cos(hAngle)*hLen*1.3 + hBend*1.8,
+      -r*0.62 + Math.sin(hAngle)*hLen*1.3
+    );
+    ctx.stroke();
+  }
+
+  // Face
+  ctx.fillStyle = hitFlash ? '#fff' : '#f0fdf4';
+  ctx.beginPath(); ctx.ellipse(0, -r*0.5, r*0.38, r*0.44, 0, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#bae6fd'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  // Empty eye sockets
+  ctx.fillStyle = rage ? '#9d174d' : '#0ea5e9';
+  ctx.beginPath(); ctx.ellipse(-r*0.16, -r*0.54, 5, 7, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.16, -r*0.54, 5, 7, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.ellipse(-r*0.16, -r*0.55, 2.5, 3, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.16, -r*0.55, 2.5, 3, 0, 0, Math.PI*2); ctx.fill();
+
+  // Open mouth (SCREAMING)
+  const mouthOpen = r * (0.14 + screamPulse * 0.08);
+  ctx.fillStyle = '#0f172a';
+  ctx.beginPath(); ctx.ellipse(0, -r*0.28, mouthOpen, mouthOpen * 0.7, 0, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#bae6fd'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(0, -r*0.28, mouthOpen, 0, Math.PI); ctx.stroke();
+
+  // Scream energy rings
+  if (screamPulse > 0) {
+    for (let si = 0; si < 3; si++) {
+      ctx.strokeStyle = `rgba(125,211,252,${0.5 - si*0.15})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(0, -r*0.28, r*(0.5 + si*0.35 + screamPulse*0.2), 0, Math.PI*2); ctx.stroke();
+    }
+  }
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// EXECUTIONER — Đao phủ to đen, mặt nạ, rìu lớn
+// ──────────────────────────────────────────────────────────────
+function drawEnemyExecutioner(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const walk = Math.sin(t / 180) * 0.06;
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(walk);
+
+  // Huge body
+  ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#292524' : '#1c1917');
+  ctx.beginPath(); ctx.ellipse(0, r*0.05, r*0.82, r, 0, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#57534e'; ctx.lineWidth = 2.5; ctx.stroke();
+
+  // Hood (executioner's hood)
+  ctx.fillStyle = hitFlash ? '#fff' : '#1c1917';
+  ctx.beginPath(); ctx.arc(0, -r*0.7, r*0.45, 0, Math.PI*2); ctx.fill();
+  // Hood drape
+  ctx.beginPath();
+  ctx.moveTo(-r*0.45, -r*0.7);
+  ctx.lineTo(-r*0.55, -r*0.15);
+  ctx.lineTo(r*0.55, -r*0.15);
+  ctx.lineTo(r*0.45, -r*0.7);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#292524'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Mask (black leather with eye holes)
+  ctx.fillStyle = '#0c0a09';
+  ctx.beginPath(); ctx.ellipse(0, -r*0.72, r*0.32, r*0.36, 0, 0, Math.PI*2); ctx.fill();
+  // Eye holes
+  ctx.fillStyle = rage ? '#ef4444' : '#78716c';
+  ctx.beginPath(); ctx.ellipse(-r*0.14, -r*0.76, 3.5, 3, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.14, -r*0.76, 3.5, 3, 0, 0, Math.PI*2); ctx.fill();
+
+  // HUGE AXE (right side)
+  ctx.save();
+  ctx.translate(r*0.85, -r*0.35);
+  ctx.rotate(0.3 + Math.sin(t/150) * 0.05);
+  // Shaft
+  ctx.strokeStyle = '#78350f'; ctx.lineWidth = 6; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(0, -r*0.3); ctx.lineTo(0, r*0.7); ctx.stroke();
+  // Axe head
+  ctx.fillStyle = '#64748b';
+  ctx.beginPath();
+  ctx.moveTo(0, -r*0.35);
+  ctx.lineTo(-r*0.6, -r*0.6);
+  ctx.lineTo(-r*0.7, -r*0.05);
+  ctx.lineTo(-r*0.2, r*0.1);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2; ctx.stroke();
+  // Axe glint
+  ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(-r*0.1, -r*0.3); ctx.lineTo(-r*0.55, -r*0.5); ctx.stroke();
+  ctx.restore();
+
+  // Left fist
+  ctx.fillStyle = hitFlash ? '#fff' : '#1c1917';
+  ctx.beginPath(); ctx.ellipse(-r*0.82, r*0.05, r*0.28, r*0.32, 0.2, 0, Math.PI*2); ctx.fill();
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// ICE WITCH — Phù thủy băng, tóc trắng, gậy tinh thể
+// ──────────────────────────────────────────────────────────────
+function drawEnemyIceWitch(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const hover = Math.sin(t / 220) * r * 0.07;
+  const crystalPulse = 0.7 + Math.sin(t / 170) * 0.3;
+
+  ctx.save();
+  ctx.translate(x, y + hover);
+
+  // Ice robe
+  const robeG = ctx.createLinearGradient(0, -r, 0, r);
+  robeG.addColorStop(0, hitFlash ? '#fff' : '#bfdbfe');
+  robeG.addColorStop(0.5, hitFlash ? '#ddd' : '#60a5fa');
+  robeG.addColorStop(1, '#1d4ed8');
+  ctx.fillStyle = robeG;
+  ctx.beginPath();
+  ctx.moveTo(0, -r*0.88);
+  ctx.bezierCurveTo(-r*0.85, -r*0.3, -r*0.95, r*0.45, -r*0.75, r*0.95);
+  ctx.lineTo(r*0.75, r*0.95);
+  ctx.bezierCurveTo(r*0.95, r*0.45, r*0.85, -r*0.3, 0, -r*0.88);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#93c5fd'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Ice crystal decorations on robe
+  ctx.fillStyle = 'rgba(147,197,253,0.4)';
+  for (let ci = 0; ci < 5; ci++) {
+    const cx2 = (ci - 2) * r * 0.3;
+    const cy2 = r * (0.1 + ci*0.15);
+    ctx.beginPath();
+    ctx.moveTo(cx2, cy2 - r*0.12);
+    ctx.lineTo(cx2 + r*0.06, cy2);
+    ctx.lineTo(cx2, cy2 + r*0.12);
+    ctx.lineTo(cx2 - r*0.06, cy2);
+    ctx.closePath(); ctx.fill();
+  }
+
+  // Head
+  ctx.fillStyle = hitFlash ? '#fff' : '#e0f2fe';
+  ctx.beginPath(); ctx.arc(0, -r*0.65, r*0.34, 0, Math.PI*2); ctx.fill();
+
+  // White hair (flowing)
+  ctx.fillStyle = hitFlash ? '#fff' : '#f8fafc';
+  ctx.beginPath();
+  ctx.arc(0, -r*0.78, r*0.3, Math.PI, 0);
+  ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-r*0.3, -r*0.72); ctx.lineTo(-r*0.48, -r*0.38); ctx.lineTo(-r*0.36, -r*0.72); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(r*0.3, -r*0.72); ctx.lineTo(r*0.48, -r*0.38); ctx.lineTo(r*0.36, -r*0.72); ctx.closePath(); ctx.fill();
+
+  // Ice crown
+  ctx.fillStyle = '#93c5fd';
+  for (let cri = 0; cri < 5; cri++) {
+    const crA = -Math.PI + cri * Math.PI/4;
+    const crH = r * (0.12 + (cri%2)*0.08);
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(crA-0.15)*r*0.32, -r*0.65 + Math.sin(crA-0.15)*r*0.32);
+    ctx.lineTo(Math.cos(crA)*r*(0.32+crH/r), -r*0.65 + Math.sin(crA)*r*(0.32+crH/r));
+    ctx.lineTo(Math.cos(crA+0.15)*r*0.32, -r*0.65 + Math.sin(crA+0.15)*r*0.32);
+    ctx.closePath(); ctx.fill();
+  }
+
+  // Ice blue eyes
+  ctx.fillStyle = '#7dd3fc';
+  ctx.beginPath(); ctx.ellipse(-r*0.14, -r*0.67, 4, 4.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.14, -r*0.67, 4, 4.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#0c4a6e';
+  ctx.beginPath(); ctx.ellipse(-r*0.14, -r*0.66, 2, 2.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.14, -r*0.66, 2, 2.5, 0, 0, Math.PI*2); ctx.fill();
+
+  // Ice crystal staff (right)
+  ctx.save();
+  ctx.translate(r*0.6, -r*0.2 + Math.sin(t/200)*r*0.08);
+  ctx.strokeStyle = '#bfdbfe'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(0, r*0.75); ctx.lineTo(0, -r*0.5); ctx.stroke();
+  // Crystal tip
+  ctx.fillStyle = `rgba(147,197,253,${crystalPulse})`;
+  ctx.beginPath();
+  ctx.moveTo(0, -r*0.52);
+  ctx.lineTo(-r*0.16, -r*0.28);
+  ctx.lineTo(0, -r*0.12);
+  ctx.lineTo(r*0.16, -r*0.28);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#93c5fd'; ctx.lineWidth = 1.5; ctx.stroke();
+  // Crystal glow
+  const cG = ctx.createRadialGradient(0, -r*0.32, 0, 0, -r*0.32, r*0.3);
+  cG.addColorStop(0, `rgba(125,211,252,${crystalPulse*0.5})`);
+  cG.addColorStop(1, 'transparent');
+  ctx.fillStyle = cG;
+  ctx.beginPath(); ctx.arc(0, -r*0.32, r*0.3, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// VOID CRAWLER — Sinh vật hư không tím, 6 xúc tu, nhiều mắt
+// ──────────────────────────────────────────────────────────────
+function drawEnemyVoidCrawler(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const isTitan = e.type === 'titan_minion';
+  const bodyCol = hitFlash ? '#fff' : (rage ? '#6d28d9' : (isTitan ? '#4c1d95' : '#312e81'));
+  const tentacleWave = Math.sin(t / 130);
+  const eyeGlow = 0.7 + Math.sin(t / 150) * 0.3;
+
+  ctx.save();
+  ctx.translate(x, y);
+
+  // 6 Tentacles
+  ctx.strokeStyle = hitFlash ? '#fff' : '#4c1d95';
+  ctx.lineCap = 'round';
+  for (let ti = 0; ti < 6; ti++) {
+    const tAngle = (ti / 6) * Math.PI * 2 + tentacleWave * 0.2;
+    const tLen = r * (1.2 + (ti % 2) * 0.3);
+    const tbend = Math.sin(t/120 + ti * 1.2) * r * 0.25;
+    ctx.lineWidth = r * 0.12 * (1 - ti * 0.05);
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(tAngle)*r*0.5, Math.sin(tAngle)*r*0.5);
+    ctx.quadraticCurveTo(
+      Math.cos(tAngle)*tLen*0.6 + tbend,
+      Math.sin(tAngle)*tLen*0.6 + tbend*0.5,
+      Math.cos(tAngle)*tLen,
+      Math.sin(tAngle)*tLen
+    );
+    ctx.stroke();
+
+    // Tentacle suction cups
+    ctx.fillStyle = '#6d28d9';
+    for (let si = 0; si < 3; si++) {
+      const sp = (si + 1) / 4;
+      const sx = Math.cos(tAngle) * tLen * sp;
+      const sy = Math.sin(tAngle) * tLen * sp;
+      ctx.beginPath(); ctx.arc(sx, sy, r * 0.04, 0, Math.PI*2); ctx.fill();
+    }
+  }
+
+  // Core body
+  const bodyG = ctx.createRadialGradient(-r*0.2, -r*0.2, r*0.05, 0, 0, r*0.9);
+  bodyG.addColorStop(0, hitFlash ? '#fff' : (rage ? '#7c3aed' : '#4c1d95'));
+  bodyG.addColorStop(0.6, bodyCol);
+  bodyG.addColorStop(1, '#1e1b4b');
+  ctx.fillStyle = bodyG;
+  ctx.beginPath(); ctx.arc(0, 0, r*0.75, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#4c1d95'; ctx.lineWidth = 3; ctx.stroke();
+
+  // Highlight
+  ctx.fillStyle = 'rgba(167,139,250,0.2)';
+  ctx.beginPath(); ctx.ellipse(-r*0.28, -r*0.28, r*0.28, r*0.2, -0.5, 0, Math.PI*2); ctx.fill();
+
+  // Multiple eyes (pattern)
+  const eyePositions = [[-r*0.28,-r*0.22], [r*0.28,-r*0.22], [0,-r*0.05], [-r*0.14,r*0.22], [r*0.14,r*0.22]];
+  eyePositions.forEach(([ex, ey], ei) => {
+    const eyeSize = ei === 2 ? 7.5 : 5;
+    ctx.fillStyle = `rgba(250,204,21,${eyeGlow})`;
+    ctx.beginPath(); ctx.ellipse(ex, ey, eyeSize, eyeSize*0.85, 0, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#1c1917';
+    ctx.beginPath(); ctx.ellipse(ex, ey, eyeSize*0.45, eyeSize*0.6, 0, 0, Math.PI*2); ctx.fill();
+  });
+
+  // Void energy pulsing from center
+  ctx.strokeStyle = `rgba(139,92,246,${0.3 + eyeGlow*0.2})`;
+  ctx.lineWidth = 2;
+  for (let vr = 0; vr < 3; vr++) {
+    const vrSize = r * (0.82 + vr * 0.18) + Math.sin(t/100 + vr) * r * 0.05;
+    ctx.globalAlpha = 0.3 - vr * 0.08;
+    ctx.beginPath(); ctx.arc(0, 0, vrSize, 0, Math.PI*2); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+
+  ctx.restore();
+}
+
+// ════════════════════════════════════════════════════════════════
+// ── HÀM VẼ BOSS ĐỘC LẬP ──────────────────────────────────────
+// ════════════════════════════════════════════════════════════════
+
+// ──────────────────────────────────────────────────────────────
+// BOSS: SLIME KING — Slime khổng lồ xanh, vương miện, rung bần bật
+// ──────────────────────────────────────────────────────────────
+function drawBossSlimeKing(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const bob = Math.sin(t / 150);
+  const jelly = 1 + bob * 0.08;
+  const jellyY = 1 - bob * 0.06;
+  const slimeRun = Math.sin(t / 200) * r * 0.04;
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(jelly, jellyY);
+
+  // Boss fire ring
+  drawBossFireRing(ctx, r, t, 8);
+
+  // Dripping slime at bottom
+  ctx.fillStyle = 'rgba(74,222,128,0.4)';
+  for (let di = 0; di < 5; di++) {
+    const dx = (di - 2) * r * 0.4;
+    const dLen = r * (0.15 + Math.sin(t/200 + di) * 0.1);
+    ctx.beginPath(); ctx.ellipse(dx, r*0.92 + dLen, r*0.08, dLen, 0, 0, Math.PI*2); ctx.fill();
+  }
+
+  // Main body
+  const g = ctx.createRadialGradient(-r*0.3, -r*0.3, r*0.05, 0, 0, r*1.05);
+  g.addColorStop(0, hitFlash ? '#fff' : '#bbf7d0');
+  g.addColorStop(0.4, hitFlash ? '#fff' : (rage ? '#22c55e' : '#4ade80'));
+  g.addColorStop(0.85, '#14532d');
+  g.addColorStop(1, '#052e16');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(0, 0, r*0.96, r*0.88, 0, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = rage ? '#ef4444' : '#15803d';
+  ctx.lineWidth = 4; ctx.stroke();
+
+  // Slime bubbles
+  ctx.fillStyle = 'rgba(187,247,208,0.25)';
+  ctx.beginPath(); ctx.arc(-r*0.38, -r*0.28, r*0.2, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(r*0.28, -r*0.15, r*0.14, 0, Math.PI*2); ctx.fill();
+
+  // Eyes (large angry)
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.ellipse(-r*0.32, -r*0.1, r*0.2, r*0.22, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.32, -r*0.1, r*0.2, r*0.22, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = rage ? '#ef4444' : '#1a2e05';
+  ctx.beginPath(); ctx.ellipse(-r*0.3, -r*0.08, r*0.1, r*0.14, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.34, -r*0.08, r*0.1, r*0.14, 0, 0, Math.PI*2); ctx.fill();
+  // Angry brows
+  ctx.strokeStyle = '#166534'; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(-r*0.52, -r*0.3); ctx.lineTo(-r*0.15, -r*0.22); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(r*0.52, -r*0.3); ctx.lineTo(r*0.15, -r*0.22); ctx.stroke();
+
+  // Wide grin
+  ctx.strokeStyle = '#166534'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(0, r*0.2, r*0.45, 0.15, Math.PI-0.15); ctx.stroke();
+  // Teeth
+  ctx.fillStyle = '#f0fdf4';
+  for (let ti = 0; ti < 6; ti++) {
+    const ta = 0.4 + ti * (Math.PI - 0.8) / 5;
+    ctx.beginPath();
+    ctx.arc(Math.cos(ta)*r*0.45, r*0.2 + Math.sin(ta)*r*0.45, 6, 0, Math.PI*2); ctx.fill();
+  }
+
+  // CROWN (royal gold)
+  ctx.fillStyle = '#fbbf24';
+  const crownY = -r * 1.0;
+  ctx.beginPath();
+  ctx.moveTo(-r*0.55, crownY + r*0.12);
+  ctx.lineTo(-r*0.55, crownY - r*0.08);
+  ctx.lineTo(-r*0.35, crownY + r*0.08);
+  ctx.lineTo(-r*0.18, crownY - r*0.18);
+  ctx.lineTo(0, crownY + r*0.04);
+  ctx.lineTo(r*0.18, crownY - r*0.18);
+  ctx.lineTo(r*0.35, crownY + r*0.08);
+  ctx.lineTo(r*0.55, crownY - r*0.08);
+  ctx.lineTo(r*0.55, crownY + r*0.12);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#d97706'; ctx.lineWidth = 2.5; ctx.stroke();
+  // Crown jewels
+  ctx.fillStyle = '#ef4444';
+  ctx.beginPath(); ctx.arc(0, crownY - r*0.16, 6, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#22d3ee';
+  ctx.beginPath(); ctx.arc(-r*0.38, crownY + r*0.06, 4, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(r*0.38, crownY + r*0.06, 4, 0, Math.PI*2); ctx.fill();
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// BOSS: DARK LORD — Lãnh chúa áo giáp đen hào quang
+// ──────────────────────────────────────────────────────────────
+function drawBossDarkLord(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const hover = Math.sin(t / 240) * r * 0.06;
+  const auraRot = t / 500;
+  const orbPulse = 0.7 + Math.sin(t / 180) * 0.3;
+
+  ctx.save();
+  ctx.translate(x, y + hover);
+
+  // Boss fire ring (dark purple version)
+  drawBossFireRing(ctx, r, t, 9);
+
+  // Outer aura (rotating dark energy)
+  for (let ai = 0; ai < 8; ai++) {
+    const aa = auraRot + (ai / 8) * Math.PI * 2;
+    ctx.fillStyle = `rgba(124,58,237,${0.15 + Math.sin(aa*3)*0.1})`;
+    ctx.beginPath();
+    ctx.ellipse(Math.cos(aa)*r*1.08, Math.sin(aa)*r*1.08, r*0.18, r*0.35, aa, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  // Armor body (massive, dark)
+  const armorG = ctx.createRadialGradient(-r*0.3, -r*0.3, r*0.05, 0, 0, r*1.05);
+  armorG.addColorStop(0, hitFlash ? '#fff' : (rage ? '#4c1d95' : '#1e1b4b'));
+  armorG.addColorStop(0.6, hitFlash ? '#ddd' : '#0f172a');
+  armorG.addColorStop(1, '#020617');
+  ctx.fillStyle = armorG;
+  ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#7c3aed'; ctx.lineWidth = 4; ctx.stroke();
+
+  // Armor plates (vertical lines)
+  ctx.strokeStyle = 'rgba(99,102,241,0.4)'; ctx.lineWidth = 2;
+  for (let pi = -2; pi <= 2; pi++) {
+    const px = pi * r * 0.3;
+    ctx.beginPath(); ctx.moveTo(px, -r*0.85); ctx.lineTo(px, r*0.85); ctx.stroke();
+  }
+
+  // Shoulder spikes
+  ctx.fillStyle = '#6d28d9';
+  for (let si = 0; si < 4; si++) {
+    const sa = -Math.PI * 0.75 + si * Math.PI * 0.5;
+    const sr = r * (si % 2 === 0 ? 0.95 : 1.05);
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(sa)*r*0.82, Math.sin(sa)*r*0.82);
+    ctx.lineTo(Math.cos(sa)*sr, Math.sin(sa)*sr + (si < 2 ? -r*0.12 : r*0.12));
+    ctx.lineTo(Math.cos(sa+0.3)*r*0.78, Math.sin(sa+0.3)*r*0.78);
+    ctx.closePath(); ctx.fill();
+  }
+
+  // Helmet/face (dark visor)
+  ctx.fillStyle = hitFlash ? '#fff' : '#0f172a';
+  ctx.beginPath(); ctx.arc(0, -r*0.42, r*0.42, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#4c1d95'; ctx.lineWidth = 3; ctx.stroke();
+
+  // Visor slit (glowing purple)
+  const visorG = ctx.createLinearGradient(-r*0.35, -r*0.42, r*0.35, -r*0.42);
+  visorG.addColorStop(0, 'transparent');
+  visorG.addColorStop(0.3, `rgba(168,85,247,${orbPulse})`);
+  visorG.addColorStop(0.7, `rgba(168,85,247,${orbPulse})`);
+  visorG.addColorStop(1, 'transparent');
+  ctx.fillStyle = visorG;
+  ctx.fillRect(-r*0.35, -r*0.47, r*0.7, r*0.1);
+
+  // Shadow Barrage orbs (orbiting when skill active)
+  if (e._barrageTimer > (e.phase >= 3 ? 4.5 : e.phase >= 2 ? 6.5 : 9.5)) {
+    for (let bi = 0; bi < 8; bi++) {
+      const ba = (bi / 8) * Math.PI * 2 + auraRot * 3;
+      ctx.fillStyle = `rgba(129,140,248,${0.6 + Math.sin(ba*2)*0.3})`;
+      ctx.beginPath(); ctx.arc(Math.cos(ba)*r*1.35, Math.sin(ba)*r*1.35, r*0.1, 0, Math.PI*2); ctx.fill();
+    }
+  }
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// BOSS: DRAGON QUEEN — Rồng cái lớn, cánh rộng, vương miện ngọc
+// ──────────────────────────────────────────────────────────────
+function drawBossDragonQueen(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const wingFlap = Math.sin(t / 155);
+  const headBob = Math.sin(t / 210) * r * 0.04;
+
+  ctx.save();
+  ctx.translate(x, y);
+
+  // Boss ring
+  drawBossFireRing(ctx, r, t, 9);
+
+  // MASSIVE WINGS (dragon queen has wide wings)
+  const wingCol = hitFlash ? '#fff' : (rage ? '#dc2626' : '#c2410c');
+  for (let side = -1; side <= 1; side += 2) {
+    ctx.fillStyle = wingCol;
+    ctx.beginPath();
+    ctx.moveTo(side*r*0.35, -r*0.4);
+    ctx.bezierCurveTo(side*r*1.5, -r*0.8 + wingFlap*r*0.5, side*r*2.0, r*0.2, side*r*1.4, r*0.5);
+    ctx.lineTo(side*r*0.4, r*0.1);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#7c2d12'; ctx.lineWidth = 2; ctx.stroke();
+    // Wing ribs
+    ctx.strokeStyle = 'rgba(0,0,0,0.25)'; ctx.lineWidth = 2;
+    for (let wr = 0; wr < 4; wr++) {
+      const wrProgress = (wr + 1) / 5;
+      const wrAngle = -0.4 + side * 0.2 + wr * 0.15;
+      ctx.beginPath();
+      ctx.moveTo(side*r*0.35, -r*0.2);
+      ctx.lineTo(side*r*(0.8 + wr*0.35), r*0.0 + r*0.12*wr + wingFlap*r*0.12*wrProgress);
+      ctx.stroke();
+    }
+    // Wing membrane membrane detail
+    ctx.fillStyle = 'rgba(180,50,10,0.15)';
+    ctx.beginPath();
+    ctx.moveTo(side*r*0.4, r*0.0);
+    ctx.lineTo(side*r*1.35, r*0.42);
+    ctx.lineTo(side*r*0.4, r*0.1);
+    ctx.closePath(); ctx.fill();
+  }
+
+  // Dragon body (large oval)
+  const bodyG = ctx.createRadialGradient(-r*0.3, -r*0.3, r*0.1, 0, 0, r);
+  bodyG.addColorStop(0, hitFlash ? '#fff' : '#f97316');
+  bodyG.addColorStop(0.55, hitFlash ? '#eee' : '#c2410c');
+  bodyG.addColorStop(1, '#7c2d12');
+  ctx.fillStyle = bodyG;
+  ctx.beginPath(); ctx.arc(0, 0, r*0.85, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#431407'; ctx.lineWidth = 4; ctx.stroke();
+
+  // Scale pattern
+  ctx.strokeStyle = 'rgba(0,0,0,0.18)'; ctx.lineWidth = 1.5;
+  for (let row = 0; row < 4; row++) {
+    for (let col = -2; col <= 2; col++) {
+      const sx = col * r*0.28 + (row%2)*r*0.14;
+      const sy = -r*0.3 + row * r*0.2;
+      ctx.beginPath(); ctx.arc(sx, sy, r*0.12, Math.PI, 0); ctx.stroke();
+    }
+  }
+
+  // Belly (lighter)
+  ctx.fillStyle = 'rgba(254,215,170,0.3)';
+  ctx.beginPath(); ctx.ellipse(0, r*0.18, r*0.48, r*0.38, 0, 0, Math.PI*2); ctx.fill();
+
+  // Long neck + head
+  ctx.fillStyle = hitFlash ? '#fff' : '#ea580c';
+  ctx.beginPath(); ctx.ellipse(0, -r*0.95 + headBob, r*0.32, r*0.42, 0, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#7c2d12'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Snout
+  ctx.fillStyle = hitFlash ? '#fff' : '#c2410c';
+  ctx.beginPath(); ctx.ellipse(0, -r*1.26 + headBob, r*0.22, r*0.18, 0, 0, Math.PI*2); ctx.fill();
+  // Nostril slits
+  ctx.fillStyle = '#7c2d12';
+  ctx.beginPath(); ctx.ellipse(-r*0.08, -r*1.3 + headBob, 2.5, 2, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.08, -r*1.3 + headBob, 2.5, 2, 0, 0, Math.PI*2); ctx.fill();
+
+  // DRAGON QUEEN CROWN (gem-encrusted)
+  ctx.fillStyle = '#fbbf24';
+  const crY = -r*1.38 + headBob;
+  for (let cpi = 0; cpi < 5; cpi++) {
+    const cpa = -Math.PI*0.5 - 0.5 + cpi * 0.25;
+    const cpH = r * (0.1 + (cpi%2)*0.06);
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(cpa - 0.12)*r*0.22, crY + Math.sin(cpa-0.12)*r*0.22);
+    ctx.lineTo(Math.cos(cpa)*r*(0.22+cpH/r), crY + Math.sin(cpa)*r*(0.22+cpH/r));
+    ctx.lineTo(Math.cos(cpa+0.12)*r*0.22, crY + Math.sin(cpa+0.12)*r*0.22);
+    ctx.closePath(); ctx.fill();
+  }
+  ctx.fillStyle = '#22d3ee';
+  ctx.beginPath(); ctx.arc(0, crY - r*0.22, 5, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#f472b6';
+  ctx.beginPath(); ctx.arc(-r*0.12, crY - r*0.16, 3.5, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(r*0.12, crY - r*0.16, 3.5, 0, Math.PI*2); ctx.fill();
+
+  // Eyes (golden)
+  ctx.fillStyle = '#fbbf24';
+  ctx.beginPath(); ctx.ellipse(-r*0.1, -r*1.0 + headBob, 5, 5.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.1, -r*1.0 + headBob, 5, 5.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#1c1917';
+  ctx.beginPath(); ctx.ellipse(-r*0.1, -r*1.0 + headBob, 2.5, 3.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.1, -r*1.0 + headBob, 2.5, 3.5, 0, 0, Math.PI*2); ctx.fill();
+
+  // Tail
+  ctx.strokeStyle = hitFlash ? '#fff' : '#ea580c';
+  ctx.lineWidth = r*0.16; ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(r*0.8, r*0.1);
+  ctx.bezierCurveTo(r*1.4, r*0.4, r*1.55, -r*0.2, r*1.2, -r*0.55);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// BOSS: VOID TITAN — Titan khổng lồ tím, nhiều mắt, cánh tay dài
+// ──────────────────────────────────────────────────────────────
+function drawBossVoidTitan(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const pulse = Math.sin(t / 200);
+  const armSway = Math.sin(t / 250) * 0.12;
+  const eyeGlow = 0.6 + Math.sin(t / 140) * 0.4;
+  const singActive = e._singActive;
+
+  ctx.save();
+  ctx.translate(x, y);
+
+  // Boss ring + omega
+  drawBossFireRing(ctx, r, t, 10);
+
+  // Singularity rings (when active)
+  if (singActive) {
+    for (let sr = 0; sr < 4; sr++) {
+      const srSize = r * (1.2 + sr * 0.45) + pulse * r * 0.1;
+      ctx.strokeStyle = `rgba(139,92,246,${0.5 - sr * 0.1})`;
+      ctx.lineWidth = 3 - sr * 0.5;
+      ctx.setLineDash([8, 6]);
+      ctx.beginPath(); ctx.arc(0, 0, srSize, 0, Math.PI*2); ctx.stroke();
+    }
+    ctx.setLineDash([]);
+  }
+
+  // Massive arms (elongated, multi-jointed)
+  ctx.strokeStyle = hitFlash ? '#fff' : '#4c1d95';
+  ctx.lineCap = 'round';
+  for (let side = -1; side <= 1; side += 2) {
+    ctx.lineWidth = r * 0.22;
+    ctx.beginPath();
+    ctx.moveTo(side * r * 0.62, -r * 0.15);
+    ctx.lineTo(side * r * 1.18, r * 0.28 + armSway * side * r * 0.3);
+    ctx.stroke();
+    // Forearm
+    ctx.lineWidth = r * 0.16;
+    ctx.beginPath();
+    ctx.moveTo(side * r * 1.18, r * 0.28 + armSway * side * r * 0.3);
+    ctx.lineTo(side * r * 1.7, -r * 0.15 + armSway * side * r * 0.5);
+    ctx.stroke();
+    // Clawed hand
+    ctx.fillStyle = hitFlash ? '#fff' : '#6d28d9';
+    ctx.beginPath(); ctx.ellipse(side*r*1.72, -r*0.12 + armSway*side*r*0.5, r*0.18, r*0.22, armSway*side, 0, Math.PI*2); ctx.fill();
+    // Claws
+    for (let ci = 0; ci < 3; ci++) {
+      const ca = (ci - 1) * 0.4 + armSway * side * 0.2;
+      ctx.fillStyle = hitFlash ? '#fff' : '#4c1d95';
+      ctx.beginPath();
+      ctx.moveTo(side*r*1.72 + Math.cos(ca)*r*0.12, -r*0.12 + armSway*side*r*0.5 + Math.sin(ca)*r*0.12);
+      ctx.lineTo(side*r*1.72 + Math.cos(ca)*r*0.35, -r*0.12 + armSway*side*r*0.5 + Math.sin(ca)*r*0.35);
+      ctx.lineTo(side*r*1.72 + Math.cos(ca+0.15)*r*0.28, -r*0.12 + armSway*side*r*0.5 + Math.sin(ca+0.15)*r*0.28);
+      ctx.closePath(); ctx.fill();
+    }
+  }
+
+  // Main body (huge, angular)
+  const bodyG = ctx.createRadialGradient(-r*0.25, -r*0.25, r*0.08, 0, 0, r*1.0);
+  bodyG.addColorStop(0, hitFlash ? '#fff' : (rage ? '#6d28d9' : '#4c1d95'));
+  bodyG.addColorStop(0.55, hitFlash ? '#ddd' : '#2d1b69');
+  bodyG.addColorStop(1, '#0f0720');
+  ctx.fillStyle = bodyG;
+  ctx.beginPath(); ctx.arc(0, 0, r*0.9, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#7c3aed'; ctx.lineWidth = 5; ctx.stroke();
+
+  // Body void cracks (energy lines)
+  ctx.strokeStyle = `rgba(167,139,250,${0.3 + pulse * 0.2})`;
+  ctx.lineWidth = 2.5;
+  const cracks = [[-r*0.4,-r*0.3,r*0.1,r*0.4],[-r*0.1,-r*0.6,r*0.3,r*0.1],[r*0.2,-r*0.4,r*0.5,r*0.35]];
+  cracks.forEach(([x1,y1,x2,y2]) => {
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  });
+
+  // Multiple eyes (scattered across body)
+  const voidEyes = [[-r*0.3,-r*0.4],[r*0.35,-r*0.35],[0,-r*0.12],[-r*0.45,r*0.2],[r*0.38,r*0.22],[0,r*0.48]];
+  voidEyes.forEach(([ex, ey], ei) => {
+    const eSize = ei === 2 ? 9 : 6.5;
+    ctx.fillStyle = `rgba(250,204,21,${eyeGlow})`;
+    ctx.beginPath(); ctx.ellipse(ex, ey, eSize, eSize*0.82, 0, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#1c1917';
+    ctx.beginPath(); ctx.ellipse(ex, ey, eSize*0.45, eSize*0.6, 0, 0, Math.PI*2); ctx.fill();
+    // Eye glow halo
+    ctx.strokeStyle = `rgba(250,204,21,${eyeGlow*0.4})`;
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(ex, ey, eSize*1.6, 0, Math.PI*2); ctx.stroke();
+  });
+
+  // Horns
+  ctx.fillStyle = hitFlash ? '#fff' : '#6d28d9';
+  ctx.beginPath(); ctx.moveTo(-r*0.32,-r*0.88); ctx.lineTo(-r*0.42,-r*1.22); ctx.lineTo(-r*0.15,-r*0.88); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(r*0.32,-r*0.88); ctx.lineTo(r*0.42,-r*1.22); ctx.lineTo(r*0.15,-r*0.88); ctx.closePath(); ctx.fill();
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// BOSS: DEATH HERALD — Tử thần nhỏ cưỡi ngựa khói
+// ──────────────────────────────────────────────────────────────
+function drawBossDeathHerald(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const bob = Math.sin(t / 200) * r * 0.05;
+  const horseRun = Math.sin(t / 130);
+  const cloakWave = Math.sin(t / 170);
+
+  ctx.save();
+  ctx.translate(x, y + bob);
+
+  // Boss fire ring
+  drawBossFireRing(ctx, r, t, 9);
+
+  // Ghost horse (below, wisps of smoke)
+  ctx.fillStyle = 'rgba(100,116,139,0.35)';
+  ctx.beginPath(); ctx.ellipse(0, r*0.55, r*0.72, r*0.38, 0, 0, Math.PI*2); ctx.fill();
+  // Horse legs (wisps)
+  for (let li = 0; li < 4; li++) {
+    const lx = -r*0.55 + li * r*0.35;
+    const lBob = Math.sin(t/130 + li * 0.9) * r * 0.1;
+    ctx.strokeStyle = 'rgba(100,116,139,0.4)'; ctx.lineWidth = r*0.08;
+    ctx.beginPath(); ctx.moveTo(lx, r*0.72); ctx.lineTo(lx, r*0.95 + lBob); ctx.stroke();
+  }
+  // Horse head
+  ctx.fillStyle = 'rgba(71,85,105,0.5)';
+  ctx.beginPath(); ctx.ellipse(-r*0.7, r*0.35, r*0.22, r*0.18, -0.4, 0, Math.PI*2); ctx.fill();
+  // Horse mane (wisps)
+  ctx.strokeStyle = 'rgba(148,163,184,0.4)'; ctx.lineWidth = 3;
+  for (let mi = 0; mi < 3; mi++) {
+    ctx.beginPath();
+    ctx.moveTo(-r*0.65 - mi*r*0.05, r*0.24);
+    ctx.lineTo(-r*0.68 + mi*r*0.08 + cloakWave*r*0.05, r*0.05);
+    ctx.stroke();
+  }
+
+  // Dark cloak / rider body
+  ctx.fillStyle = hitFlash ? '#fff' : (rage ? '#1e1b4b' : '#0f172a');
+  ctx.beginPath();
+  ctx.moveTo(0, -r*0.85);
+  ctx.bezierCurveTo(-r*0.9, -r*0.28, -r*1.0, r*0.35, -r*0.62, r*0.48);
+  ctx.lineTo(r*0.62, r*0.48);
+  ctx.bezierCurveTo(r*1.0, r*0.35, r*0.9, -r*0.28, 0, -r*0.85);
+  ctx.closePath(); ctx.fill();
+  // Cloak detail (hood)
+  ctx.strokeStyle = '#334155'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(-r*0.05, -r*0.82); ctx.lineTo(-r*0.04, r*0.48); ctx.stroke();
+
+  // Skull face
+  ctx.fillStyle = hitFlash ? '#fff' : '#e2e8f0';
+  ctx.beginPath(); ctx.arc(0, -r*0.52, r*0.28, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#0f172a';
+  ctx.beginPath(); ctx.ellipse(-r*0.12, -r*0.55, 5, 6, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.12, -r*0.55, 5, 6, 0, 0, Math.PI*2); ctx.fill();
+  // Glowing eyes
+  ctx.fillStyle = `rgba(148,163,184,${0.7 + Math.sin(t/150)*0.3})`;
+  ctx.beginPath(); ctx.ellipse(-r*0.12, -r*0.55, 2.5, 3, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.12, -r*0.55, 2.5, 3, 0, 0, Math.PI*2); ctx.fill();
+
+  // Scythe
+  ctx.save();
+  ctx.translate(r*0.65, -r*0.38 + Math.sin(t/180)*r*0.06);
+  ctx.rotate(0.4);
+  ctx.strokeStyle = '#475569'; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(0, r*0.38); ctx.lineTo(0, -r*0.32); ctx.stroke();
+  ctx.fillStyle = '#64748b';
+  ctx.beginPath();
+  ctx.moveTo(0, -r*0.3);
+  ctx.bezierCurveTo(r*0.32, -r*0.55, r*0.55, -r*0.38, r*0.48, -r*0.14);
+  ctx.lineTo(r*0.22, -r*0.12);
+  ctx.bezierCurveTo(r*0.3, -r*0.28, r*0.15, -r*0.42, 0, -r*0.28);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.restore();
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// BOSS: REAPER FORM 1 — Tử thần đang thức dậy, bán thân
+// ──────────────────────────────────────────────────────────────
+function drawBossReaperForm1(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const rise = Math.sin(t / 280) * r * 0.06; // đang trồi lên
+  const scytheSwing = Math.sin(t / 180) * 0.25;
+  const auraAlpha = 0.5 + Math.sin(t / 120) * 0.3;
+  const scytheWarning = e._scytheWarning;
+
+  ctx.save();
+  ctx.translate(x, y + rise);
+
+  // Boss fire ring (red)
+  drawBossFireRing(ctx, r, t, 9);
+
+  // Ground smoke (emanating from below)
+  for (let si = 0; si < 5; si++) {
+    const sAngle = (si / 5) * Math.PI + t / 400;
+    ctx.fillStyle = `rgba(15,23,42,${0.35 - si * 0.05})`;
+    ctx.beginPath();
+    ctx.ellipse(Math.cos(sAngle)*r*0.55, r*0.8, r*(0.22 - si*0.03), r*0.14, 0, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  // Dark robe body (immense)
+  const robeG = ctx.createRadialGradient(0, 0, r*0.1, 0, 0, r*1.05);
+  robeG.addColorStop(0, hitFlash ? '#fff' : (rage ? '#450a0a' : '#1e1b4b'));
+  robeG.addColorStop(0.7, hitFlash ? '#ddd' : '#0f172a');
+  robeG.addColorStop(1, '#020617');
+  ctx.fillStyle = robeG;
+  ctx.beginPath(); ctx.arc(0, 0, r*0.95, 0, Math.PI*2); ctx.fill();
+
+  // Energy tears (red cracks on robe - form breaking open)
+  ctx.strokeStyle = `rgba(220,38,38,${auraAlpha})`;
+  ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(-r*0.3, -r*0.5); ctx.lineTo(-r*0.1, r*0.2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(r*0.2, -r*0.6); ctx.lineTo(r*0.4, r*0.1); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-r*0.5, r*0.1); ctx.lineTo(r*0.2, r*0.5); ctx.stroke();
+
+  // Skull (large, cracked)
+  ctx.fillStyle = hitFlash ? '#fff' : '#d4d4d4';
+  ctx.beginPath(); ctx.arc(0, -r*0.42, r*0.42, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 2.5; ctx.stroke();
+  // Skull crack
+  ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(r*0.05, -r*0.82); ctx.lineTo(-r*0.05, -r*0.42); ctx.lineTo(r*0.08, -r*0.2); ctx.stroke();
+
+  // Eye sockets — glowing red (awakening)
+  ctx.fillStyle = `rgba(239,68,68,${auraAlpha})`;
+  ctx.beginPath(); ctx.ellipse(-r*0.18, -r*0.46, 8, 9, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.18, -r*0.46, 8, 9, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.ellipse(-r*0.18, -r*0.47, 4, 5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.18, -r*0.47, 4, 5, 0, 0, Math.PI*2); ctx.fill();
+
+  // SCYTHE (massive, death scythe — one hand)
+  ctx.save();
+  ctx.translate(r*0.7, -r*0.25);
+  ctx.rotate(scytheSwing + (scytheWarning ? Math.sin(t/40)*0.2 : 0));
+  // Handle
+  ctx.strokeStyle = '#1c1917'; ctx.lineWidth = 6;
+  ctx.beginPath(); ctx.moveTo(0, r*0.55); ctx.lineTo(0, -r*0.55); ctx.stroke();
+  // Blade (curved)
+  ctx.fillStyle = hitFlash ? '#fff' : '#475569';
+  ctx.beginPath();
+  ctx.moveTo(0, -r*0.55);
+  ctx.bezierCurveTo(-r*0.5, -r*0.85, -r*0.95, -r*0.55, -r*0.88, -r*0.15);
+  ctx.lineTo(-r*0.55, -r*0.14);
+  ctx.bezierCurveTo(-r*0.65, -r*0.45, -r*0.32, -r*0.68, 0, -r*0.5);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#64748b'; ctx.lineWidth = 2; ctx.stroke();
+  // Blade edge (sharp)
+  ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, -r*0.55);
+  ctx.bezierCurveTo(-r*0.45, -r*0.8, -r*0.88, -r*0.48, -r*0.88, -r*0.15);
+  ctx.stroke();
+  // Warning glow on blade
+  if (scytheWarning) {
+    ctx.strokeStyle = `rgba(220,38,38,${0.6+Math.sin(t/50)*0.4})`;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(0, -r*0.55);
+    ctx.bezierCurveTo(-r*0.45, -r*0.8, -r*0.88, -r*0.48, -r*0.88, -r*0.15);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Dark aura rings
+  for (let ar = 0; ar < 3; ar++) {
+    ctx.strokeStyle = `rgba(220,38,38,${(0.25-ar*0.07)*auraAlpha})`;
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(0, 0, r*(1.08 + ar*0.22), 0, Math.PI*2); ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+// ──────────────────────────────────────────────────────────────
+// BOSS: DEATH REAPER (Red Death) — Tử thần tối thượng
+// 4 phases, phase-based anim, lưỡi hái plasma, floating
+// ──────────────────────────────────────────────────────────────
+function drawBossDeathReaper(ctx, e, t, hitFlash, rage) {
+  const x = e.x, y = e.y, r = e.r;
+  const hpPct = e.hp / e.maxHp;
+  const phase = hpPct > 0.70 ? 1 : hpPct > 0.45 ? 2 : hpPct > 0.20 ? 3 : 4;
+  const float = Math.sin(t / 200) * r * 0.08; // floating animation
+  const cloakSway = Math.sin(t / 280) * 0.06;
+  const scytheRot = t / 600; // slowly rotating scythe
+  const auraAlpha = 0.5 + Math.sin(t / 100) * 0.35;
+  const isClone = e._isDeathClone;
+
+  ctx.save();
+  ctx.translate(x, y + float);
+  ctx.rotate(cloakSway);
+
+  // OMEGA RING (Lv10 boss)
+  if (!isClone) drawOmegaRing(ctx, r, t);
+
+  // Phase-based outer aura
+  const auraColors = ['#7c3aed', '#7c3aed', '#dc2626', '#ef4444'];
+  const auraCol = auraColors[phase - 1];
+  for (let ai = 0; ai < 4; ai++) {
+    const aSize = r * (1.15 + ai * 0.28) + Math.sin(t / 80 + ai) * r * 0.05;
+    ctx.strokeStyle = `rgba(${phase >= 3 ? '220,38,38' : '124,58,237'},${(0.35 - ai * 0.07) * auraAlpha})`;
+    ctx.lineWidth = 3.5 - ai * 0.5;
+    ctx.beginPath(); ctx.arc(0, 0, aSize, 0, Math.PI*2); ctx.stroke();
+  }
+
+  // SHADOW CLOAK (immense, billowing)
+  const cloakG = ctx.createRadialGradient(0, 0, r*0.15, 0, 0, r*1.1);
+  cloakG.addColorStop(0, hitFlash ? '#fff' : (phase >= 4 ? '#1c0000' : '#020617'));
+  cloakG.addColorStop(0.6, hitFlash ? '#aaa' : '#0a0014');
+  cloakG.addColorStop(1, 'rgba(0,0,10,0)');
+  ctx.fillStyle = cloakG;
+  ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2); ctx.fill();
+
+  // Phase 2+: Dark wings
+  if (phase >= 2 && !isClone) {
+    const wingFlap = Math.sin(t / 180);
+    ctx.fillStyle = hitFlash ? '#fff' : (phase >= 3 ? '#450a0a' : '#0f0720');
+    for (let side = -1; side <= 1; side += 2) {
+      ctx.beginPath();
+      ctx.moveTo(side*r*0.3, -r*0.3);
+      ctx.bezierCurveTo(side*r*1.3, -r*0.5 + wingFlap*r*0.3, side*r*1.7, r*0.2, side*r*1.1, r*0.5);
+      ctx.lineTo(side*r*0.35, r*0.1);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = auraCol + '88'; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(side*r*0.3, -r*0.3);
+      ctx.bezierCurveTo(side*r*1.3, -r*0.5 + wingFlap*r*0.3, side*r*1.7, r*0.2, side*r*1.1, r*0.5);
+      ctx.stroke();
+    }
+  }
+
+  // Skull face (massive, phase-colored eyes)
+  ctx.fillStyle = hitFlash ? '#fff' : (isClone ? '#3a1a1a' : '#d4d4d4');
+  ctx.beginPath(); ctx.arc(0, -r*0.28, r*0.45, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = phase >= 3 ? '#dc2626' : '#6d28d9'; ctx.lineWidth = 3; ctx.stroke();
+
+  // Eye sockets — GLOWING
+  const eyeCol = phase >= 3 ? '#ef4444' : '#a855f7';
+  ctx.fillStyle = eyeCol;
+  ctx.beginPath(); ctx.ellipse(-r*0.2, -r*0.32, 9, 11, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.2, -r*0.32, 9, 11, 0, 0, Math.PI*2); ctx.fill();
+  // Inner glow
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.ellipse(-r*0.2, -r*0.33, 4.5, 6, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(r*0.2, -r*0.33, 4.5, 6, 0, 0, Math.PI*2); ctx.fill();
+  // Eye halo glow
+  ctx.strokeStyle = eyeCol; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(-r*0.2, -r*0.32, r*0.22, 0, Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(r*0.2, -r*0.32, r*0.22, 0, Math.PI*2); ctx.stroke();
+
+  // Skull crack (phase 3+)
+  if (phase >= 3) {
+    ctx.strokeStyle = `rgba(220,38,38,${auraAlpha})`;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(-r*0.08, -r*0.7); ctx.lineTo(r*0.05, -r*0.28); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(r*0.05, -r*0.28); ctx.lineTo(r*0.18, -r*0.15); ctx.stroke();
+  }
+
+  // Jaw (opening/closing slowly)
+  const jawOpen = r*0.12 + Math.sin(t/220) * r*0.04;
+  ctx.fillStyle = hitFlash ? '#fff' : '#b0b0b0';
+  ctx.beginPath(); ctx.arc(0, -r*0.08, r*0.28, 0, Math.PI); ctx.fill();
+  ctx.strokeStyle = '#6b7280'; ctx.lineWidth = 1.5; ctx.stroke();
+  // Teeth
+  ctx.fillStyle = hitFlash ? '#ddd' : '#e2e8f0';
+  for (let ti = 0; ti < 7; ti++) {
+    const ta = (ti / 6) * Math.PI;
+    ctx.fillRect(Math.cos(ta)*r*0.26 - 3, -r*0.08 - 2, 6, jawOpen * 0.6);
+  }
+
+  // PLASMA SCYTHE (rotating, phase-colored blade)
+  if (!isClone) {
+    ctx.save();
+    ctx.translate(r*0.82, -r*0.1);
+    ctx.rotate(scytheRot + Math.sin(t/200)*0.1);
+
+    // Handle
+    ctx.strokeStyle = '#1c1917'; ctx.lineWidth = 7;
+    ctx.beginPath(); ctx.moveTo(0, r*0.65); ctx.lineTo(0, -r*0.62); ctx.stroke();
+
+    // Plasma blade glow
+    const bladeGCol = phase >= 3 ? '#ef4444' : '#a855f7';
+    ctx.shadowBlur = 18; ctx.shadowColor = bladeGCol;
+    ctx.fillStyle = bladeGCol;
+    ctx.beginPath();
+    ctx.moveTo(0, -r*0.62);
+    ctx.bezierCurveTo(-r*0.6, -r*1.0, -r*1.1, -r*0.68, -r*1.02, -r*0.2);
+    ctx.lineTo(-r*0.6, -r*0.18);
+    ctx.bezierCurveTo(-r*0.7, -r*0.55, -r*0.38, -r*0.82, 0, -r*0.58);
+    ctx.closePath(); ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Blade edge (bright)
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5;
+    ctx.globalAlpha = 0.8;
+    ctx.beginPath();
+    ctx.moveTo(0, -r*0.62);
+    ctx.bezierCurveTo(-r*0.58, -r*0.98, -r*1.05, -r*0.65, -r*1.02, -r*0.2);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // Plasma energy particles on blade
+    for (let pi = 0; pi < 5; pi++) {
+      const pa = -Math.PI*0.3 - pi * 0.25;
+      const pr = r * (0.35 + pi * 0.15);
+      ctx.fillStyle = phase >= 3 ? `rgba(239,68,68,${0.8-pi*0.1})` : `rgba(168,85,247,${0.8-pi*0.1})`;
+      ctx.beginPath(); ctx.arc(Math.cos(pa)*pr, Math.sin(pa)*pr - r*0.4, r*(0.07-pi*0.01), 0, Math.PI*2); ctx.fill();
+    }
+
+    ctx.restore();
+  }
+
+  // Phase 4: Fire particles emanating from body
+  if (phase >= 4 && !isClone) {
+    ctx.globalAlpha = 0.6;
+    for (let fi = 0; fi < 8; fi++) {
+      const fa = (fi/8) * Math.PI * 2 + t/400;
+      const fr = r*(1.0 + Math.sin(t/100+fi)*0.12);
+      ctx.fillStyle = fi%2 === 0 ? '#ef4444' : '#f97316';
+      ctx.beginPath();
+      ctx.ellipse(Math.cos(fa)*fr, Math.sin(fa)*fr, r*0.07, r*0.16, fa, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // Clone visual (slightly transparent + blue tint)
+  if (isClone) {
+    ctx.strokeStyle = `rgba(99,102,241,${0.3 + Math.sin(t/150)*0.2})`;
+    ctx.lineWidth = 3;
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath(); ctx.arc(0, 0, r*1.05, 0, Math.PI*2); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  ctx.restore();
+}
+
+
+// ----------------------------------------------------------------
+// -- HELPER FUNCTIONS CHO BOSS RENDER -------------------------
+// ----------------------------------------------------------------
+
+// V? v�ng l?a xung quanh boss (level-scaled)
+function drawBossFireRing(ctx, r, t, bossLevel) {
+  const ringCount = Math.min(bossLevel, 12);
+  const ringRot = t / 400;
+  ctx.save();
+  for (let ri = 0; ri < ringCount; ri++) {
+    const angle = (ri / ringCount) * Math.PI * 2 + ringRot;
+    const fr = r * 1.25 + Math.sin(t / 100 + ri) * r * 0.08;
+    const alpha = 0.4 + Math.sin(t / 80 + ri * 0.8) * 0.3;
+    const col = bossLevel >= 9 ? [168,85,247] : [239,68,68];
+    ctx.fillStyle = 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',' + alpha + ')';
+    ctx.beginPath();
+    ctx.ellipse(Math.cos(angle) * fr, Math.sin(angle) * fr, r * 0.06, r * 0.14, angle, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+// V? v�ng Omega cho boss c?p cao nh?t (Level 10 / Red Death)
+function drawOmegaRing(ctx, r, t) {
+  const segments = 12;
+  const ringRot = t / 700;
+  ctx.save();
+  for (let si = 0; si < segments; si++) {
+    const angle = (si / segments) * Math.PI * 2 + ringRot;
+    const nextAngle = ((si + 0.65) / segments) * Math.PI * 2 + ringRot;
+    const ringR = r * 1.55 + Math.sin(t / 120 + si) * r * 0.04;
+    ctx.strokeStyle = 'rgba(239,68,68,' + (0.4 + Math.sin(t/100+si)*0.25) + ')';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(0, 0, ringR, angle, nextAngle);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = 'rgba(168,85,247,' + (0.25 + Math.sin(t/150)*0.15) + ')';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(0, 0, r * 1.18, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+}
