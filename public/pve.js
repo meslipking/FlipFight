@@ -2429,10 +2429,17 @@ class PveGame {
     if (this.save && this.save.lastRunGhost) {
       this.lastRunGhostActive = true;
       const g = this.save.lastRunGhost;
+      const ghostClsDef = CLASSES[g.clsKey] || {};
+      const ghostClsName = CLASSES_I18N[currentLang]?.[g.clsKey]?.name || ghostClsDef.name || (currentLang === 'en' ? 'Unknown' : 'Bí Ẩn');
+      const ghostName = currentLang === 'en'
+        ? `Ghost: ${g.name || ghostClsName}`
+        : `Hồn Ma: ${g.name || ghostClsName}`;
       this.summons.push({
         id: 'ghost_echo',
         type: 'ghost_echo',
         clsKey: g.clsKey,
+        clsIcon: ghostClsDef.icon || '👻',
+        clsColor: ghostClsDef.color || '#a78bfa',
         x: WORLD_W / 2 - 80,
         y: WORLD_H / 2 - 80,
         r: 22,
@@ -2441,12 +2448,15 @@ class PveGame {
         expiresAt: Infinity, // infinite duration
         speed: 140,
         dmg: 30 + g.level * 4,
-        color: '#c084fc', // purple spectral glow
+        color: ghostClsDef.color || '#c084fc',
         attackCd: 850,
         lastAttack: 0,
-        name: `Hồn Ma: ${g.name || 'Người Chơi Trước'}`
+        name: ghostName
       });
-      showToast('👻 HỒN MA KẾT TINH XUẤT HIỆN! Quái vật +10% sức mạnh!', '#a78bfa');
+      const toastMsg = currentLang === 'en'
+        ? `👻 GHOST ECHO APPEARED: ${ghostClsName} (Lv.${g.level || '?'})! Enemies +10% stronger!`
+        : `👻 HỒN MA KẾT TINH XUẤT HIỆN: ${ghostClsName} (Lv.${g.level || '?'})! Quái vật +10% sức mạnh!`;
+      showToast(toastMsg, '#a78bfa');
     }
 
     this.initVisualAssets();
@@ -6725,17 +6735,20 @@ class PveGame {
       if (s.isLegendary) return false;
       if (s.level >= 8) return false;
       if (s.level === 7) {
-        // To upgrade to Lv 8, must own the corresponding passive item for standard EVOs
+        // To upgrade to Lv 8, skill MUST have an EVO or UNION combo path
         const evo = EVO_COMBOS.find(e => e.baseSkill === s.id);
+        const union = UNION_COMBOS.find(u => u.baseSkill1 === s.id || u.baseSkill2 === s.id);
+        // If no evo/union path exists for this skill, cap it at lv7
+        if (!evo && !union) return false;
+        // For EVO combos: must own the corresponding passive item
         if (evo) {
           const hasPassive = this.passiveItems.some(p => p.id === evo.passiveItem);
           if (!hasPassive) return false;
         }
-        // To upgrade to Lv 8, must own the corresponding secondary skill for UNION combos
-        const union = UNION_COMBOS.find(u => u.baseSkill1 === s.id || u.baseSkill2 === s.id);
+        // For UNION combos: must own both base skills at lv7+
         if (union) {
-          const hasSkill1 = this.skills.some(sk => sk.id === union.baseSkill1);
-          const hasSkill2 = this.skills.some(sk => sk.id === union.baseSkill2);
+          const hasSkill1 = this.skills.some(sk => sk.id === union.baseSkill1 && sk.level >= 7);
+          const hasSkill2 = this.skills.some(sk => sk.id === union.baseSkill2 && sk.level >= 7);
           if (!hasSkill1 || !hasSkill2) return false;
         }
       }
@@ -6757,6 +6770,7 @@ class PveGame {
     if (this.skills.filter(s => !s.isLegendary).length < MAX_SKILLS) {
       poolNewSkills.forEach(id => {
         const def = SKILL_DEFS[id];
+        const clsName = CLASSES_I18N[currentLang]?.[playerBranch]?.name || CLASSES[playerBranch]?.name || '';
         candidates.push({
           type: 'new_skill',
           id: id,
@@ -6764,7 +6778,7 @@ class PveGame {
           icon: def.icon,
           name: SKILLS_I18N[currentLang][id]?.name || def.name,
           desc: SKILLS_I18N[currentLang][id]?.desc || def.desc,
-          typeLabel: `✨ Kỹ Năng ${CLASSES[playerBranch]?.name || ''} Đặc Quyền`,
+          typeLabel: currentLang === 'en' ? `✨ ${clsName} Exclusive Skill` : `✨ Kỹ Năng ${clsName} Đặc Quyền`,
           color: def.color,
           cardClass: 'new-skill',
           apply: () => this.addSkill(id)
@@ -6775,12 +6789,16 @@ class PveGame {
     // Add upgrade skill options
     upgradeableSkills.forEach(s => {
       const def = SKILL_DEFS[s.id];
+      const skillName = SKILLS_I18N[currentLang][s.id]?.name || def.name;
       candidates.push({
         type: 'upgrade_skill',
         id: s.id,
         weight: 6,
-        icon: def.icon, name: `${def.name} LV.${s.level+1}`, desc: `Nâng cấp kỹ năng chủ động lên cấp ${s.level+1}. Sức mạnh và hiệu ứng tăng mạnh.`,
-        typeLabel: '⬆️ Nâng Cấp Kỹ Năng', color: def.color, cardClass: 'upgrade-skill',
+        icon: def.icon,
+        name: `${skillName} LV.${s.level+1}`,
+        desc: currentLang === 'en' ? `Upgrade active skill to level ${s.level+1}. Power and effects increase greatly.` : `Nâng cấp kỹ năng chủ động lên cấp ${s.level+1}. Sức mạnh và hiệu ứng tăng mạnh.`,
+        typeLabel: currentLang === 'en' ? '⬆️ Skill Upgrade' : '⬆️ Nâng Cấp Kỹ Năng',
+        color: def.color, cardClass: 'upgrade-skill',
         apply: () => { s.level++; this.showSkillLevelUp(s.id, s.level); this.checkLegendary(); }
       });
     });
@@ -6810,12 +6828,16 @@ class PveGame {
     upgradeablePassives.forEach(pItem => {
       const def = PASSIVE_ITEMS_DEFS[pItem.id];
       if (def) {
+        const passiveName = PASSIVES_I18N[currentLang][pItem.id]?.name || def.name;
         candidates.push({
           type: 'upgrade_passive',
           id: pItem.id,
           weight: 5,
-          icon: def.icon, name: `${def.name} LV.${pItem.level+1}`, desc: `Nâng cấp thuộc tính hỗ trợ của ${def.name}.`,
-          typeLabel: '⬆️ Nâng Cấp Vật Phẩm', color: '#10b981', cardClass: 'upgrade-passive',
+          icon: def.icon,
+          name: `${passiveName} LV.${pItem.level+1}`,
+          desc: currentLang === 'en' ? `Upgrade support item ${passiveName} to level ${pItem.level+1}.` : `Nâng cấp thuộc tính hỗ trợ của ${passiveName}.`,
+          typeLabel: currentLang === 'en' ? '⬆️ Item Upgrade' : '⬆️ Nâng Cấp Vật Phẩm',
+          color: '#10b981', cardClass: 'upgrade-passive',
           apply: () => {
             pItem.level++;
             this.recalculatePassiveStats();
@@ -8940,6 +8962,7 @@ class PveGame {
     ctx.restore();
     ctx.shadowBlur = 0;
 
+
     // Bobbing movement for floating magician look
     const bobY = Math.sin(t / 180) * 2.2;
     ctx.translate(0, bobY);
@@ -9325,16 +9348,18 @@ class PveGame {
       ctx.stroke();
 
     } else if (s.type === 'ghost_echo') {
-      // ── GHOST ECHO: translucent wavy spirit ──
+      // ── GHOST ECHO: translucent wavy spirit showing previous class identity ──
       const r = s.r;
-      ctx.globalAlpha *= 0.75;
-      ctx.shadowColor = '#a78bfa';
-      ctx.shadowBlur = 22;
-      // Ghost body (teardrop)
+      const ghostColor = s.clsColor || '#a78bfa';
+      const ghostIcon = s.clsIcon || '👻';
+      ctx.globalAlpha *= 0.78;
+      ctx.shadowColor = ghostColor;
+      ctx.shadowBlur = 28;
+      // Ghost body (teardrop) using class color
       const gg = ctx.createRadialGradient(0, -r * 0.3, 0, 0, 0, r * 0.9);
-      gg.addColorStop(0, '#c4b5fd');
-      gg.addColorStop(0.6, '#7c3aed');
-      gg.addColorStop(1, 'rgba(109,40,217,0)');
+      gg.addColorStop(0, lightenColor(ghostColor, 55));
+      gg.addColorStop(0.55, ghostColor);
+      gg.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = gg;
       ctx.beginPath();
       ctx.arc(0, -r * 0.25, r * 0.55, 0, Math.PI, true);
@@ -9344,15 +9369,33 @@ class PveGame {
       }
       ctx.closePath();
       ctx.fill();
+      // Glowing outer ring in class color
+      const prevAlpha2 = ctx.globalAlpha;
+      ctx.globalAlpha = prevAlpha2 * 0.45;
+      ctx.strokeStyle = ghostColor;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 1.05, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.globalAlpha = prevAlpha2;
       // Eyes
-      ctx.globalAlpha = 1.0 * (ctx.globalAlpha > 0 ? 1 : 1);
-      ctx.fillStyle = '#ffffff'; ctx.shadowBlur = 10;
+      ctx.shadowBlur = 8;
+      ctx.fillStyle = '#ffffff';
       ctx.beginPath(); ctx.arc(-r * 0.18, -r * 0.32, r * 0.1, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.arc(r * 0.18, -r * 0.32, r * 0.1, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = '#1e1b4b';
       ctx.beginPath(); ctx.arc(-r * 0.18, -r * 0.3, r * 0.05, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.arc(r * 0.18, -r * 0.3, r * 0.05, 0, Math.PI * 2); ctx.fill();
       ctx.shadowBlur = 0;
+      // Draw class icon inside ghost body
+      ctx.font = `bold ${Math.round(r * 0.62)}px Outfit`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const prevAlpha3 = ctx.globalAlpha;
+      ctx.globalAlpha = prevAlpha3 * 0.75;
+      ctx.fillText(ghostIcon, 0, -r * 0.05);
+      ctx.textBaseline = 'alphabetic';
+      ctx.globalAlpha = prevAlpha3;
 
     } else {
       // Fallback generic blob summon
@@ -9368,12 +9411,14 @@ class PveGame {
     // Floating emoji label above summon
     ctx.save();
     const icons = { shadow_clone:'👤', skeleton:'💀', spirit_wolf:'🐺', grim_reaper:'☠️', ghost_echo:'👻' };
+    // For ghost_echo: show the previous character class icon, otherwise use type icon
+    const summonLabelIcon = (s.type === 'ghost_echo' && s.clsIcon) ? s.clsIcon : (icons[s.type] || '✨');
     const labelY = -s.r * 1.15 - 14 + Math.sin(t / 240) * 2.5;
     ctx.font = 'bold 11px Outfit'; ctx.textAlign = 'center';
     ctx.fillStyle = '#ffffff';
     ctx.strokeStyle = '#000000'; ctx.lineWidth = 2.5;
-    ctx.strokeText(icons[s.type] || '✨', 0, labelY);
-    ctx.fillText(icons[s.type] || '✨', 0, labelY);
+    ctx.strokeText(summonLabelIcon, 0, labelY);
+    ctx.fillText(summonLabelIcon, 0, labelY);
     ctx.restore();
 
     ctx.restore();
