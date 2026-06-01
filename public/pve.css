@@ -1733,3 +1733,47 @@ html, body {
   #audioToggleBtn { width: 36px; height: 36px; font-size: 16px; }
 }
 
+/* ── PVE LANG TOGGLE ─────────────────────────────────────────── */
+#langToggle {
+  position: absolute;
+  top: 20px;
+  right: 80px;
+  z-index: 200;
+  display: flex;
+  gap: 6px;
+}
+#langToggle button {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 14px;
+  color: #94a3b8;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  transition: all 0.2s;
+  backdrop-filter: blur(8px);
+}
+#langToggle button:hover {
+  background: rgba(167, 139, 250, 0.15);
+  border-color: #a78bfa;
+  color: #fff;
+}
+#langToggle button.active {
+  background: #a78bfa !important;
+  border-color: #a78bfa !important;
+  color: #0c0d1e !important;
+  box-shadow: 0 0 12px rgba(167, 139, 250, 0.5);
+}
+@media (max-width: 768px) {
+  #langToggle {
+    top: 14px;
+    right: 70px;
+  }
+  #langToggle button {
+    padding: 4px 10px;
+    font-size: 10px;
+  }
+}
+

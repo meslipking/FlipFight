@@ -4,19 +4,723 @@
 ═══════════════════════════════════════════════════════════════ */
 
 'use strict';
+// ─── LOCALIZATION SYSTEM ──────────────────────────────────────
+let currentLang = localStorage.getItem('lang') || 'vi';
+
+const I18N = {
+  en: {
+    back_to_lobby: "← Main Menu",
+    lobby_subtitle: "⚔️ PVE ROGUELIKE — SURVIVAL MODE ⚔️",
+    lobby_tagline: "Time Survival · 30 Mins · Grim Reaper Boss · Skill Evolution",
+    char_header: "CHARACTER",
+    class_assassin: "Assassin",
+    class_fighter: "Fighter",
+    class_mage: "Mage",
+    class_ranger: "Ranger",
+    class_paladin: "Paladin",
+    class_necromancer: "Necromancer",
+    class_druid: "Druid",
+    pet_header: "PET COMPANION",
+    pet_hint: "Equip a pet to receive in-game buffs",
+    battle_map_header: "BATTLE MAP",
+    stage_1_name: "Angel Meadow",
+    stage_1_desc: "<span class=\"diff-badge diff-hard\">Hard</span> · 30 Mins · Reaper Boss at 30m",
+    stage_2_name: "Ancient Library",
+    stage_2_desc: "<span class=\"diff-badge diff-extreme\">Extreme</span> · Bosses spawn earlier",
+    stage_3_name: "Void Dungeon",
+    stage_3_desc: "<span class=\"diff-badge diff-doom\">Despair</span> · Bosses from minute 3",
+    perm_upgrade_title: "PERMANENT UPGRADES",
+    perm_upgrade_sub: "Increase permanent stats with gold",
+    info_card_roguelike_title: "Roguelike",
+    info_card_roguelike_desc: "Choose skill on level up",
+    info_card_boss_title: "Boss Every 5m",
+    info_card_boss_desc: "Higher difficulty over time",
+    info_card_evo_title: "Evolution",
+    info_card_evo_desc: "Combine skills in same branch",
+    info_card_arcana_title: "Arcana Tarot",
+    info_card_arcana_desc: "Magical card enhancements",
+    start_battle_btn: "START BATTLE",
+    tip_label: "💡 Tip: Collect skills of the same branch to unlock <span style=\"color:#fbbf24;\">⭐ Ultimate Evolution</span>",
+    control_hint: "⌨️ Key <kbd class=\"kb-key\">P</kbd> = Upgrade Altar · <kbd class=\"kb-key\">ESC</kbd> = Pause Game",
+    hud_day: "Day",
+    hud_night: "Night",
+    hud_clear: "Cool",
+    hud_storm: "Thunderstorm",
+    hud_blizzard: "Blizzard",
+    hud_codex: "📖 Codex",
+    hud_surrender: "☠ Surrender",
+    pause_title: "⏸️ GAME PAUSED",
+    pause_stats_header: "📊 CHARACTER STATS",
+    upgrade_title: "🎯 CHOOSE UPGRADE",
+    upgrade_sub: "Choose 1 upgrade to continue the match",
+    merchant_title: "⚖️ MERCHANT SHOP",
+    btn_close_shop: "✕ CLOSE [Esc]",
+    merchant_sub: "Items consume gold earned *in this match*. Equip them to increase survival!",
+    demonic_title: "😈 DEMONIC ALTAR",
+    demonic_sub: "Offer your blood (Max HP) in exchange for demonic powers!",
+    demonic_quote: "\"He who desires ultimate strength must pay the corresponding price in blood...\"",
+    btn_decline_bargain: "✕ DECLINE BARGAIN [Esc]",
+    legendary_title: "✨ ULTIMATE SKILL EVOLUTION ✨",
+    legendary_sub: "Congratulations! You have unlocked ultimate skill breakthrough!",
+    gameover_title: "💀 DEFEAT 💀",
+    gameover_sub: "You have fallen in the survival battle.",
+    gameover_wave_reached: "Waves Survived:",
+    gameover_kills: "Enemies Defeated:",
+    gameover_time: "Survival Time:",
+    gameover_gold: "Gold Collected:",
+    btn_try_again: "🔄 TRY AGAIN",
+    btn_exit: "🚪 EXIT TO LOBBY",
+    victory_title: "🏆 VICTORY 🏆",
+    victory_sub: "You survived the 30-minute ordeal and defeated the Reaper!",
+    victory_skills_owned: "Skills Acquired:",
+    btn_ng_plus: "🔥 NEW GAME+ (HARDER)",
+    arcana_title: "🃏 ROGUELIKE ARCANA TAROT 🃏",
+    arcana_sub: "Choose 1 Arcana card for permanent special combat buffs in this match",
+    codex_title: "📖 ANCIENT CODEX",
+    btn_close_codex: "✕ CLOSE",
+    tab_skills: "⚔️ Skills",
+    tab_passives: "🛡️ Passives",
+    tab_evos: "🧬 Evolutions",
+    tab_bosses: "☠️ Bosses",
+    evo_header: "🧬 EVOLUTION PATHS",
+    btn_confirm_close: "CONFIRM & CLOSE",
+    powerup_sub: "Permanently upgrade basic attributes for all characters",
+    powerup_tab_basic: "⚡ Basic Stats",
+    powerup_tab_mastery: "🌳 Divine Mastery",
+    powerup_gold_label: "Available Gold:",
+    boss_discovered_title: "👹 ANCIENT BOSS",
+    boss_threat_label: "⚠️ THREAT LEVEL ⚠️",
+    audio_title: "🎵 AUDIO WIDGET",
+    audio_music: "Music"
+  },
+  vi: {
+    back_to_lobby: "← Trang Chủ",
+    lobby_subtitle: "⚔️ PVE ROGUELIKE — CHẾ ĐỘ SINH TỒN ⚔️",
+    lobby_tagline: "Sinh Tồn Thời Gian · 30 Phút · Boss Tử Thần · Tiến Hóa Kỹ Năng",
+    char_header: "NHÂN VẬT",
+    class_assassin: "Sát Thủ",
+    class_fighter: "Đấu Sĩ",
+    class_mage: "Pháp Sư",
+    class_ranger: "Cung Thủ",
+    class_paladin: "Hộ Vệ",
+    class_necromancer: "Gọi Hồn",
+    class_druid: "Thần Rừng",
+    pet_header: "THẦN THÚ ĐỒNG HÀNH",
+    pet_hint: "Kích hoạt thần thú để nhận buff trong trận",
+    battle_map_header: "BẢN ĐỒ CHIẾN ĐẤU",
+    stage_1_name: "Đồng Cỏ Angel",
+    stage_1_desc: "<span class=\"diff-badge diff-hard\">Rất Khó</span> · 30 Phút · Boss Tử Thần phút 30",
+    stage_2_name: "Thư Viện Cổ",
+    stage_2_desc: "<span class=\"diff-badge diff-extreme\">Kinh Hoàng</span> · Boss xuất hiện sớm hơn",
+    stage_3_name: "Hầm Ngục Hư Vô",
+    stage_3_desc: "<span class=\"diff-badge diff-doom\">Tuyệt Vọng</span> · Bosses từ phút 3",
+    perm_upgrade_title: "NÂNG CẤP VĨNH VIỄN",
+    perm_upgrade_sub: "Gia tăng chỉ số vĩnh viễn với vàng",
+    info_card_roguelike_title: "Roguelike",
+    info_card_roguelike_desc: "Chọn kỹ năng mỗi lv up",
+    info_card_boss_title: "Boss mỗi 5 phút",
+    info_card_boss_desc: "Càng sau càng nguy hiểm",
+    info_card_evo_title: "Tiến Hóa",
+    info_card_evo_desc: "Kết hợp kỹ năng cùng nhánh",
+    info_card_arcana_title: "Arcana Tarot",
+    info_card_arcana_desc: "Bùa ma thuật cường hóa",
+    start_battle_btn: "BẮT ĐẦU TRẬN ĐẤU",
+    tip_label: "💡 Mẹo: Thu thập kỹ năng cùng nhánh để mở <span style=\"color:#fbbf24;\">⭐ Siêu Tiến Hóa</span>",
+    control_hint: "⌨️ Phím <kbd class=\"kb-key\">P</kbd> = Bảng Nâng Cấp · <kbd class=\"kb-key\">ESC</kbd> = Tạm Dừng",
+    hud_day: "Ngày",
+    hud_night: "Đêm",
+    hud_clear: "Mát Mẻ",
+    hud_storm: "Dông Bão",
+    hud_blizzard: "Bão Tuyết",
+    hud_codex: "📖 Codex",
+    hud_surrender: "☠ Đầu Hàng",
+    pause_title: "⏸️ ĐÃ TẠM DỪNG",
+    pause_stats_header: "📊 CHỈ SỐ NHÂN VẬT",
+    upgrade_title: "🎯 NÂNG CẤP ĐẾN",
+    upgrade_sub: "Chọn 1 nâng cấp để tiếp tục trận đấu",
+    merchant_title: "⚖️ CỬA HÀNG THƯƠNG NHÂN",
+    btn_close_shop: "✕ ĐÓNG [Esc]",
+    merchant_sub: "Vật phẩm tiêu thụ vàng kiếm được *trong trận*. Hãy trang bị để gia tăng cơ hội sống sót!",
+    demonic_title: "😈 TẾ ĐÀN ÁC QUỶ",
+    demonic_sub: "Hiến dâng máu (Max HP) để đổi lấy sức mạnh tột đỉnh của quỷ dữ!",
+    demonic_quote: "\"Kẻ muốn có sức mạnh tối thượng phải trả cái giá tương xứng bằng máu...\"",
+    btn_decline_bargain: "✕ TỪ CHỐI GIAO KÈO [Esc]",
+    legendary_title: "✨ SIÊU TIẾN HÓA KÝ NĂNG ✨",
+    legendary_sub: "Chúc mừng! Bạn đã đột phá cực hạn kỹ năng!",
+    gameover_title: "💀 THẤT BẠI 💀",
+    gameover_sub: "Bạn đã ngã xuống trong trận chiến sinh tồn.",
+    gameover_wave_reached: "Đợt Quái Đạt Đến:",
+    gameover_kills: "Kẻ Địch Đã Diệt:",
+    gameover_time: "Thời Gian Sinh Tồn:",
+    gameover_gold: "Vàng Thu Thập:",
+    btn_try_again: "🔄 CHƠI LẠI",
+    btn_exit: "🚪 VỀ LOBBY",
+    victory_title: "🏆 CHIẾN THẮNG 🏆",
+    victory_sub: "Bạn đã sống sót qua 30 phút sinh tồn và tiêu diệt Tử Thần!",
+    victory_skills_owned: "Kỹ Năng Đã Sở Hữu:",
+    btn_ng_plus: "🔥 NEW GAME+ (KHÓ HƠN)",
+    arcana_title: "🃏 BÀI PHÉP ARCANA TAROT 🃏",
+    arcana_sub: "Chọn 1 lá bài Arcana cường hóa hiệu ứng đặc biệt vĩnh viễn trong trận",
+    codex_title: "📖 THƯ VIỆN CỔ (CODEX)",
+    btn_close_codex: "✕ ĐÓNG",
+    tab_skills: "⚔️ Kỹ Năng",
+    tab_passives: "🛡️ Hỗ Trợ",
+    tab_evos: "🧬 Tiến Hóa",
+    tab_bosses: "☠️ Thủ Lĩnh",
+    evo_header: "🧬 CÔNG THỨC TIẾN HÓA",
+    btn_confirm_close: "XÁC NHẬN & ĐÓNG",
+    powerup_sub: "Nâng cấp vĩnh viễn các chỉ số cơ bản cho mọi nhân vật",
+    powerup_tab_basic: "⚡ Chỉ số Cơ Bản",
+    powerup_tab_mastery: "🌳 Mastery Thần Thánh",
+    powerup_gold_label: "Vàng Hiện Có",
+    boss_discovered_title: "👹 KHÁM PHÁ BOSS MỚI 👹",
+    boss_threat_label: "⚠️ BOSS NGUY HIỂM ⚠️",
+    audio_title: "🎵 Âm Thanh",
+    audio_music: "Nhạc Nền"
+  }
+};
+
+const EXTRA_I18N = {
+  en: {
+    none: "None",
+    unlocked_msg: "unlocked",
+    cannot_revive: "No Revives left!",
+    no_gold_shop: "Not enough gold in match!",
+    buy_item_toast: "{name} purchased!",
+    max_level: "✓ MAX",
+    wave: "Wave {wave}",
+    reaper_alert: "☠️ WARNING: DEATH APPROACHES! SURVIVE OR DIE!",
+    suicide_title: "Surrender?",
+    suicide_desc: "The match will end. Are you sure?",
+    suicide_btn_yes: "☠ Surrender",
+    suicide_btn_no: "Continue",
+    boss_slime_king_desc: "Giant Slime King. Slow but crushes anything it touches. Summons mini slimes constantly.",
+    boss_dark_lord_desc: "Leader of the shadow army. Shoots powerful long-range magical orbs and has heavy armor protection.",
+    boss_dragon_queen_desc: "Queen of the fire dragons. Breathes 5 extremely hot fireballs incinerating all in her path.",
+    boss_void_titan_desc: "Ancient Titan awakened from the Void. High defense, rages at low health, stamps ground creating earthquakes.",
+    boss_death_herald_desc: "Herald of judgment day. Moves fast, turns invisible, and constantly spawns assassin skeletons.",
+    boss_reaper_form1_desc: "Dark shadow of the Reaper appearing to signal survival time is running out.",
+    boss_death_reaper_desc: "Ultimate Death Reaper appearing at 30 mins to reap your soul. Only the strongest can defeat him!",
+    undiscovered: "Undiscovered",
+    not_unlocked: "Not unlocked",
+    formula: "Formula",
+    threat_ancient: "Ancient Monster",
+    float_lvl_up: "⬆️ LEVEL {level}!",
+    float_gold: "+{gold} Gold 🪙",
+    float_magnet: "🧲 VACUUM ORB!",
+    float_invuln: "🧪 INVINCIBLE 8s!",
+    toast_egg: "🥚 Golden Egg: +3% {stat}!",
+    toast_vacuum: "🧲 Magnet: Pulled all items!",
+    toast_die: "🎲 Reroll Die: +1 Reroll!",
+    toast_invuln: "🧪 Potion: Invincible for 8s!",
+    toast_no_gold_lobby: "Not enough gold!",
+    toast_unlocked_pet: "🐾 Unlocked pet {name}!",
+    toast_equipped_pet: "🐾 Equipped pet {name}!",
+    toast_mastery_unlock: "🌳 Unlocked Mastery: {name}!",
+    toast_mastery_locked: "🌳 Node is locked! Unlock dependencies first.",
+    toast_powerup_max: "✓ Powerup is already at max level!",
+    toast_powerup_unlocked: "⚡ Upgraded {name} to LV.{level}!",
+    toast_mastery_unlocked: "🌳 Unlocked {name}!",
+    btn_buy_egg: "BUY {cost} 🪙",
+    revive_btn: "❤️ Revive ({cost} Gold)",
+    atk_label: "⚔️ Power (ATK)",
+    spd_label: "💨 Speed (SPD)",
+    hp_label: "❤️ Health",
+    regen_label: "💚 Regeneration",
+    arm_label: "🛡️ Defense (ARM)",
+    cdr_label: "⚡ Cooldown (CDR)",
+    mag_label: "🧲 Vacuum (Magnet)",
+    crit_label: "🍀 Critical (Crit)",
+    lst_label: "🩸 Lifesteal",
+    gold_label: "🪙 Gold Earned",
+    xp_label: "⭐ Level & XP",
+    pet_label: "🐾 Pet Companion",
+    tarot_label: "🔮 Tarot Cards",
+    
+    stat_up_hp_title: "+25% Max HP",
+    stat_up_hp_desc: "Increase maximum health and fully heal.",
+    stat_up_spd_title: "+15% Speed",
+    stat_up_spd_desc: "Move 15% faster.",
+    stat_up_atk_title: "+20% Damage",
+    stat_up_atk_desc: "All skills deal 20% more damage.",
+    stat_up_cdr_title: "-15% Cooldown",
+    stat_up_cdr_desc: "All skill cooldowns reduced by 15%.",
+    stat_up_aoe_title: "+20% AoE Area",
+    stat_up_aoe_desc: "Skill impact area increased by 20%.",
+    stat_up_lst_title: "+8% Lifesteal",
+    stat_up_lst_desc: "Restore health equal to 8% of damage dealt.",
+    stat_up_type: "📊 Stat Upgrade",
+    
+    item_chicken: "🍗 Roast Chicken",
+    item_chicken_desc: "Instantly heals 50 HP.",
+    item_gold_egg: "🥚 Golden Egg",
+    item_gold_egg_desc: "+3% random permanent stat for this match (ATK/DEF/SPD/CRIT/CD).",
+    item_super_vacuum: "🧲 Super Vacuum",
+    item_super_vacuum_desc: "Activate magnet to pull all XP orbs on the map.",
+    item_reroll_die: "🎲 Reroll Die",
+    item_reroll_die_desc: "Gain +1 extra Reroll choice during level up.",
+    item_invuln_potion: "🧪 Invincibility Potion",
+    item_invuln_potion_desc: "Gain complete invincibility for 8 seconds.",
+    
+    stat_atk: "Attack ⚔️",
+    stat_def: "Defense 🛡️",
+    stat_spd: "Speed 💨",
+    stat_crit: "Crit ⚡",
+    stat_cd: "Cooldown ⏱️",
+    
+    altar_curse: "💀 Curse: Spawn rate +35%, +20% Crit!",
+    altar_void: "🌀 Void: Natural regen locked, +5% Lifesteal!",
+    altar_deal_ok: "😈 Bargain completed!",
+    altar_deal_ghost: "🌑 Void: Lost {gold}🪙, +{skills} skills, -20% Cooldown!"
+  },
+  vi: {
+    none: "Không",
+    unlocked_msg: "đã mở khóa",
+    cannot_revive: "Không còn lượt hồi sinh!",
+    no_gold_shop: "Không đủ vàng trong trận!",
+    buy_item_toast: "Đã mua {name}!",
+    max_level: "✓ MAX",
+    wave: "Đợt {wave}",
+    reaper_alert: "☠️ CẢNH BÁO: TỬ THẦN ĐANG ĐẾN! HÃY SINH TỒN!",
+    suicide_title: "Đầu Hàng?",
+    suicide_desc: "Trận đấu sẽ kết thúc. Bạn có chắc không?",
+    suicide_btn_yes: "☠ Đầu Hàng",
+    suicide_btn_no: "Tiếp Tục",
+    boss_slime_king_desc: "Vua Slime khổng lồ. Di chuyển chậm nhưng đè bẹp mọi thứ nó chạm vào. Triệu hồi Slime con liên tục.",
+    boss_dark_lord_desc: "Kẻ thống lĩnh đội quân bóng tối. Bắn cầu phép ma thuật tầm xa cực mạnh và có áo giáp bảo vệ vững chắc.",
+    boss_dragon_queen_desc: "Nữ hoàng của loài rồng lửa. Khè ra 5 tia lửa cực nóng thiêu rụi mọi thứ cản đường.",
+    boss_void_titan_desc: "Titan cổ đại thức tỉnh từ Hư vô. Sức phòng thủ cực cao, cuồng nộ khi yếu máu, giẫm đạp tạo chấn động lớn.",
+    boss_death_herald_desc: "Kẻ báo hiệu ngày phán xét. Di chuyển cực nhanh, tàng hình và liên tục triệu hồi xương sát thủ cản bước.",
+    boss_reaper_form1_desc: "Hình bóng đen tối của Thần Chết xuất hiện báo hiệu thời gian sinh tồn sắp cạn kiệt.",
+    boss_death_reaper_desc: "Tử Thần Tối Thượng xuất hiện lúc 30 phút để tước đoạt sinh mạng của bạn. Chỉ kẻ mạnh nhất mới có thể tiêu diệt được hắn!",
+    undiscovered: "Chưa khám phá",
+    not_unlocked: "Chưa mở khóa",
+    formula: "Công thức",
+    threat_ancient: "Thủ lĩnh cổ đại",
+    float_lvl_up: "⬆️ LEVEL {level}!",
+    float_gold: "+{gold} Vàng 🪙",
+    float_magnet: "🧲 NAM CHÂM CỰC ĐẠI!",
+    float_invuln: "🧪 BẤT TỬ 8s!",
+    toast_egg: "🥚 Trứng Vàng: +3% {stat}!",
+    toast_vacuum: "🧲 Nam Châm: Thu hút toàn bộ vật phẩm!",
+    toast_die: "🎲 Xúc Xắc: Nhận thêm +1 lượt Reroll!",
+    toast_invuln: "🧪 Thuốc Bất Tử: Bất tử trong 8 giây!",
+    toast_no_gold_lobby: "Không đủ vàng!",
+    toast_unlocked_pet: "🐾 Đã mở khóa thần thú {name}!",
+    toast_equipped_pet: "🐾 Đã trang bị thần thú {name}!",
+    toast_mastery_unlock: "🌳 Đã mở khóa Mastery: {name}!",
+    toast_mastery_locked: "🌳 Nhánh này đang khóa! Hãy mở khóa các nút trước đó.",
+    toast_powerup_max: "✓ Nâng cấp đã đạt cấp tối đa!",
+    toast_powerup_unlocked: "⚡ Đã nâng cấp {name} lên LV.{level}!",
+    toast_mastery_unlocked: "🌳 Đã mở khóa {name}!",
+    btn_buy_egg: "MUA {cost} 🪙",
+    revive_btn: "❤️ Hồi Sinh ({cost} Vàng)",
+    atk_label: "⚔️ Sức Mạnh (ATK)",
+    spd_label: "💨 Tốc Độ (SPD)",
+    hp_label: "❤️ Máu",
+    regen_label: "💚 Hồi Phục",
+    arm_label: "🛡️ Phòng Thủ (ARM)",
+    cdr_label: "⚡ Giảm Hồi Chiêu (CDR)",
+    mag_label: "🧲 Tầm Hút (Magnet)",
+    crit_label: "🍀 Chí Mạng (Crit)",
+    lst_label: "🩸 Hút Máu (Lifesteal)",
+    gold_label: "🪙 Vàng Thu Thập",
+    xp_label: "⭐ Cấp Độ & XP",
+    pet_label: "🐾 Thần Thú",
+    tarot_label: "🔮 Bài Tarot",
+    
+    stat_up_hp_title: "+25% Máu Tối Đa",
+    stat_up_hp_desc: "Tăng máu tối đa và hồi đầy máu.",
+    stat_up_spd_title: "+15% Tốc Độ",
+    stat_up_spd_desc: "Di chuyển nhanh hơn 15%.",
+    stat_up_atk_title: "+20% Sát Thương",
+    stat_up_atk_desc: "Tất cả kỹ năng gây thêm 20% sát thương.",
+    stat_up_cdr_title: "-15% Hồi Chiêu",
+    stat_up_cdr_desc: "Tất cả kỹ năng hồi chiêu nhanh hơn 15%.",
+    stat_up_aoe_title: "+20% Diện Tích AoE",
+    stat_up_aoe_desc: "Vùng tác động kỹ năng lớn hơn 20%.",
+    stat_up_lst_title: "+8% Hút Máu",
+    stat_up_lst_desc: "Mỗi đòn đánh hồi máu tương ứng 8% sát thương gây ra.",
+    stat_up_type: "📊 Nâng Chỉ Số",
+    
+    item_chicken: "🍗 Đùi Gà Nướng",
+    item_chicken_desc: "Hồi phục ngay lập tức 50 HP.",
+    item_gold_egg: "🥚 Trứng Vàng",
+    item_gold_egg_desc: "+3% ngẫu nhiên 1 chỉ số vĩnh viễn trong trận (ATK/DEF/SPD/CRIT/CD).",
+    item_super_vacuum: "🧲 Nam Châm cực đại",
+    item_super_vacuum_desc: "Kích hoạt lực hút cực đại gom toàn bộ ngọc trên bản đồ.",
+    item_reroll_die: "🎲 Xúc Xắc hồi chiêu",
+    item_reroll_die_desc: "Tăng thêm +1 lượt Reroll lựa chọn nâng cấp.",
+    item_invuln_potion: "🧪 Thuốc Bất Tử",
+    item_invuln_potion_desc: "Nhận trạng thái bất tử hoàn toàn trong 8 giây.",
+    
+    stat_atk: "Tấn Công ⚔️",
+    stat_def: "Phòng Thủ 🛡️",
+    stat_spd: "Tốc Độ 💨",
+    stat_crit: "Chí Mạng ⚡",
+    stat_cd: "Hồi Chiêu ⏱️",
+    
+    altar_curse: "💀 Lời nguyền: Quái sinh nhanh hơn 35%, +20% Chí mạng!",
+    altar_void: "🌀 Hư vô: Khóa hồi máu tự nhiên, +5% Hút máu!",
+    altar_deal_ok: "😈 Giao kèo hoàn thành!",
+    altar_deal_ghost: "🌑 Đối Mặt Hư Vô: Mất {gold}🪙, +{skills} kỹ năng, -20% Hồi chiêu!"
+  }
+};
+
+const CLASSES_I18N = {
+  en: {
+    assassin: {
+      name: "Assassin",
+      desc: "Superior mobility, swift assassination, high critical damage.",
+      passive: "⚡ Passive: +15% Crit Rate, +10% Speed",
+      exclusive: "🎯 Assassin skills only"
+    },
+    fighter: {
+      name: "Fighter",
+      desc: "Invincible iron defense, front line dominance, sweeping combat.",
+      passive: "🛡️ Passive: +15% Damage Resist, Reflect 15% melee",
+      exclusive: "🎯 Fighter skills only"
+    },
+    mage: {
+      name: "Mage",
+      desc: "Spell storms, long-range crowd control over large areas.",
+      passive: "🔮 Passive: +20% Spell Damage, -10% Cooldown",
+      exclusive: "🎯 Mage skills only"
+    },
+    ranger: {
+      name: "Ranger",
+      desc: "Piercing arrows, rapid attack speed, lethal safe distance.",
+      passive: "🏹 Passive: +15% Attack Speed, +1 Pierce Arrow",
+      exclusive: "🎯 Ranger skills only"
+    },
+    paladin: {
+      name: "Paladin",
+      desc: "Holy healing lights, divine shields, protecting allies.",
+      passive: "✨ Passive: +5 HP/s Regen, Armor x1.5",
+      exclusive: "🎯 Paladin skills only"
+    },
+    necromancer: {
+      name: "Necromancer",
+      desc: "Summon skeleton minions, drain life essence of enemies.",
+      passive: "💀 Passive: +20% Lifesteal, +1 Summon Limit",
+      exclusive: "🎯 Necromancer skills only"
+    },
+    druid: {
+      name: "Druid",
+      desc: "Summon spirit companions, wide-area poison, health regeneration.",
+      passive: "🌿 Passive: Poison Damage x2, Heal when standing still",
+      exclusive: "🎯 Druid skills only"
+    }
+  },
+  vi: {
+    assassin: {
+      name: "Sát Thủ",
+      desc: "Cơ động vượt trội, ám sát chớp nhoáng, hiểm hóc chí mạng.",
+      passive: "⚡ Nội tại: +15% Chí mạng, +10% Tốc chạy",
+      exclusive: "🎯 Chỉ học kỹ năng hệ Sát Thủ"
+    },
+    fighter: {
+      name: "Đấu Sĩ",
+      desc: "Thiết giáp bất bại, đứng mũi chịu sào, càn quét tuyến đầu.",
+      passive: "🛡️ Nội tại: +15% Kháng STH, Phản 15% cận chiến",
+      exclusive: "🎯 Chỉ học kỹ năng hệ Đấu Sĩ"
+    },
+    mage: {
+      name: "Pháp Sư",
+      desc: "Bão tố phép thuật, tầm xa khống chế quần thể diện rộng.",
+      passive: "🔮 Nội tại: +20% STH phép, -10% Hồi chiêu",
+      exclusive: "🎯 Chỉ học kỹ năng hệ Pháp Sư"
+    },
+    ranger: {
+      name: "Cung Thủ",
+      desc: "Cung tên xuyên thấu, tốc đánh cực nhanh, giữ khoảng cách hiểm hóc.",
+      passive: "🏹 Nội tại: +15% Tốc bắn, +1 Tia xuyên thấu",
+      exclusive: "🎯 Chỉ học kỹ năng hệ Cung Thủ"
+    },
+    paladin: {
+      name: "Hộ Vệ",
+      desc: "Thánh quang hồi phục, tạo giáp thần, bảo vệ đồng đội.",
+      passive: "✨ Nội tại: +5 HP/giây Hồi máu, Giáp x1.5",
+      exclusive: "🎯 Chỉ học kỹ năng hệ Hộ Vệ"
+    },
+    necromancer: {
+      name: "Gọi Hồn",
+      desc: "Triệu hồi đệ xương chiến đấu, hút sinh lực kẻ địch.",
+      passive: "💀 Nội tại: +20% Hút máu, +1 Đệ triệu hồi",
+      exclusive: "🎯 Chỉ học kỹ năng hệ Gọi Hồn"
+    },
+    druid: {
+      name: "Thần Rừng",
+      desc: "Triệu hồi linh thú, gây độc diện rộng, hồi phục theo thời gian.",
+      passive: "🌿 Nội tại: Độc x2, Hồi máu khi đứng yên",
+      exclusive: "🎯 Chỉ học kỹ năng hệ Thần Rừng"
+    }
+  }
+};
+
+const SKILLS_I18N = {
+  en: {
+    shadow_blades: { name: "Shadow Blades", desc: "Dark daggers rotate around player sweeping nearby enemies." },
+    void_pulse: { name: "Void Pulse", desc: "Purple energy shockwave knocking back and dealing high AoE damage." },
+    poison_dart: { name: "Poison Darts", desc: "Homing poison darts dealing damage over time." },
+    shadow_clone: { name: "Shadow Clone", desc: "Summon a clone that copies the player's basic attacks." },
+    shield_bash: { name: "Shield Bash", desc: "Bash shield to stun and damage enemies in front." },
+    earthquake: { name: "Earthquake", desc: "Crack the earth to stun and deal heavy area damage." },
+    iron_wall: { name: "Iron Wall", desc: "Create a shield absorbing damage and restoring health over time." },
+    rally: { name: "Rally Charge", desc: "Increase movement speed by 50% and enable attacking while moving." },
+    magic_missile: { name: "Magic Missile", desc: "Homing magical missile exploding on contact with nearest enemy." },
+    frost_aura: { name: "Frost Aura", desc: "An icy ring slowing down and damaging surrounding enemies." },
+    thunder_ring: { name: "Lightning Ring", desc: "Shoot 8 piercing lightning bolts outward around the player." },
+    meteor: { name: "Meteor Rain", desc: "Summon meteors from the sky dealing huge damage to random areas." },
+    piercing_arrow: { name: "Piercing Arrow", desc: "Shoot arrows that pierce through multiple enemies." },
+    arrow_rain: { name: "Arrow Rain", desc: "Summon a rain of arrows dealing damage in a specified area." },
+    spirit_wolf: { name: "Spirit Wolf", desc: "Summon a spirit wolf that charges at and bites enemies." },
+    wind_storm: { name: "Windstorm", desc: "Create tornadoes sweeping and dragging enemies along." },
+    holy_light: { name: "Holy Light", desc: "Beam of divine light dealing damage and healing the player." },
+    aegis_shield: { name: "Aegis Shield", desc: "Summon a divine shield block reflecting damage." },
+    consecration: { name: "Consecration", desc: "Bless the ground, damaging enemies and healing allies inside." },
+    judgment: { name: "Judgment Day", desc: "Summon holy light beams striking down random enemies." },
+    summon_skeleton: { name: "Summon Skeleton", desc: "Summon skeleton soldiers to attack enemies." },
+    death_grasp: { name: "Death Grasp", desc: "Hands of death emerge from below slowing and damaging enemies." },
+    soul_drain: { name: "Soul Drain", desc: "Drain souls of nearby enemies restoring health." },
+    abyss_summon: { name: "Abyss Lord", desc: "Summon a colossal abyssal demon dealing massive damage." },
+    briar_patch: { name: "Briar Patch", desc: "Create a patch of thorns slowing and poisoning enemies." },
+    forest_heal: { name: "Forest Blessing", desc: "Invoke forest spirits for continuous health regen and speed." },
+    vine_whip: { name: "Vine Whip", desc: "Whip vines to pull back and stun close-range enemies." },
+    nature_wrath: { name: "Nature's Wrath", desc: "Anger the forest, summoning roots to entangle all enemies." },
+    specter_storm: { name: "Specter Storm 🌀", desc: "Ultimate combination of Shadow Blades, Clone, Void Pulse, Poison Darts. Create a giant specter storm wiping out the map." },
+    celestial_nova: { name: "Celestial Nova 🌟", desc: "Ultimate combination of Frost Aura, Magic Missile, Lightning, Meteor. Invoke a supernova of stars freezing and burning everything." },
+    titan_fortress: { name: "Titan Fortress 🧱", desc: "Ultimate combination of Shield Bash, Earthquake, Iron Wall, Rally. Transform into an absolute titan fortress, reflecting all damage." },
+    gale_tempest: { name: "Gale Tempest 🌪️", desc: "Ultimate combination of Piercing Arrow, Arrow Rain, Windstorm, Spirit Wolf. Summon a storm pulling and tearing all enemies apart." },
+    divine_sanctuary: { name: "Divine Sanctuary 🏛️", desc: "Ultimate combination of Holy Light, Aegis, Consecration, Judgment. Divine cathedral zone rendering you immune to damage." },
+    lich_army: { name: "Lich Army ☠️", desc: "Ultimate combination of Skeleton, Death Grasp, Soul Drain, Abyss. Summon a skeleton army and a giant Lich Lord." },
+    origin_spirit: { name: "Origin Spirit 🌳", desc: "Ultimate combination of Briar Patch, Forest Heal, Vine Whip, Wrath. Merge with the ancient forest spirit, dealing high poison over map." }
+  },
+  vi: {
+    shadow_blades: { name: "Lưỡi Bóng Tối", desc: "Dao găm bóng tối quay quanh người càn quét kẻ địch gần." },
+    void_pulse: { name: "Xung Hư Vô", desc: "Xung năng lượng tím đẩy lùi và gây sát thương AoE mạnh." },
+    poison_dart: { name: "Kim Độc", desc: "Kim độc tự tìm mục tiêu gây sát thương theo thời gian." },
+    shadow_clone: { name: "Phân Thân", desc: "Tạo phân thân sao chép đòn tấn công của chủ thể." },
+    shield_bash: { name: "Đập Khiên", desc: "Đập khiên gây choáng và sát thương cho quái xung quanh." },
+    earthquake: { name: "Địa Chấn", desc: "Nứt đất gây choáng và sát thương diện rộng." },
+    iron_wall: { name: "Tường Sắt", desc: "Tạo giáp hấp thụ sát thương hồi phục theo thời gian." },
+    rally: { name: "Xung Phong", desc: "Tăng tốc chạy 50% và có thể vừa di chuyển vừa đánh." },
+    magic_missile: { name: "Tên Lửa Thần", desc: "Tên lửa ma pháp tự tìm kẻ địch gần nhất phát nổ." },
+    frost_aura: { name: "Băng Hào Quang", desc: "Vòng băng làm chậm và gây sát thương kẻ địch xung quanh." },
+    thunder_ring: { name: "Vòng Sét", desc: "8 tia sét bắn xung quanh người chơi xuyên thấu." },
+    meteor: { name: "Mưa Thiên Thạch", desc: "Thiên thạch rơi ngẫu nhiên gây sát thương cực lớn." },
+    piercing_arrow: { name: "Mũi Tên Xuyên", desc: "Bắn ra mũi tên xuyên thấu qua nhiều kẻ địch." },
+    arrow_rain: { name: "Mưa Tên", desc: "Mưa mũi tên trút xuống khu vực chỉ định liên tục." },
+    spirit_wolf: { name: "Sói Linh Hồn", desc: "Triệu hồi sói linh hồn lao thẳng vào cắn xé kẻ địch." },
+    wind_storm: { name: "Bão Tên Lốc", desc: "Tạo ra các cơn lốc xoáy quét qua kéo theo kẻ địch." },
+    holy_light: { name: "Thánh Quang", desc: "Tia sáng thánh phục hồi máu và gây sát thương quái." },
+    aegis_shield: { name: "Khiên Thánh", desc: "Tạo khiên bảo vệ phản lại sát thương cận chiến." },
+    consecration: { name: "Đất Thánh", desc: "Ban phước mặt đất, gây sát thương quái, hồi máu ta." },
+    judgment: { name: "Ngày Phán Xét", desc: "Tia sáng từ trời đánh xuống các kẻ địch ngẫu nhiên." },
+    summon_skeleton: { name: "Triệu Hồi Xương", desc: "Triệu hồi các chiến binh xương tấn công quái." },
+    death_grasp: { name: "Bàn Tay Tử Thần", desc: "Bàn tay ma quỷ trồi lên giữ chân và gây sát thương quái." },
+    soul_drain: { name: "Hút Linh Hồn", desc: "Hút linh hồn quái xung quanh hồi máu cho bản thân." },
+    abyss_summon: { name: "Chúa Tể Vực Sâu", desc: "Triệu hồi ác quỷ khổng lồ càn quét bản đồ." },
+    briar_patch: { name: "Bụi Gai", desc: "Tạo thảm gai làm chậm và gây độc diện rộng." },
+    forest_heal: { name: "Hồi Sinh Rừng", desc: "Mượn sức mạnh rừng xanh hồi phục và tăng tốc chạy." },
+    nature_wrath: { name: "Phẫn Nộ Rừng", desc: "Rừng xanh phẫn nộ, rễ cây trồi lên quấn chặt mọi quái." },
+    vine_whip: { name: "Roi Dây Leo", desc: "Quất dây leo kéo quái lại gần và gây choáng." },
+    specter_storm: { name: "Cơn Bão Vong Hồn 🌀", desc: "Siêu tiến hóa từ Lưỡi Bóng Tối, Phân Thân, Xung Hư Vô, Kim Độc. Tạo bão quỷ quét sạch bản đồ." },
+    celestial_nova: { name: "Siêu Tân Tinh 🌟", desc: "Siêu tiến hóa từ Băng Hào Quang, Tên Lửa Thần, Vòng Sét, Mưa Thiên Thạch. Băng hỏa cực hạn hủy diệt tất cả." },
+    titan_fortress: { name: "Pháo Đài Titan 🧱", desc: "Siêu tiến hóa từ Đập Khiên, Địa Chấn, Tường Sắt, Xung Phong. Hóa thân pháo đài bất tử phản mọi sát thương." },
+    gale_tempest: { name: "Bão Tố Tối Thượng 🌪️", desc: "Siêu tiến hóa từ Mũi Tên Xuyên, Mưa Tên, Bão Tên Lốc, Sói Linh Hồn. Cơn lốc cuồng phong xé nát kẻ địch." },
+    divine_sanctuary: { name: "Thành Trì Thánh Điện 🏛️", desc: "Siêu tiến hóa từ Thánh Quang, Khiên Thánh, Đất Thánh, Ngày Phán Xét. Khu vực thánh điện miễn nhiễm mọi sát thương." },
+    lich_army: { name: "Đại Quân Lich ☠️", desc: "Siêu tiến hóa từ Triệu Hồi Xương, Bàn Tay Tử Thần, Hút Linh Hồn, Chúa Tể Vực Sâu. Quân đoàn xương bất tử càn quét tất cả." },
+    origin_spirit: { name: "Linh Hồn Khởi Nguyên 🌳", desc: "Siêu tiến hóa từ Bụi Gai, Hồi Sinh Rừng, Roi Dây Leo, Phẫn Nộ Rừng. Hóa thân thần rừng tối cổ độc hóa toàn bản đồ." }
+  }
+};
+
+const PASSIVES_I18N = {
+  en: {
+    spinach: { name: "Spinach", desc: "+10% damage dealt per level." },
+    armor_plate: { name: "Armor Plate", desc: "-2 damage taken per level." },
+    hollow_heart: { name: "Hollow Heart", desc: "+20% maximum HP per level." },
+    candelabrador: { name: "Candelabrador", desc: "+15% area size per level." },
+    empty_tome: { name: "Empty Tome", desc: "-8% cooldown per level." },
+    wings: { name: "Wings", desc: "+10% movement speed per level." },
+    attractorb: { name: "Attractorb", desc: "+60px item range per level." },
+    clover: { name: "Clover", desc: "+8% critical strike chance per level." },
+    duplicator: { name: "Duplicator", desc: "+1 projectile amount per level." }
+  },
+  vi: {
+    spinach: { name: "Rau Chân Vịt", desc: "+10% sát thương gây ra mỗi cấp." },
+    armor_plate: { name: "Giáp Thép", desc: "-2 sát thương nhận vào mỗi cấp." },
+    hollow_heart: { name: "Trái Tim Rỗng", desc: "+20% Máu tối đa mỗi cấp." },
+    candelabrador: { name: "Chân Nến", desc: "+15% phạm vi kỹ năng mỗi cấp." },
+    empty_tome: { name: "Sách Cổ", desc: "-8% thời gian hồi chiêu mỗi cấp." },
+    wings: { name: "Đôi Cánh", desc: "+10% tốc độ di chuyển mỗi cấp." },
+    attractorb: { name: "Nam Châm", desc: "+60px tầm hút vật phẩm mỗi cấp." },
+    clover: { name: "Cỏ 4 Lá", desc: "+8% tỷ lệ chí mạng mỗi cấp." },
+    duplicator: { name: "Nhân Bản", desc: "+1 số lượng đạn bắn ra mỗi cấp." }
+  }
+};
+
+const POWERUP_I18N = {
+  en: {
+    might: { name: "Might", desc: "+10% skill damage per level." },
+    amount: { name: "Amount", desc: "+1 projectile/effect amount per level." },
+    swiftness: { name: "Swiftness", desc: "+5% movement speed per level." },
+    recovery: { name: "Recovery", desc: "+3 HP/s health regeneration per level." },
+    greed: { name: "Greed", desc: "+15% gold gain per level." },
+    luck: { name: "Luck", desc: "+5% critical strike chance per level." },
+    cooldown: { name: "Cooldown", desc: "-6% skill cooldown per level." },
+    vitality: { name: "Vitality", desc: "+15% maximum HP per level." },
+    growth: { name: "Growth", desc: "+10% XP gain per level." },
+    magnet: { name: "Magnet", desc: "+80px item collection range per level." }
+  },
+  vi: {
+    might: { name: "Sức Mạnh", desc: "+10% sát thương kỹ năng mỗi cấp." },
+    amount: { name: "Số Lượng", desc: "+1 đạn/hiệu ứng bổ sung mỗi cấp." },
+    swiftness: { name: "Tốc Độ", desc: "+5% tốc độ di chuyển mỗi cấp." },
+    recovery: { name: "Phục Hồi", desc: "+3 HP/giây hồi máu mỗi cấp." },
+    greed: { name: "Tham Lam", desc: "+15% vàng nhận được mỗi cấp." },
+    luck: { name: "May Mắn", desc: "+5% tỷ lệ chí mạng mỗi cấp." },
+    cooldown: { name: "Hồi Chiêu", desc: "-6% hồi chiêu kỹ năng mỗi cấp." },
+    vitality: { name: "Sinh Khí", desc: "+15% HP tối đa mỗi cấp." },
+    growth: { name: "Tăng Trưởng", desc: "+10% XP nhận được mỗi cấp." },
+    magnet: { name: "Hút Ngọc", desc: "+80px tầm hút ngọc XP & vàng mỗi cấp." }
+  }
+};
+
+const MASTERIES_I18N = {
+  en: {
+    node1: { name: "Resilient Warrior", desc: "+10% Max HP & +5% Armor permanently." },
+    node2: { name: "Ancient Wisdom", desc: "+5% Cooldown Reduction (CDR) permanently." },
+    node3: { name: "Golden Fortune", desc: "+10% Gold Earned permanently." },
+    node4: { name: "Shadow Ambush", desc: "+5% Critical Strike Chance permanently." },
+    node5: { name: "Matchless Might", desc: "+10% Skill Damage & +5% AoE permanently." },
+    node6: { name: "Supreme Archmage", desc: "+8% Attack Speed & +5% Movement Speed permanently." },
+    node7: { name: "Demonic Bloodline", desc: "+2% Lifesteal to all skills permanently." },
+    node8: { name: "Beast Catalyst", desc: "+15 HP/s Health Regeneration permanently." },
+    node9: { name: "Mark of Death", desc: "+15% Damage and +5% Crit chance permanently." },
+    node10: { name: "Solar Flare Aura", desc: "+20% Damage, +10% Cooldown Reduction permanently." }
+  },
+  vi: {
+    node1: { name: "Chiến Binh Kiên Cường", desc: "+10% HP tối đa & +5% Giáp vĩnh viễn." },
+    node2: { name: "Trí Tuệ Cổ Đại", desc: "+5% Tốc độ hồi chiêu (CDR) vĩnh viễn." },
+    node3: { name: "Thần Tài Gõ Cửa", desc: "+10% Vàng nhận được vĩnh viễn." },
+    node4: { name: "Bóng Tối Phục Kích", desc: "+5% Tỷ lệ chí mạng vĩnh viễn." },
+    node5: { name: "Quyền Năng Vô Song", desc: "+10% Sát thương kỹ năng & +5% AoE." },
+    node6: { name: "Pháp Sư Tối Thượng", desc: "+8% Tốc độ đánh & +5% Tốc độ di chuyển." },
+    node7: { name: "Dòng Máu Quỷ", desc: "+2% Hút máu cho tất cả kỹ năng." },
+    node8: { name: "Thần Thú Gia Tốc", desc: "+15 HP/giây hồi phục vĩnh viễn." },
+    node9: { name: "Dấu Ấn Tử Thần", desc: "+15% Sát thương và +5% chí mạng." },
+    node10: { name: "Hào Quang Mặt Trời", desc: "+20% Sát thương, +10% hồi chiêu." }
+  }
+};
+
+const LENH_BAI_I18N = {
+  en: {
+    dai_hoa: { name: 'Great Fire Calamity', desc: 'Monsters are fire-attribute, dealing +20% damage. Gold x2.' },
+    tuyet_phu: { name: 'Snow God Frost', desc: 'Everything is slowed by 20%. XP x1.5.' },
+    ngay_tan_the: { name: 'Doomsday Curse', desc: 'Spawn rate x2 but legendary drop rate x3.' },
+    dem_vo_tan: { name: 'Eternal Night', desc: 'Always nighttime. Damage +25%.' },
+    man_hinh_xanh: { name: 'Green Aura', desc: 'Monsters have +15% HP but drop x2 gold.' },
+    dinh_menh: { name: 'Destiny Storm', desc: 'Every 30s a lightning strike hits a target near the player.' },
+    qua_tang: { name: 'Heavenly Gift', desc: 'Merchant is always present, prices reduced by 40%.' },
+    xam_lan: { name: 'Invasion', desc: 'Spawn rate +50% but player +30% ATK.' },
+    thien_su: { name: 'Angel Grace', desc: '+1 revive and +20 HP/s health regeneration.' },
+    dam_phan: { name: 'Negotiation', desc: 'Start with 3 upgrade choices immediately.' },
+    suc_manh_bong_toi: { name: 'Dark Might', desc: 'All skills +20% damage, +5% Lifesteal.' },
+    phong_trao: { name: 'Gale Wind', desc: '+40% movement speed, skill AoE +30%.' }
+  },
+  vi: {
+    dai_hoa: { name: 'Đại Hỏa Kiếp', desc: 'Quái mang thuộc tính lửa, gây 20% thêm STH. Vàng x2.' },
+    tuyet_phu: { name: 'Tuyết Phủ Thần', desc: 'Mọi thứ chậm -20%, XP x1.5.' },
+    ngay_tan_the: { name: 'Ngày Tận Thế', desc: 'Quái sinh x2 nhưng drop legendary x3.' },
+    dem_vo_tan: { name: 'Đêm Vô Tận', desc: 'Luôn là ban đêm. STH +25%.' },
+    man_hinh_xanh: { name: 'Hào Quang Xanh', desc: 'Quái có 15% HP nhiều hơn nhưng nhả vàng x2.' },
+    dinh_menh: { name: 'Định Mệnh Sấm', desc: 'Mỗi 30s sét đánh 1 mục tiêu ngẫu nhiên gần player.' },
+    qua_tang: { name: 'Của Trời Cho', desc: 'Merchant luôn có mặt, giá giảm 40%.' },
+    xam_lan: { name: 'Xâm Lăng', desc: 'Quái sinh nhanh hơn 50% nhưng player +30% ATK.' },
+    thien_su: { name: 'Ân Huệ Thiên Sứ', desc: '+1 lần hồi sinh và +20% Hồi máu mỗi giây.' },
+    dam_phan: { name: 'Đàm Phán', desc: 'Bắt đầu với 3 upgrade choices ngay lập tức.' },
+    suc_manh_bong_toi: { name: 'Sức Mạnh Bóng Tối', desc: 'Mọi kỹ năng +20% STH, +5% Lifesteal.' },
+    phong_trao: { name: 'Phong Trào', desc: '+40% Tốc chạy, kỹ năng AoE rộng +30%.' }
+  }
+};
+
+const PETS_I18N = {
+  en: {
+    corgi: { name: 'Corgi 🐶', desc: '+15% Permanent Gold' },
+    owl: { name: 'Owl 🦉', desc: '+15% Permanent XP' },
+    kitty: { name: 'Kitty 🐱', desc: '+15 HP/s Permanent Regen' }
+  },
+  vi: {
+    corgi: { name: 'Corgi 🐶', desc: '+15% Vàng vĩnh viễn' },
+    owl: { name: 'Owl 🦉', desc: '+15% XP vĩnh viễn' },
+    kitty: { name: 'Kitty 🐱', desc: '+15 HP hồi/giây vĩnh viễn' }
+  }
+};
+
+const ALTAR_DEALS_I18N = {
+  en: {
+    blood: { title: 'BLOOD SACRIFICE COVENANT', cost: 'Lose permanently -25% Max HP', reward: '+40% Skill Damage' },
+    curse: { title: 'CURSE OF THE DEVIL', cost: 'Monsters spawn 35% faster', reward: '+20% Critical strike chance' },
+    void: { title: 'VOID VORTEX', cost: 'Lock natural regeneration permanently', reward: '+5% Lifesteal' },
+    soul: { title: 'SOUL SACRIFICE', cost: '-30% Movement Speed permanently', reward: '+60% Skill Damage' },
+    pain: { title: 'MASOCHIST PLEASURE', cost: 'Lose 5 HP on every hit', reward: '+35% Damage & Reflect 15%' },
+    frenzy: { title: 'HELLISH FRENZY', cost: '-40% Defense permanently', reward: '+25% Atk speed & +20% AoE area' },
+    ghost: { title: 'FACE THE VOID', cost: 'Lose 50% current gold in match', reward: '+3 Random skills & CDR -20%' },
+    dark_pact: { title: 'THE GREAT NIGHT', cost: 'Screen is 40% darker', reward: '+50% Night Damage & Night Sight' },
+    lich: { title: 'REAPER COVENANT', cost: 'Cannot revive (Lose Phoenix)', reward: '+8% Lifesteal & Heal 2% MaxHP on kill' }
+  },
+  vi: {
+    blood: { title: 'HỢP ĐỒNG HUYẾT TẾ', cost: 'Mất vĩnh viễn -25% Máu tối đa', reward: '+40% Sát thương kỹ năng' },
+    curse: { title: 'LỜI NGUYỀN CỦA QUỶ', cost: 'Quái vật sinh nhanh hơn 35%', reward: '+20% Tỷ lệ chí mạng' },
+    void: { title: 'VÒNG XOÁY HƯ VÔ', cost: 'Khóa vĩnh viễn hồi máu tự nhiên', reward: '+5% Hút máu (Lifesteal)' },
+    soul: { title: 'HIẾN DÂNG LINH HỒN', cost: '-30% Tốc độ di chuyển vĩnh viễn', reward: '+60% Sát thương tất cả kỹ năng' },
+    pain: { title: 'KHOAN KHOÁI TRONG ĐAU KHỔ', cost: 'Mỗi đòn trúng bạn mất 5 HP', reward: '+35% Sát thương + Phản 15% sát thương nhận vào' },
+    frenzy: { title: 'PHẪN NỘ ĐỊA NGỤC', cost: '-40% Phòng thủ vĩnh viễn', reward: '+25% Tốc đánh + AoE kỹ năng rộng hơn 20%' },
+    ghost: { title: 'ĐỐI MẶT HƯ VÔ', cost: 'Mất 50% vàng hiện tại trong trận', reward: '+3 Kỹ năng random + Tốc độ hồi chiêu -20%' },
+    dark_pact: { title: 'ĐÊM VĨ ĐẠI', cost: 'Toàn bộ màn hình tối hơn (tầm nhìn -40%)', reward: '+50% Sát thương ban đêm + Nhìn xuyên màn đêm' },
+    lich: { title: 'HIỆP ƯỚC THẦN CHẾT', cost: 'Không thể hồi sinh (mất trang bị Phoenix)', reward: 'Hút máu +8% + Mỗi kill hồi 2% MaxHP' }
+  }
+};
+
+window.setLang = function(lang) {
+  currentLang = lang;
+  localStorage.setItem('lang', lang);
+  
+  // Update data-i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (I18N[lang] && I18N[lang][key] !== undefined) {
+      el.innerHTML = I18N[lang][key];
+    }
+  });
+
+  // Toggle active class on lang toggle buttons
+  const btnEn = document.getElementById('langBtnEn');
+  const btnVi = document.getElementById('langBtnVi');
+  if (btnEn) btnEn.classList.toggle('active', lang === 'en');
+  if (btnVi) btnVi.classList.toggle('active', lang === 'vi');
+
+  // Trigger lobby updates
+  if (typeof selectedClass !== 'undefined') selectClass(selectedClass);
+  if (typeof renderPetPanel === 'function') renderPetPanel();
+  if (typeof renderPowerupPanel === 'function') renderPowerupPanel();
+  if (typeof renderMasteryPanel === 'function') renderMasteryPanel();
+};
+
 
 // ─── CONSTANTS ────────────────────────────────────────────────
 const PVE_PW = 'flipfight_pve_beta';
 const WORLD_W = 4000, WORLD_H = 4000;
 const MAX_SKILLS = 6;
 
-// Time-based stages (seconds) — Vampire Survivors style
-// Mỗi màn chơi là 30 phút — giống Vampire Survivors
+// Time-based stages (seconds) — Survival Mode
+// Mỗi màn chơi là 30 phút
 // Victory = survive the full duration; Death = game over
 const STAGE_DURATION = { 1: 1800, 2: 1800, 3: 1800 }; // 30 phút mỗi màn
 const STAGE_MAX_WAVE = { 1: 30, 2: 30, 3: 30 }; // 30 wave (1 wave/phút)
 
-// ─── BOSS SCHEDULE (Vampire Survivors style) ─────────────────
+// ─── BOSS SCHEDULE ───────────────────────────────────────────
 // Phút 5, 10, 15, 20, 25 = boss thông thường (ngày càng mạnh)
 // Phút 28 = boss cực khó báo hiệu cuối game
 // Phút 30 = TỬ THẦN xuất hiện — giết ngay hoặc chết!
@@ -527,24 +1231,15 @@ function selectClass(cls) {
   const def = CLASSES[cls];
   const nameEl = document.getElementById('classPreviewName');
   const descEl = document.getElementById('classPreviewDesc');
-  if (nameEl) nameEl.textContent = def.icon + ' ' + def.name;
-  if (descEl) descEl.textContent = def.desc;
+  const clsTrans = CLASSES_I18N[currentLang][cls] || {};
+  if (nameEl) nameEl.textContent = def.icon + ' ' + (clsTrans.name || def.name);
+  if (descEl) descEl.textContent = clsTrans.desc || def.desc;
   
   // Class-exclusive skill and passive info
   const startSkillDef = SKILL_DEFS[def.startSkill];
-  const classPassiveInfo = {
-    assassin:    { passive: '⚡ Nội tại: +15% Chí mạng, +10% Tốc chạy', exclusive: `🎯 Chỉ học kỹ năng hệ Sát Thủ` },
-    fighter:     { passive: '🛡️ Nội tại: +15% Kháng STH, Phản 15% cận chiến', exclusive: `🎯 Chỉ học kỹ năng hệ Đấu Sĩ` },
-    mage:        { passive: '🔮 Nội tại: +20% STH phép, -10% Hồi chiêu', exclusive: `🎯 Chỉ học kỹ năng hệ Pháp Sư` },
-    ranger:      { passive: '🏹 Nội tại: +15% Tốc bắn, +1 Tia xuyên thấu', exclusive: `🎯 Chỉ học kỹ năng hệ Cung Thủ` },
-    paladin:     { passive: '✨ Nội tại: +5 HP/giây Hồi máu, Giáp x1.5', exclusive: `🎯 Chỉ học kỹ năng hệ Hộ Vệ` },
-    necromancer: { passive: '💀 Nội tại: +20% Hút máu, +1 Đệ triệu hồi', exclusive: `🎯 Chỉ học kỹ năng hệ Gọi Hồn` },
-    druid:       { passive: '🌿 Nội tại: Độc x2, Hồi máu khi đứng yên', exclusive: `🎯 Chỉ học kỹ năng hệ Thần Rừng` }
-  };
-  const info = classPassiveInfo[cls] || {};
-  const startSkillName = startSkillDef ? `${startSkillDef.icon} K.năng đầu: ${startSkillDef.name}` : '';
+  const startSkillName = startSkillDef ? `${startSkillDef.icon} ${currentLang === 'en' ? 'Start Skill' : 'K.năng đầu'}: ${SKILLS_I18N[currentLang][def.startSkill]?.name || startSkillDef.name}` : '';
   const passiveEl = document.getElementById('classPassiveDesc');
-  if (passiveEl) passiveEl.textContent = `${info.passive || ''} • ${info.exclusive || ''} • ${startSkillName}`;
+  if (passiveEl) passiveEl.textContent = `${clsTrans.passive || ''} • ${clsTrans.exclusive || ''} • ${startSkillName}`;
 }
 
 
@@ -637,8 +1332,8 @@ function renderPowerupPanel() {
     card.innerHTML = `
       <div class="pu-icon">${def.icon}</div>
       <div class="pu-info">
-        <div class="pu-name">${def.name}</div>
-        <div class="pu-desc">${def.desc}</div>
+        <div class="pu-name">${POWERUP_I18N[currentLang][id]?.name || def.name}</div>
+        <div class="pu-desc">${POWERUP_I18N[currentLang][id]?.desc || def.desc}</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
         <div class="pu-level">LV ${lv}/${def.maxLevel}</div>
@@ -733,6 +1428,7 @@ function renderMasteryPanel() {
   if (!savedData.mastery) savedData.mastery = {};
   
   Object.entries(MASTERY_DEFS).forEach(([id, def]) => {
+    const localDef = MASTERIES_I18N[currentLang][id] || def;
     const isPurchased = !!savedData.mastery[id];
     const isUnlocked = isMasteryNodeUnlocked(id);
     const isAffordable = savedData.gold >= def.cost;
@@ -1045,7 +1741,7 @@ function renderPetPanel() {
 
       const item = document.createElement('div');
       item.className = 'pet-canvas-item';
-      item.title = def.name + ' — ' + def.desc;
+      item.title = (PETS_I18N[currentLang][id]?.name || def.name) + ' — ' + (PETS_I18N[currentLang][id]?.desc || def.desc);
       item.onclick = () => isUnlocked ? equipPet(id) : buyPet(id);
 
       const cv = document.createElement('canvas');
@@ -1058,7 +1754,7 @@ function renderPetPanel() {
 
       const nameEl = document.createElement('div');
       nameEl.className = 'pet-canvas-name';
-      nameEl.textContent = def.name;
+      nameEl.textContent = PETS_I18N[currentLang][id]?.name || def.name;
       nameEl.style.color = isActive ? '#fbbf24' : (isUnlocked ? '#94a3b8' : '#374151');
 
       item.appendChild(cv);
@@ -1122,17 +1818,17 @@ function renderPetPanel() {
 
     let btnHtml = '';
     if (isActive) {
-      btnHtml = `<div style="background:rgba(251,191,36,0.18);border:1px solid #fbbf24;color:#fbbf24;font-size:9px;font-weight:800;border-radius:6px;padding:2px 6px;">⚡ ĐANG DÙNG</div>`;
+      btnHtml = `<div style="background:rgba(251,191,36,0.18);border:1px solid #fbbf24;color:#fbbf24;font-size:9px;font-weight:800;border-radius:6px;padding:2px 6px;">⚡ ${currentLang === 'en' ? 'EQUIPPED' : 'ĐANG DÙNG'}</div>`;
     } else if (isUnlocked) {
-      btnHtml = `<button onclick="equipPet('${id}')" style="background:#1e293b;border:1px solid #475569;color:#e2e8f0;font-size:9px;font-weight:700;border-radius:6px;padding:2px 6px;cursor:pointer;">Chọn</button>`;
+      btnHtml = `<button onclick="equipPet('${id}')" style="background:#1e293b;border:1px solid #475569;color:#e2e8f0;font-size:9px;font-weight:700;border-radius:6px;padding:2px 6px;cursor:pointer;">${currentLang === 'en' ? 'Equip' : 'Chọn'}</button>`;
     } else {
       btnHtml = `<button onclick="buyPet('${id}')" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);border:none;color:#fff;font-size:9px;font-weight:700;border-radius:6px;padding:3px 6px;cursor:pointer;">🪙${def.cost}</button>`;
     }
 
     card.innerHTML = `
       <div style="font-size:22px;${isUnlocked?'':'filter:grayscale(0.8) opacity(0.5);'}">${def.emoji}</div>
-      <div style="font-weight:700;font-size:10px;color:${isActive?'#fbbf24':'#e2e8f0'};">${def.name}</div>
-      <div style="font-size:8px;color:#475569;line-height:1.3;height:20px;overflow:hidden;">${def.desc}</div>
+      <div style="font-weight:700;font-size:10px;color:${isActive?'#fbbf24':'#e2e8f0'}; panel-title">	ext{pet: } ${PETS_I18N[currentLang][id]?.name || def.name}</div>
+      <div style="font-size:8px;color:#64748b;line-height:1.3;height:20px;overflow:hidden;">${PETS_I18N[currentLang][id]?.desc || def.desc}</div>
       <div style="margin-top:1px;">${btnHtml}</div>
     `;
     grid.appendChild(card);
@@ -1144,7 +1840,7 @@ function buyPet(id) {
   const def = PETS_DEFS[id];
   if (!def || !savedData) return;
   if (savedData.gold < def.cost) {
-    showToast(`Không đủ vàng! Cần ${def.cost} 🪙`, '#f87171');
+    showToast(currentLang === 'en' ? `Not enough gold! Need ${def.cost} 🪙` : `Không đủ vàng! Cần ${def.cost} 🪙`, '#f87171');
     return;
   }
   savedData.gold -= def.cost;
@@ -1154,7 +1850,7 @@ function buyPet(id) {
   saveToDisk();
   updateGoldDisplay();
   renderPetPanel();
-  showToast(`🐾 Đã mở khóa thần thú ${def.name}!`, '#34d399');
+  showToast(EXTRA_I18N[currentLang].toast_unlocked_pet.replace('{name}', PETS_I18N[currentLang][id]?.name || def.name), '#34d399');
 }
 
 function equipPet(id) {
@@ -1163,7 +1859,7 @@ function equipPet(id) {
   saveToDisk();
   renderPetPanel();
   const def = PETS_DEFS[id];
-  showToast(`🐾 Thần thú ${def ? def.name : 'không'} đã đồng hành cùng bạn!`, '#38bdf8');
+  showToast(EXTRA_I18N[currentLang].toast_equipped_pet.replace('{name}', def ? (PETS_I18N[currentLang][id]?.name || def.name) : (currentLang === 'en' ? 'None' : 'không')), '#38bdf8');
 }
 
 window.buyPet = buyPet;
@@ -1240,7 +1936,7 @@ function renderCodex(tab) {
       card.innerHTML = `
         <div class="c-icon">${known ? def.icon : '❓'}</div>
         <div class="c-name">${known ? def.name : '???'}</div>
-        ${known ? `<div class="c-desc">${def.desc}</div>` : '<div class="c-desc">Chưa khám phá</div>'}
+        ${known ? `<div class="c-desc">${SKILLS_I18N[currentLang][id]?.desc || def.desc}</div>` : `<div class="c-desc">${EXTRA_I18N[currentLang].undiscovered}</div>`}
         ${known ? `<div class="c-type">${def.branch}</div>` : ''}`;
       body.appendChild(card);
     });
@@ -1253,7 +1949,7 @@ function renderCodex(tab) {
       card.innerHTML = `
         <div class="c-icon">${known ? def.icon : '❓'}</div>
         <div class="c-name">${known ? def.name : '???'}</div>
-        ${known ? `<div class="c-desc">${def.desc}</div>` : '<div class="c-desc">Chưa mở khóa</div>'}`;
+        ${known ? `<div class="c-desc">${PASSIVES_I18N[currentLang][id]?.desc || def.desc}</div>` : `<div class="c-desc">${EXTRA_I18N[currentLang].not_unlocked}</div>`}`;
       body.appendChild(card);
     });
   } else if (tab === 'evolutions') {
@@ -1267,7 +1963,11 @@ function renderCodex(tab) {
         const base1Def = SKILL_DEFS[combo.baseSkill || combo.baseSkill1];
         const base2Def = combo.baseSkill2 ? SKILL_DEFS[combo.baseSkill2] : PASSIVE_ITEMS_DEFS[combo.passiveItem];
         const evoDef = SKILL_DEFS[evoId];
-        const typeLabel = combo.type || 'EVOLUTION';
+        const base1Name = SKILLS_I18N[currentLang][combo.baseSkill || combo.baseSkill1]?.name || base1Def.name;
+        const base2Name = combo.baseSkill2 ? (SKILLS_I18N[currentLang][combo.baseSkill2]?.name || base2Def.name) : (PASSIVES_I18N[currentLang][combo.passiveItem]?.name || base2Def.name);
+        const evoName = SKILLS_I18N[currentLang][evoId]?.name || evoDef.name;
+        const evoDesc = SKILLS_I18N[currentLang][evoId]?.desc || evoDef.desc;
+        const typeLabel = combo.type ? (currentLang === 'en' ? 'UNION' : 'SIÊU TIẾN HÓA') : (currentLang === 'en' ? 'EVOLUTION' : 'TIẾN HÓA');
         const typeColors = { EVOLUTION:'#fbbf24', UNION:'#93c5fd', GIFT:'#fde68a', MORPH:'#c084fc' };
         card.innerHTML = `
           <div class="evo-lhs">
@@ -1582,7 +2282,7 @@ class PveGame {
     this.skills     = [];
     this.skillState = {};  // keyed by skill id
 
-    // ── TIME-BASED WAVE SYSTEM (Vampire Survivors style) ──
+    // ── TIME-BASED WAVE SYSTEM (Survival Mode) ──
     this.gameElapsed = 0;        // total seconds survived
     this.stageDuration = STAGE_DURATION[selectedStage] || 600;
     this.maxVisualWave = STAGE_MAX_WAVE[selectedStage] || 10;
@@ -2863,7 +3563,7 @@ class PveGame {
     const prevX = p.x, prevY = p.y;
     p.x = Math.max(p.r, Math.min(WORLD_W - p.r, p.x + dx * spd));
     p.y = Math.max(p.r, Math.min(WORLD_H - p.r, p.y + dy * spd));
-    // ── Track actual velocity for boss intercept AI ────────────
+    // ── Track actual velocity for boss intercept pathfinding ────
     // (_vx, _vy) là vận tốc pixel/giây để boss dự đoán vị trí tương lai
     p._vx = (p.x - prevX) / dt;
     p._vy = (p.y - prevY) / dt;
@@ -4099,7 +4799,7 @@ class PveGame {
       this.screenShake(15, 0.5);
       showToast(`⭐ MILESTONE 40! XP nhận được x2!`, '#fbbf24');
     } else {
-      this.addFloat(p.x, p.y - 50, `⬆️ LEVEL ${p.level}!`, '#a78bfa', true);
+      this.addFloat(p.x, p.y - 50, EXTRA_I18N[currentLang].float_lvl_up.replace('{level}', p.level), '#a78bfa', true);
       this.spawnParticles(p.x, p.y, '#a78bfa', 25, 6);
     }
 
@@ -6062,8 +6762,8 @@ class PveGame {
           id: id,
           weight: 4,
           icon: def.icon,
-          name: def.name,
-          desc: def.desc,
+          name: SKILLS_I18N[currentLang][id]?.name || def.name,
+          desc: SKILLS_I18N[currentLang][id]?.desc || def.desc,
           typeLabel: `✨ Kỹ Năng ${CLASSES[playerBranch]?.name || ''} Đặc Quyền`,
           color: def.color,
           cardClass: 'new-skill',
@@ -6094,7 +6794,7 @@ class PveGame {
             type: 'new_passive',
             id: id,
             weight: 3,
-            icon: def.icon, name: def.name, desc: def.desc, typeLabel: '🛡️ Vật Phẩm Hỗ Trợ Mới',
+            icon: def.icon, name: PASSIVES_I18N[currentLang][id]?.name || def.name, desc: PASSIVES_I18N[currentLang][id]?.desc || def.desc, typeLabel: currentLang === 'en' ? '🛡️ New Passive Item' : '🛡️ Vật Phẩm Hỗ Trợ Mới',
             color: '#34d399', cardClass: 'new-passive',
             apply: () => {
               this.passiveItems.push({ id, level: 1 });
@@ -6136,18 +6836,18 @@ class PveGame {
 
     // Fill the rest with random stat boosts if we have less than 3 choices
         const statBoosts = [
-      { icon:'❤️', name:'+25% Máu Tối Đa', desc:'Tăng máu tối đa và hồi đầy máu.', apply: () => { this.player.lvlUpMaxHpMult = (this.player.lvlUpMaxHpMult || 1.0) * 1.25; this.recalculatePassiveStats(); this.player.hp = this.player.maxHp; } },
-      { icon:'💨', name:'+15% Tốc Độ', desc:'Di chuyển nhanh hơn 15%.', apply: () => { this.player.lvlUpSpdMult = (this.player.lvlUpSpdMult || 1.0) * 1.15; this.recalculatePassiveStats(); } },
-      { icon:'⚔️', name:'+20% Sát Thương', desc:'Tất cả kỹ năng gây thêm 20% sát thương.', apply: () => { this.player.lvlUpDmgMult = (this.player.lvlUpDmgMult || 1.0) * 1.20; this.recalculatePassiveStats(); } },
-      { icon:'⏱️', name:'-15% Hồi Chiêu', desc:'Tất cả kỹ năng hồi chiêu nhanh hơn 15%.', apply: () => { this.player.lvlUpCdMult = (this.player.lvlUpCdMult || 1.0) * 0.85; this.recalculatePassiveStats(); } },
-      { icon:'💥', name:'+20% Diện Tích AoE', desc:'Vùng tác động kỹ năng lớn hơn 20%.', apply: () => { this.player.lvlUpAoeMult = (this.player.lvlUpAoeMult || 1.0) * 1.20; this.recalculatePassiveStats(); } },
-      { icon:'🩸', name:'+8% Hút Máu', desc:'Mỗi đòn đánh hồi máu tương ứng 8% sát thương gây ra.', apply: () => { this.player.lvlUpLifesteal = (this.player.lvlUpLifesteal || 0.0) + 0.08; this.recalculatePassiveStats(); } },
+      { icon:'❤️', name: EXTRA_I18N[currentLang].stat_up_hp_title, desc: EXTRA_I18N[currentLang].stat_up_hp_desc, apply: () => { this.player.lvlUpMaxHpMult = (this.player.lvlUpMaxHpMult || 1.0) * 1.25; this.recalculatePassiveStats(); this.player.hp = this.player.maxHp; } },
+      { icon:'💨', name: EXTRA_I18N[currentLang].stat_up_spd_title, desc: EXTRA_I18N[currentLang].stat_up_spd_desc, apply: () => { this.player.lvlUpSpdMult = (this.player.lvlUpSpdMult || 1.0) * 1.15; this.recalculatePassiveStats(); } },
+      { icon:'⚔️', name: EXTRA_I18N[currentLang].stat_up_atk_title, desc: EXTRA_I18N[currentLang].stat_up_atk_desc, apply: () => { this.player.lvlUpDmgMult = (this.player.lvlUpDmgMult || 1.0) * 1.20; this.recalculatePassiveStats(); } },
+      { icon:'⏱️', name: EXTRA_I18N[currentLang].stat_up_cdr_title, desc: EXTRA_I18N[currentLang].stat_up_cdr_desc, apply: () => { this.player.lvlUpCdMult = (this.player.lvlUpCdMult || 1.0) * 0.85; this.recalculatePassiveStats(); } },
+      { icon:'💥', name: EXTRA_I18N[currentLang].stat_up_aoe_title, desc: EXTRA_I18N[currentLang].stat_up_aoe_desc, apply: () => { this.player.lvlUpAoeMult = (this.player.lvlUpAoeMult || 1.0) * 1.20; this.recalculatePassiveStats(); } },
+      { icon:'🩸', name: EXTRA_I18N[currentLang].stat_up_lst_title, desc: EXTRA_I18N[currentLang].stat_up_lst_desc, apply: () => { this.player.lvlUpLifesteal = (this.player.lvlUpLifesteal || 0.0) + 0.08; this.recalculatePassiveStats(); } },
     ];
 
     while (selected.length < 3) {
       const boost = statBoosts[Math.floor(Math.random() * statBoosts.length)];
       if (!selected.some(s => s.name === boost.name)) {
-        selected.push({ ...boost, typeLabel: '📊 Nâng Chỉ Số', cardClass: 'stat-boost', color: '#fbbf24' });
+        selected.push({ ...boost, typeLabel: EXTRA_I18N[currentLang].stat_up_type, cardClass: 'stat-boost', color: '#fbbf24' });
       }
     }
 
@@ -6167,11 +6867,11 @@ class PveGame {
     if ((this.player.level >= 30 || this.totalKills >= 2000) && savedData.unlockedPassives) {
       if (!savedData.unlockedPassives.includes('attractorb')) {
         savedData.unlockedPassives.push('attractorb');
-        unlockedMsg += '🔓 Mở khóa vật phẩm: Nam Châm (Attractorb)!\n';
+        unlockedMsg += currentLang === 'en' ? '🔓 Unlocked item: Attractorb!\n' : '🔓 Mở khóa vật phẩm: Nam Châm (Attractorb)!\n';
       }
       if (!savedData.unlockedPassives.includes('clover')) {
         savedData.unlockedPassives.push('clover');
-        unlockedMsg += '🔓 Mở khóa vật phẩm: Cỏ 4 Lá (Clover)!\n';
+        unlockedMsg += currentLang === 'en' ? '🔓 Unlocked item: Clover!\n' : '🔓 Mở khóa vật phẩm: Cỏ 4 Lá (Clover)!\n';
       }
     }
 
@@ -6210,27 +6910,27 @@ class PveGame {
     // Bonus vàng đặc biệt nếu giết Tử Thần
     if (killedReaper) {
       this.totalGold += 5000;
-      showToast('🏆 +5000🪙 THƯỞNG DIỆT TỬ THẦN!', '#fbbf24');
+      showToast(currentLang === 'en' ? '🏆 +5000🪙 DEFEATED REAPER BONUS!' : '🏆 +5000🪙 THƯỞNG DIỆT TỬ THẦN!', '#fbbf24');
     }
 
     // Check unlocks
     let unlockedMsg = '';
     if (this.selectedStage === 1 && !savedData.unlockedStages.includes(2)) {
       savedData.unlockedStages.push(2);
-      unlockedMsg += '🔓 Mở khóa Stage 2: Thư Viện Cổ!\n';
+      unlockedMsg += currentLang === 'en' ? '🔓 Unlocked Stage 2: Ancient Library!\n' : '🔓 Mở khóa Stage 2: Thư Viện Cổ!\n';
     } else if (this.selectedStage === 2 && !savedData.unlockedStages.includes(3)) {
       savedData.unlockedStages.push(3);
-      unlockedMsg += '🔓 Mở khóa Stage 3: Hầm Ngục Hư Vô!\n';
+      unlockedMsg += currentLang === 'en' ? '🔓 Unlocked Stage 3: Void Dungeon!\n' : '🔓 Mở khóa Stage 3: Hầm Ngục Hư Vô!\n';
     }
 
     if ((this.player.level >= 20 || this.totalKills >= 500) && savedData.unlockedPassives) {
       if (!savedData.unlockedPassives.includes('attractorb')) {
         savedData.unlockedPassives.push('attractorb');
-        unlockedMsg += '🔓 Mở khóa vật phẩm: Nam Châm (Attractorb)!\n';
+        unlockedMsg += currentLang === 'en' ? '🔓 Unlocked item: Attractorb!\n' : '🔓 Mở khóa vật phẩm: Nam Châm (Attractorb)!\n';
       }
       if (!savedData.unlockedPassives.includes('clover')) {
         savedData.unlockedPassives.push('clover');
-        unlockedMsg += '🔓 Mở khóa vật phẩm: Cỏ 4 Lá (Clover)!\n';
+        unlockedMsg += currentLang === 'en' ? '🔓 Unlocked item: Clover!\n' : '🔓 Mở khóa vật phẩm: Cỏ 4 Lá (Clover)!\n';
       }
     }
 
@@ -6557,11 +7257,11 @@ class PveGame {
     if (cardsContainer) {
       cardsContainer.innerHTML = '';
       const shopItems = [
-        { id: 'chicken', name: '🍗 Đùi Gà Nướng', icon: '🍗', cost: 15, desc: 'Hồi phục ngay lập tức 50 HP.' },
-        { id: 'gold_egg', name: '🥚 Trứng Vàng', icon: '🥚', cost: 45, desc: '+3% ngẫu nhiên 1 chỉ số vĩnh viễn trong trận (ATK/DEF/SPD/CRIT/CD).' },
-        { id: 'super_vacuum', name: '🧲 Nam Châm cực đại', icon: '🧲', cost: 30, desc: 'Kích hoạt lực hút cực đại gom toàn bộ ngọc trên bản đồ.' },
-        { id: 'reroll_die', name: '🎲 Xúc Xắc hồi chiêu', icon: '🎲', cost: 35, desc: 'Tăng thêm +1 lượt Reroll lựa chọn nâng cấp.' },
-        { id: 'invuln_potion', name: '🧪 Thuốc Bất Tử', icon: '🧪', cost: 60, desc: 'Nhận trạng thái bất tử hoàn toàn trong 8 giây.' }
+        { id: 'chicken', name: EXTRA_I18N[currentLang].item_chicken, icon: '🍗', cost: 15, desc: EXTRA_I18N[currentLang].item_chicken_desc },
+        { id: 'gold_egg', name: EXTRA_I18N[currentLang].item_gold_egg, icon: '🥚', cost: 45, desc: EXTRA_I18N[currentLang].item_gold_egg_desc },
+        { id: 'super_vacuum', name: EXTRA_I18N[currentLang].item_super_vacuum, icon: '🧲', cost: 30, desc: EXTRA_I18N[currentLang].item_super_vacuum_desc },
+        { id: 'reroll_die', name: EXTRA_I18N[currentLang].item_reroll_die, icon: '🎲', cost: 35, desc: EXTRA_I18N[currentLang].item_reroll_die_desc },
+        { id: 'invuln_potion', name: EXTRA_I18N[currentLang].item_invuln_potion, icon: '🧪', cost: 60, desc: EXTRA_I18N[currentLang].item_invuln_potion_desc }
       ];
 
       const mult = this.merchantPriceDiscount || 1.0;
@@ -6615,17 +7315,16 @@ class PveGame {
       nameEl.textContent = def.name;
       emojiEl.textContent = def.emoji;
       
-      const customDescs = {
-        boss_slime_king: "Vua Slime khổng lồ. Di chuyển chậm nhưng đè bẹp mọi thứ nó chạm vào. Triệu hồi Slime con liên tục.",
-        boss_dark_lord: "Kẻ thống lĩnh đội quân bóng tối. Bắn cầu phép ma thuật tầm xa cực mạnh và có áo giáp bảo vệ vững chắc.",
-        boss_dragon_queen: "Nữ hoàng của loài rồng lửa. Khè ra 5 tia lửa cực nóng thiêu rụi mọi thứ cản đường.",
-        boss_void_titan: "Titan cổ đại thức tỉnh từ Hư vô. Sức phòng thủ cực cao, cuồng nộ khi yếu máu, giẫm đạp tạo chấn động lớn.",
-        boss_death_herald: "Kẻ báo hiệu ngày phán xét. Di chuyển cực nhanh, tàng hình và liên tục triệu hồi xương sát thủ cản bước.",
-        boss_reaper_form1: "Hình bóng đen tối của Thần Chết xuất hiện báo hiệu thời gian sinh tồn sắp cạn kiệt.",
-        boss_death_reaper: "Tử Thần Tối Thượng xuất hiện lúc 30 phút để tước đoạt sinh mạng của bạn. Chỉ kẻ mạnh nhất mới có thể tiêu diệt được hắn!"
+      const descMap = {
+        boss_slime_king: EXTRA_I18N[currentLang].boss_slime_king_desc,
+        boss_dark_lord: EXTRA_I18N[currentLang].boss_dark_lord_desc,
+        boss_dragon_queen: EXTRA_I18N[currentLang].boss_dragon_queen_desc,
+        boss_void_titan: EXTRA_I18N[currentLang].boss_void_titan_desc,
+        boss_death_herald: EXTRA_I18N[currentLang].boss_death_herald_desc,
+        boss_reaper_form1: EXTRA_I18N[currentLang].boss_reaper_form1_desc,
+        boss_death_reaper: EXTRA_I18N[currentLang].boss_death_reaper_desc
       };
-      
-      descEl.textContent = customDescs[typeId] || def._desc || "Thần thú hung hãn cổ đại sở hữu sức mạnh hủy diệt và bộ kỹ năng cực kỳ bá đạo.";
+      descEl.textContent = descMap[typeId] || def._desc || (currentLang === 'en' ? "Ancient beast with devastating power." : "Thần thú hung hãn cổ đại sở hữu sức mạnh hủy diệt và bộ kỹ năng cực kỳ bá đạo.");
       
       modal.style.display = 'flex';
       modal.classList.remove('hidden');
@@ -6640,13 +7339,13 @@ class PveGame {
     const modal = document.createElement('div');
     modal.id = 'suicideConfirmModal';
     modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;pointer-events:all;';
-    modal.innerHTML = `<div style='background:#1a0000;border:2px solid #ef4444;border-radius:16px;padding:32px 40px;text-align:center;max-width:360px;'><div style='font-size:48px;margin-bottom:8px;'>☠️</div><h2 style='color:#fca5a5;margin:0 0 8px;font-size:22px;'>Đầu Hàng?</h2><p style='color:#94a3b8;margin-bottom:24px;font-size:14px;'>Trận đấu sẽ kết thúc. Bạn có chắc không?</p><div style='display:flex;gap:12px;justify-content:center;'><button onclick='document.getElementById(\"suicideConfirmModal\").remove();if(G)G.resume();' style='background:#374151;border:1px solid #6b7280;color:#d1d5db;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;'>Tiếp Tục</button><button onclick='document.getElementById(\"suicideConfirmModal\").remove();if(G){G.stop();G=null;}goToLobby();' style='background:linear-gradient(135deg,#7f1d1d,#450a0a);border:1px solid #ef4444;color:#fca5a5;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;'>☠ Đầu Hàng</button></div></div>`;
+    modal.innerHTML = `<div style='background:#1a0000;border:2px solid #ef4444;border-radius:16px;padding:32px 40px;text-align:center;max-width:360px;font-family:Outfit;'><div style='font-size:48px;margin-bottom:8px;'>☠️</div><h2 style='color:#fca5a5;margin:0 0 8px;font-size:22px;'>${EXTRA_I18N[currentLang].suicide_title}</h2><p style='color:#94a3b8;margin-bottom:24px;font-size:14px;'>${EXTRA_I18N[currentLang].suicide_desc}</p><div style='display:flex;gap:12px;justify-content:center;'><button onclick='document.getElementById(\"suicideConfirmModal\").remove();if(G)G.resume();' style='background:#374151;border:1px solid #6b7280;color:#d1d5db;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:Outfit;'>${EXTRA_I18N[currentLang].suicide_btn_no}</button><button onclick='document.getElementById(\"suicideConfirmModal\").remove();if(G){G.stop();G=null;}goToLobby();' style='background:linear-gradient(135deg,#7f1d1d,#450a0a);border:1px solid #ef4444;color:#fca5a5;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:Outfit;'>${EXTRA_I18N[currentLang].suicide_btn_yes}</button></div></div>`;
     document.body.appendChild(modal);
   }
 
   buyMerchantItem(id, cost, name) {
     if (this.totalGold < cost) {
-      showToast('Không đủ vàng trong trận!', '#f87171');
+      showToast(EXTRA_I18N[currentLang].no_gold_shop, '#f87171');
       return;
     }
 
@@ -6658,7 +7357,7 @@ class PveGame {
       p.hp = Math.min(p.maxHp, p.hp + 50);
       this.spawnParticles(p.x, p.y, '#4ade80', 25, 4);
       this.addFloat(p.x, p.y - 40, '+50 HP 🍗', '#4ade80', true);
-      showToast('🍗 Đùi Gà Nướng: +50 HP!', '#4ade80');
+      showToast(currentLang === 'en' ? '🍗 Roast Chicken: +50 HP!' : '🍗 Đùi Gà Nướng: +50 HP!', '#4ade80');
     } 
     else if (id === 'gold_egg') {
       const stats = ['atkMult', 'defMult', 'spdMult', 'critChance', 'cdMult'];
@@ -10533,9 +11232,9 @@ class PveGame {
       {
         id: 'blood',
         icon: '🩸',
-        title: 'HỢP ĐỒNG HUYẾT TẾ',
-        cost: 'Mất vĩnh viễn -25% Máu tối đa',
-        reward: '+40% Sát thương kỹ năng',
+        title: ALTAR_DEALS_I18N[currentLang].blood.title,
+        cost: ALTAR_DEALS_I18N[currentLang].blood.cost,
+        reward: ALTAR_DEALS_I18N[currentLang].blood.reward,
         costColor: '#fca5a5',
         rewardColor: '#fbbf24',
         apply: () => this.acceptDemonicDeal('blood')
@@ -10543,9 +11242,9 @@ class PveGame {
       {
         id: 'curse',
         icon: '💀',
-        title: 'LỜI NGUYỀN CỦA QUỶ',
-        cost: 'Quái vật sinh nhanh hơn 35%',
-        reward: '+20% Tỷ lệ chí mạng',
+        title: ALTAR_DEALS_I18N[currentLang].curse.title,
+        cost: ALTAR_DEALS_I18N[currentLang].curse.cost,
+        reward: ALTAR_DEALS_I18N[currentLang].curse.reward,
         costColor: '#fca5a5',
         rewardColor: '#fbbf24',
         apply: () => this.acceptDemonicDeal('curse')
@@ -10553,9 +11252,9 @@ class PveGame {
       {
         id: 'void',
         icon: '🌀',
-        title: 'VÒNG XOÁY HƯ VÔ',
-        cost: 'Khóa vĩnh viễn hồi máu tự nhiên',
-        reward: '+5% Hút máu (Lifesteal)',
+        title: ALTAR_DEALS_I18N[currentLang].void.title,
+        cost: ALTAR_DEALS_I18N[currentLang].void.cost,
+        reward: ALTAR_DEALS_I18N[currentLang].void.reward,
         costColor: '#fca5a5',
         rewardColor: '#34d399',
         apply: () => this.acceptDemonicDeal('void')
@@ -10563,39 +11262,39 @@ class PveGame {
       {
         id: 'soul',
         icon: '👻',
-        title: 'HIẾN DÂNG LINH HỒN',
-        cost: '-30% Tốc độ di chuyển vĩnh viễn',
-        reward: '+60% Sát thương tất cả kỹ năng',
+        title: ALTAR_DEALS_I18N[currentLang].soul.title,
+        cost: ALTAR_DEALS_I18N[currentLang].soul.cost,
+        reward: ALTAR_DEALS_I18N[currentLang].soul.reward,
         costColor: '#fca5a5',
         rewardColor: '#a78bfa',
-        apply: () => this.acceptDemonicDealCustom({ spdMult: 0.70, dmgMult: 1.60 }, '👻 Hiến dâng linh hồn: -30% Tốc độ, +60% Sát thương!')
+        apply: () => this.acceptDemonicDealCustom({ spdMult: 0.70, dmgMult: 1.60 }, currentLang === 'en' ? '👻 Soul Sacrifice: -30% Speed, +60% Damage!' : '👻 Hiến dâng linh hồn: -30% Tốc độ, +60% Sát thương!')
       },
       {
         id: 'pain',
         icon: '⚡',
-        title: 'KHOAN KHOÁI TRONG ĐAU KHỔ',
-        cost: 'Mỗi đòn trúng bạn mất 5 HP',
-        reward: '+35% Sát thương + Phản 15% sát thương nhận vào',
+        title: ALTAR_DEALS_I18N[currentLang].pain.title,
+        cost: ALTAR_DEALS_I18N[currentLang].pain.cost,
+        reward: ALTAR_DEALS_I18N[currentLang].pain.reward,
         costColor: '#fca5a5',
         rewardColor: '#fbbf24',
-        apply: () => this.acceptDemonicDealCustom({ masochist: true, dmgMult: 1.35, thorns: 0.15 }, '⚡ Đau khổ & Sức mạnh: Mất 5HP/đòn, +35% STH, Gai 15%!')
+        apply: () => this.acceptDemonicDealCustom({ masochist: true, dmgMult: 1.35, thorns: 0.15 }, currentLang === 'en' ? '⚡ Pain & Power: Lose 5HP/hit, +35% Damage, 15% Thorns!' : '⚡ Đau khổ & Sức mạnh: Mất 5HP/đòn, +35% STH, Gai 15%!')
       },
       {
         id: 'frenzy',
         icon: '🔥',
-        title: 'PHẪN NỘ ĐỊA NGỤC',
-        cost: '-40% Phòng thủ vĩnh viễn',
-        reward: '+25% Tốc đánh + AoE kỹ năng rộng hơn 20%',
+        title: ALTAR_DEALS_I18N[currentLang].frenzy.title,
+        cost: ALTAR_DEALS_I18N[currentLang].frenzy.cost,
+        reward: ALTAR_DEALS_I18N[currentLang].frenzy.reward,
         costColor: '#fca5a5',
         rewardColor: '#f97316',
-        apply: () => this.acceptDemonicDealCustom({ defMult: 0.60, atkMult: 1.25, aoeMult: 1.20 }, '🔥 Phẫn Nộ Địa Ngục: -40% Giáp, +25% Tốc đánh, +20% AoE!')
+        apply: () => this.acceptDemonicDealCustom({ defMult: 0.60, atkMult: 1.25, aoeMult: 1.20 }, currentLang === 'en' ? '🔥 Hellish Frenzy: -40% Armor, +25% Attack Speed, +20% AoE!' : '🔥 Phẫn Nộ Địa Ngục: -40% Giáp, +25% Tốc đánh, +20% AoE!')
       },
       {
         id: 'ghost',
         icon: '🌑',
-        title: 'ĐỐI MẶT HƯ VÔ',
-        cost: 'Mất 50% vàng hiện tại trong trận',
-        reward: '+3 Kỹ năng random + Tốc độ hồi chiêu -20%',
+        title: ALTAR_DEALS_I18N[currentLang].ghost.title,
+        cost: ALTAR_DEALS_I18N[currentLang].ghost.cost,
+        reward: ALTAR_DEALS_I18N[currentLang].ghost.reward,
         costColor: '#fca5a5',
         rewardColor: '#818cf8',
         apply: () => this.acceptDemonicDealGhost()
@@ -10603,22 +11302,22 @@ class PveGame {
       {
         id: 'dark_pact',
         icon: '🌙',
-        title: 'ĐÊM VĨ ĐẠI',
-        cost: 'Toàn bộ màn hình tối hơn (tầm nhìn -40%)',
-        reward: '+50% Sát thương ban đêm + Nhìn xuyên màn đêm',
+        title: ALTAR_DEALS_I18N[currentLang].dark_pact.title,
+        cost: ALTAR_DEALS_I18N[currentLang].dark_pact.cost,
+        reward: ALTAR_DEALS_I18N[currentLang].dark_pact.reward,
         costColor: '#94a3b8',
         rewardColor: '#c084fc',
-        apply: () => this.acceptDemonicDealCustom({ darkSight: true, nightDmgBonus: 0.50 }, '🌙 Đêm Vĩ Đại: Tầm nhìn hẹp, +50% STH ban đêm!')
+        apply: () => this.acceptDemonicDealCustom({ darkSight: true, nightDmgBonus: 0.50 }, currentLang === 'en' ? '🌙 Great Night: Narrow sight, +50% Night Damage!' : '🌙 Đêm Vĩ Đại: Tầm nhìn hẹp, +50% STH ban đêm!')
       },
       {
         id: 'lich',
         icon: '☠️',
-        title: 'HIỆP ƯỚC THẦN CHẾT',
-        cost: 'Không thể hồi sinh (mất trang bị Phoenix)',
-        reward: 'Hút máu +8% + Mỗi kill hồi 2% MaxHP',
+        title: ALTAR_DEALS_I18N[currentLang].lich.title,
+        cost: ALTAR_DEALS_I18N[currentLang].lich.cost,
+        reward: ALTAR_DEALS_I18N[currentLang].lich.reward,
         costColor: '#fca5a5',
         rewardColor: '#34d399',
-        apply: () => this.acceptDemonicDealCustom({ noRevive: true, lifesteal: 0.08, killHealPct: 0.02 }, '☠️ Hiệp Ước Thần Chết: Không hồi sinh, +8% Hút máu, hồi máu mỗi kill!')
+        apply: () => this.acceptDemonicDealCustom({ noRevive: true, lifesteal: 0.08, killHealPct: 0.02 }, currentLang === 'en' ? '☠‍♂️ Reaper Covenant: No revives, +8% Lifesteal, heal on kill!' : '☠‍♂️ Hiệp Ước Thần Chết: Không hồi sinh, +8% Hút máu, hồi máu mỗi kill!')
       }
     ];
 
@@ -10667,13 +11366,13 @@ class PveGame {
       p.spawnRateMult = (p.spawnRateMult || 1.0) * 1.35;
       p.demonicCritChance = (p.demonicCritChance || 0.0) + 0.20;
       this.recalculatePassiveStats();
-      this.addFloat(p.x, p.y - 60, `💀 Lời nguyền: Quái sinh nhanh hơn 35%, +20% Chí mạng!`, '#f87171', true);
+      this.addFloat(p.x, p.y - 60, EXTRA_I18N[currentLang].altar_curse, '#f87171', true);
     } 
     else if (type === 'void') {
       p.hasDemonicVoidRegenBan = true;
       p.demonicLifesteal = (p.demonicLifesteal || 0.0) + 0.05;
       this.recalculatePassiveStats();
-      this.addFloat(p.x, p.y - 60, `🌀 Hư vô: Khóa hồi máu tự nhiên, +5% Hút máu!`, '#7c3aed', true);
+      this.addFloat(p.x, p.y - 60, EXTRA_I18N[currentLang].altar_void, '#7c3aed', true);
     }
     
     if (this.demonicAltar) {
@@ -10703,7 +11402,7 @@ class PveGame {
     if (mods.noRevive) { p.noRevive = true; p.reviveUsed = true; }
 
     this.recalculatePassiveStats();
-    this.addFloat(p.x, p.y - 60, floatMsg || '😈 Giao kèo hoàn thành!', '#ef4444', true);
+    this.addFloat(p.x, p.y - 60, floatMsg || EXTRA_I18N[currentLang].altar_deal_ok, '#ef4444', true);
     this.spawnParticles(p.x, p.y, '#ef4444', 25, 5);
 
     if (this.demonicAltar) this.demonicAltar.active = false;
@@ -10737,7 +11436,7 @@ class PveGame {
     p.cdMult = (p.cdMult || 1.0) * 0.80;
     this.recalculatePassiveStats();
 
-    this.addFloat(p.x, p.y - 60, `🌑 Đối Mặt Hư Vô: Mất ${goldLost}🪙, +${added} kỹ năng, -20% Hồi chiêu!`, '#818cf8', true);
+    this.addFloat(p.x, p.y - 60, EXTRA_I18N[currentLang].altar_deal_ghost.replace('{gold}', goldLost).replace('{skills}', added), '#818cf8', true);
     this.spawnParticles(p.x, p.y, '#818cf8', 30, 6);
 
     if (this.demonicAltar) this.demonicAltar.active = false;
@@ -12254,7 +12953,7 @@ function updatePauseStatsPanel() {
   if (!container || !G) return;
   
   const p = G.player;
-  const activePetName = G.save.activePet ? (PETS_DEFS[G.save.activePet]?.name || G.save.activePet) : 'Không';
+  const activePetName = G.save.activePet ? (PETS_I18N[currentLang][G.save.activePet]?.name || G.save.activePet) : EXTRA_I18N[currentLang].none;
   
   const tarotNames = G.activeArcanas.size > 0 
     ? Array.from(G.activeArcanas).map(id => {
@@ -12273,22 +12972,22 @@ function updatePauseStatsPanel() {
         ].find(a => a.id === id);
         return matchingArc ? matchingArc.name : id;
       }).join(', ')
-    : 'Không';
+    : EXTRA_I18N[currentLang].none;
 
   const stats = [
-    { label: '⚔️ Sức Mạnh (ATK)', val: Math.round(p.dmgMult * p.atkMult * 100) + '%' },
-    { label: '💨 Tốc Độ (SPD)', val: Math.round(p.speed) },
-    { label: '❤️ Máu', val: Math.round(p.hp) + ' / ' + Math.round(p.maxHp) },
-    { label: '💚 Hồi Phục', val: '+' + Math.round(p.hpRegen) + '/s' },
-    { label: '🛡️ Phòng Thủ (ARM)', val: Math.round(p.defMult * 100) + '%' },
-    { label: '⚡ Giảm Hồi Chiêu (CDR)', val: Math.round((1 - p.cdMult) * 100) + '%' },
-    { label: '🧲 Tầm Hút (Magnet)', val: Math.round(G.magnetRadius) + 'px' },
-    { label: '🍀 Chí Mạng (Crit)', val: Math.round(p.critChance * 100) + '%' },
-    { label: '🩸 Hút Máu (Lifesteal)', val: Math.round(p.lifesteal * 100) + '%' },
-    { label: '🪙 Vàng Thu Thập', val: G.totalGold + ' 🪙' },
-    { label: '⭐ Cấp Độ & XP', val: 'Lv.' + p.level + ' (' + p.xp + '/' + p.xpToNext + ')' },
-    { label: '🐾 Thần Thú', val: activePetName },
-    { label: '🔮 Bài Tarot', val: tarotNames, fullWidth: true }
+    { label: EXTRA_I18N[currentLang].atk_label, val: Math.round(p.dmgMult * p.atkMult * 100) + '%' },
+    { label: EXTRA_I18N[currentLang].spd_label, val: Math.round(p.speed) },
+    { label: EXTRA_I18N[currentLang].hp_label, val: Math.round(p.hp) + ' / ' + Math.round(p.maxHp) },
+    { label: EXTRA_I18N[currentLang].regen_label, val: '+' + Math.round(p.hpRegen) + '/s' },
+    { label: EXTRA_I18N[currentLang].arm_label, val: Math.round(p.defMult * 100) + '%' },
+    { label: EXTRA_I18N[currentLang].cdr_label, val: Math.round((1 - p.cdMult) * 100) + '%' },
+    { label: EXTRA_I18N[currentLang].mag_label, val: Math.round(G.magnetRadius) + 'px' },
+    { label: EXTRA_I18N[currentLang].crit_label, val: Math.round(p.critChance * 100) + '%' },
+    { label: EXTRA_I18N[currentLang].lst_label, val: Math.round(p.lifesteal * 100) + '%' },
+    { label: EXTRA_I18N[currentLang].gold_label, val: G.totalGold + ' 🪙' },
+    { label: EXTRA_I18N[currentLang].xp_label, val: 'Lv.' + p.level + ' (' + p.xp + '/' + p.xpToNext + ')' },
+    { label: EXTRA_I18N[currentLang].pet_label, val: activePetName },
+    { label: EXTRA_I18N[currentLang].tarot_label, val: tarotNames, fullWidth: true }
   ];
   
   container.innerHTML = '';

@@ -13,7 +13,7 @@
     "ssh2": "^1.17.0",
     "ws": "^8.17.0"
   },
-  "author": "AI Angel Studio",
+  "author": "Angel Studio",
   "license": "MIT",
   "devDependencies": {
     "electron": "^42.3.0",
